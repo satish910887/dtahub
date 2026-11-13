@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact - DTAhub</title>
+<meta name="description" content="Contact DTAhub for feedback, tool requests and questions.">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/tool.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+<main class="tw prose">
+<a class="back" href="/" data-en="← Home" data-hi="← होम">← Home</a>
+<h1 data-en="Contact Us" data-hi="संपर्क करें">Contact Us</h1>
+<p class="lead" data-en="Feedback or a tool request? Tell us." data-hi="फीडबैक या नए टूल की मांग? हमें बताइए।">Feedback.</p>
+<form class="panel" id="cf">
+ <label data-en="Your name" data-hi="आपका नाम">Name</label>
+ <input id="nm" type="text" required>
+ <label data-en="Email" data-hi="ईमेल">Email</label>
+ <input id="em" type="email" required>
+ <label data-en="Message" data-hi="संदेश">Message</label>
+ <textarea id="ms" style="min-height:130px" required></textarea>
+ <div class="seg"><button class="btn gold" type="submit" data-en="Send" data-hi="भेजें">Send</button></div>
+ <div class="ok" id="ok" hidden></div>
+</form>
+<script>
+document.getElementById("cf").addEventListener("submit",function(e){
+ e.preventDefault();var o=document.getElementById("ok");o.hidden=false;
+ o.textContent=L("Demo mode: messages are not delivered yet. Real email will be connected soon.","डेमो मोड: संदेश अभी भेजे नहीं जाते। असली ईमेल जल्द जुड़ेगा।");
+});
+</script>
+</main>
+<script src="/js/tool.js"></script>
+</body>
+</html>

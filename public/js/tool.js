@@ -26,3 +26,9 @@ window.copyText=function(text,btn){
  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done,function(){fb()})}else fb();
  function fb(){var a=document.createElement("textarea");a.value=text;document.body.appendChild(a);a.select();try{document.execCommand("copy")}catch(e){}document.body.removeChild(a);done()}
 };
+(function(){
+ var f=document.querySelector(".foot");if(!f)return;
+ var p=document.createElement("p");p.className="fl2";f.appendChild(p);
+ function r(){p.innerHTML='<a href="/blog/">'+L("Blog","ब्लॉग")+'</a> · <a href="/contact.html">'+L("Contact","संपर्क")+'</a> · <a href="/privacy.html">'+L("Privacy Policy","प्राइवेसी पॉलिसी")+'</a> · <a href="/terms.html">'+L("Terms","शर्तें")+'</a>'}
+ r();document.addEventListener("langchange",r);
+})();
