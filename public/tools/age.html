@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Age Calculator - DTAhub</title>
+<meta name="description" content="Free age calculator. Find your exact age in years, months and days, and days left for your next birthday.">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/tool.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+<main class="tw">
+<a class="back" href="/#tools" data-en="← All tools" data-hi="← सभी टूल्स">← All tools</a>
+<h1 data-en="Age Calculator" data-hi="उम्र कैलकुलेटर">Age Calculator</h1>
+<p class="lead" data-en="Exact age in years, months and days." data-hi="साल, महीने और दिनों में सही उम्र।">Exact age.</p>
+<div class="panel">
+ <label data-en="Date of birth" data-hi="जन्म तिथि">Date of birth</label>
+ <input id="dob" type="date">
+ <label data-en="Age on date" data-hi="किस तारीख को उम्र जाननी है">Age on date</label>
+ <input id="to" type="date">
+ <div class="err" id="err" hidden></div>
+</div>
+<div class="panel" id="res" hidden>
+ <div class="stats">
+  <div class="stat big"><small data-en="Your age" data-hi="आपकी उम्र">Your age</small><b id="o-age"></b></div>
+  <div class="stat"><small data-en="Total months" data-hi="कुल महीने">Total months</small><b id="o-m"></b></div>
+  <div class="stat"><small data-en="Total weeks" data-hi="कुल हफ्ते">Total weeks</small><b id="o-w"></b></div>
+  <div class="stat"><small data-en="Total days" data-hi="कुल दिन">Total days</small><b id="o-d"></b></div>
+  <div class="stat"><small data-en="Next birthday in" data-hi="अगला जन्मदिन">Next birthday</small><b id="o-nb"></b></div>
+ </div>
+</div>
+</main>
+<script src="/js/tool.js"></script>
+<script>
+function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+$("to").value=ymd(new Date());
+function calc(){
+ var a=$("dob").value,b=$("to").value,err=$("err");
+ err.hidden=true;
+ if(!a||!b){$("res").hidden=true;return}
+ var d1=new Date(a+"T00:00:00"),d2=new Date(b+"T00:00:00");
+ if(d2<d1){$("res").hidden=true;err.hidden=false;err.textContent=L("Date of birth must be before the other date.","जन्म तिथि दूसरी तारीख से पहले होनी चाहिए।");return}
+ var y=d2.getFullYear()-d1.getFullYear(),m=d2.getMonth()-d1.getMonth(),d=d2.getDate()-d1.getDate();
+ if(d<0){m--;d+=new Date(d2.getFullYear(),d2.getMonth(),0).getDate()}
+ if(m<0){y--;m+=12}
+ var days=Math.round((d2-d1)/864e5);
+ var nb=new Date(d2.getFullYear(),d1.getMonth(),d1.getDate());
+ if(nb<d2)nb.setFullYear(d2.getFullYear()+1);
+ var left=Math.round((nb-d2)/864e5);
+ $("res").hidden=false;
+ $("o-age").textContent=y+L(" yrs ", " साल ")+m+L(" mo ", " माह ")+d+L(" days"," दिन");
+ $("o-m").textContent=fmt(y*12+m);
+ $("o-w").textContent=fmt(Math.floor(days/7));
+ $("o-d").textContent=fmt(days);
+ $("o-nb").textContent=left===0?L("Today! 🎉","आज! 🎉"):left+L(" days"," दिन");
+}
+document.querySelectorAll("input").forEach(function(i){i.addEventListener("input",calc)});
+document.addEventListener("langchange",calc);
+calc();
+</script>
+</body>
+</html>

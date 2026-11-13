@@ -21,7 +21,7 @@ function renderGrid(){
  var list=window.TOOLS.filter(function(t){
   return (cat==="all"||t.cat===cat)&&(!s||(t.en+t.hi+t.den+t.dhi).toLowerCase().indexOf(s)>-1)});
  grid.innerHTML=list.map(function(t){
-  return '<a class="card reveal" href="tools/'+t.id+'.html"><span class="soon">'+(lang==="en"?"Soon":"जल्द")+'</span><div class="ico">'+t.ico+'</div><h3>'+t[lang]+'</h3><p>'+(lang==="en"?t.den:t.dhi)+'</p></a>'}).join("");
+  return '<a class="card reveal" href="tools/'+t.id+'.html">'+(t.live?'':'<span class="soon">'+(lang==="en"?"Soon":"जल्द")+'</span>')+'<div class="ico">'+t.ico+'</div><h3>'+t[lang]+'</h3><p>'+(lang==="en"?t.den:t.dhi)+'</p></a>'}).join("");
  empty.hidden=list.length>0;watch();
 }
 chips.addEventListener("click",function(e){var b=e.target.closest(".chip");if(!b)return;cat=b.getAttribute("data-id");renderChips();renderGrid()});

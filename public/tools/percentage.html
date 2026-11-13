@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Percentage Calculator - DTAhub</title>
+<meta name="description" content="Free percentage calculator. Find X% of a number, what percent one number is of another, and percentage change.">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/tool.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+<main class="tw">
+<a class="back" href="/#tools" data-en="← All tools" data-hi="← सभी टूल्स">← All tools</a>
+<h1 data-en="Percentage Calculator" data-hi="प्रतिशत कैलकुलेटर">Percentage Calculator</h1>
+<p class="lead" data-en="Three quick percentage calculations in one place." data-hi="तीन आसान प्रतिशत हिसाब एक जगह।">Quick percentage maths.</p>
+
+<div class="panel">
+ <label data-en="1. What is X% of Y?" data-hi="1. Y का X% कितना होता है?">1</label>
+ <div class="two"><input id="a1" type="number" inputmode="decimal" placeholder="X %"><input id="b1" type="number" inputmode="decimal" placeholder="Y"></div>
+ <p class="line" id="r1"></p>
+</div>
+<div class="panel">
+ <label data-en="2. X is what percent of Y?" data-hi="2. X, Y का कितने प्रतिशत है?">2</label>
+ <div class="two"><input id="a2" type="number" inputmode="decimal" placeholder="X"><input id="b2" type="number" inputmode="decimal" placeholder="Y"></div>
+ <p class="line" id="r2"></p>
+</div>
+<div class="panel">
+ <label data-en="3. Percentage change from X to Y" data-hi="3. X से Y तक प्रतिशत बदलाव">3</label>
+ <div class="two"><input id="a3" type="number" inputmode="decimal" placeholder="X"><input id="b3" type="number" inputmode="decimal" placeholder="Y"></div>
+ <p class="line" id="r3"></p>
+</div>
+</main>
+<script src="/js/tool.js"></script>
+<script>
+function v(id){var s=$(id).value;return s===""?NaN:+s}
+function calc(){
+ var a=v("a1"),b=v("b1");
+ $("r1").textContent=(isNaN(a)||isNaN(b))?"":fmt(a*b/100);
+ a=v("a2");b=v("b2");
+ $("r2").textContent=(isNaN(a)||isNaN(b)||b===0)?"":fmt(a/b*100)+" %";
+ a=v("a3");b=v("b3");
+ if(isNaN(a)||isNaN(b)||a===0){$("r3").textContent=""}
+ else{var c=(b-a)/Math.abs(a)*100;$("r3").textContent=(c>=0?L("Increase of ","बढ़ोतरी "):L("Decrease of ","कमी "))+fmt(Math.abs(c))+" %"}
+}
+document.querySelectorAll("input").forEach(function(i){i.addEventListener("input",calc)});
+document.addEventListener("langchange",calc);
+calc();
+</script>
+</body>
+</html>

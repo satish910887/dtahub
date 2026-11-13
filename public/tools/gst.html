@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GST Calculator - DTAhub</title>
+<meta name="description" content="Free GST calculator. Add GST to a price or remove GST from a price, with CGST and SGST split.">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/tool.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+<main class="tw">
+<a class="back" href="/#tools" data-en="← All tools" data-hi="← सभी टूल्स">← All tools</a>
+<h1 data-en="GST Calculator" data-hi="GST कैलकुलेटर">GST Calculator</h1>
+<p class="lead" data-en="Add GST to a price or remove it from a GST-inclusive price." data-hi="कीमत में GST जोड़ें या GST वाली कीमत से हटाएं।">Add or remove GST.</p>
+<div class="panel">
+ <div class="seg" style="margin-top:0">
+  <button class="chip on" id="madd" data-en="Add GST" data-hi="GST जोड़ें">Add GST</button>
+  <button class="chip" id="mrem" data-en="Remove GST" data-hi="GST हटाएं">Remove GST</button>
+ </div>
+ <label data-en="Amount (₹)" data-hi="राशि (₹)">Amount</label>
+ <input id="amt" type="number" inputmode="decimal" value="1000" min="0">
+ <label data-en="GST rate (%)" data-hi="GST दर (%)">GST rate</label>
+ <input id="rate" type="number" inputmode="decimal" value="18" min="0" step="0.01">
+ <div class="seg">
+  <button class="chip r" data-r="5">5%</button>
+  <button class="chip r" data-r="12">12%</button>
+  <button class="chip r on" data-r="18">18%</button>
+  <button class="chip r" data-r="28">28%</button>
+ </div>
+</div>
+<div class="panel" id="res" hidden>
+ <div class="stats">
+  <div class="stat"><small data-en="Price without GST" data-hi="GST के बिना कीमत">Net</small><b id="o-net"></b></div>
+  <div class="stat"><small data-en="GST amount" data-hi="GST राशि">GST</small><b id="o-gst"></b></div>
+  <div class="stat"><small>CGST</small><b id="o-c"></b></div>
+  <div class="stat"><small>SGST</small><b id="o-s"></b></div>
+  <div class="stat big"><small data-en="Price with GST" data-hi="GST के साथ कीमत">Total</small><b id="o-tot"></b></div>
+ </div>
+</div>
+</main>
+<script src="/js/tool.js"></script>
+<script>
+var mode="add";
+function calc(){
+ var A=+$("amt").value,R=+$("rate").value;
+ document.querySelectorAll(".r").forEach(function(b){b.classList.toggle("on",+b.dataset.r===R)});
+ if(!(A>=0)||!(R>=0)||$("amt").value===""){$("res").hidden=true;return}
+ var net,gst,tot;
+ if(mode==="add"){net=A;gst=A*R/100;tot=A+gst}
+ else{net=A*100/(100+R);gst=A-net;tot=A}
+ $("res").hidden=false;
+ $("o-net").textContent="₹ "+fmt(net);
+ $("o-gst").textContent="₹ "+fmt(gst);
+ $("o-c").textContent="₹ "+fmt(gst/2);
+ $("o-s").textContent="₹ "+fmt(gst/2);
+ $("o-tot").textContent="₹ "+fmt(tot);
+}
+document.querySelectorAll("input").forEach(function(i){i.addEventListener("input",calc)});
+document.querySelectorAll(".r").forEach(function(b){b.onclick=function(){$("rate").value=b.dataset.r;calc()}});
+$("madd").onclick=function(){mode="add";$("madd").classList.add("on");$("mrem").classList.remove("on");calc()};
+$("mrem").onclick=function(){mode="rem";$("mrem").classList.add("on");$("madd").classList.remove("on");calc()};
+calc();
+</script>
+</body>
+</html>
