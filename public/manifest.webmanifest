@@ -1,0 +1,80 @@
+{
+  "name": "DTAhub – Your Everyday Digital Toolkit",
+  "short_name": "DTAhub",
+  "description": "DTAhub is your everyday digital toolkit: free PDF, image, text, developer tools and calculators that run privately in your browser. No sign-up.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#08080d",
+  "theme_color": "#08080d",
+  "lang": "en",
+  "categories": [
+    "utilities",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Merge PDF",
+      "short_name": "Merge PDF",
+      "url": "/tools/pdf-merge.html",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Compress Image",
+      "short_name": "Compress Image",
+      "url": "/tools/image-compress.html",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Hindi Typing Helper",
+      "short_name": "Hindi Typing Helper",
+      "url": "/tools/typing-helper.html",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "QR Code Generator",
+      "short_name": "QR Code Generator",
+      "url": "/tools/qr-code.html",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

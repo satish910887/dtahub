@@ -20,5 +20,6 @@ window.saveBlob=function(blob,name){
  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;
  document.body.appendChild(a);a.click();document.body.removeChild(a);
  setTimeout(function(){URL.revokeObjectURL(a.href)},4000);
+ if(window.toast)toast(L("Download started ✓","डाउनलोड शुरू ✓")+" "+name);
 };
 window.baseName=function(f){return f.name.replace(/\.[^.]+$/,"")};

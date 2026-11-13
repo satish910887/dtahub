@@ -3,12 +3,12 @@
 .back{color:var(--muted);font-size:.9rem;display:inline-block;margin-top:6px}
 .back:hover{color:var(--gold)}
 .lead{color:var(--muted);margin:0 0 20px}
-.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:16px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
 .panel label{display:block;font-size:.85rem;color:var(--muted);margin:12px 0 6px}
 .panel label:first-child{margin-top:0}
 .panel input,.panel select{width:100%;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:1rem;outline:none}
 .panel input:focus,.panel select:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(139,92,246,.2)}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}
 .seg{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
 .stat{background:var(--card2);border-radius:14px;padding:14px}
@@ -26,9 +26,6 @@
 @media(max-width:360px){.two{grid-template-columns:1fr}}
 .panel textarea{width:100%;min-height:160px;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:1rem;font-family:inherit;outline:none;resize:vertical}
 .panel textarea:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(139,92,246,.2)}
-.btn{padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);cursor:pointer;font-size:.9rem;transition:transform .2s,border-color .2s}
-.btn:hover,.btn:active{border-color:var(--gold);transform:translateY(-2px)}
-.btn.gold{background:linear-gradient(120deg,var(--gold),#ffe9a8);color:#15110a;border-color:transparent;font-weight:700}
 .tips{color:var(--muted);font-size:.88rem;line-height:1.9}
 .tips b{color:var(--gold)}
 .chk{display:flex;align-items:center;gap:10px;margin:10px 0;color:var(--text);font-size:.95rem}
@@ -59,3 +56,7 @@
 .bcard p{margin:0;color:var(--muted);font-size:.9rem}
 .cta{display:inline-block;margin-top:14px;padding:11px 18px;border-radius:12px;background:linear-gradient(120deg,var(--gold),#ffe9a8);color:#15110a;font-weight:700}
 .foot .fl2 a{margin:0 6px}
+.seg .btn{min-height:44px}
+.form-row{display:grid;gap:10px}
+.hp{position:absolute;left:-9999px;opacity:0;height:0;width:0}
+.note{padding:12px 14px;border-radius:12px;border:1px solid var(--line2);background:var(--card2);color:var(--muted);font-size:.9rem;margin-bottom:12px}
