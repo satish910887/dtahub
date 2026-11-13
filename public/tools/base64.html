@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Base64 Encoder Decoder - DTAhub</title>
+<meta name="description" content="Free Base64 encoder and decoder. Supports Hindi and all Unicode text.">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/tool.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+<main class="tw">
+<a class="back" href="/#tools" data-en="← All tools" data-hi="← सभी टूल्स">← All tools</a>
+<h1 data-en="Base64 Tool" data-hi="Base64 टूल">Base64 Tool</h1>
+<p class="lead" data-en="Encode text to Base64 or decode it back. Hindi text works too." data-hi="टेक्स्ट को Base64 में बदलें या वापस पढ़ें। हिंदी भी चलती है।">Base64.</p>
+<div class="panel">
+ <textarea id="in" spellcheck="false" data-ph-en="Enter text or Base64 here..." data-ph-hi="टेक्स्ट या Base64 यहां डालें..." placeholder="Enter text or Base64 here..."></textarea>
+ <div class="seg">
+  <button class="btn gold" id="en" data-en="Encode" data-hi="एनकोड">Encode</button>
+  <button class="btn gold" id="de" data-en="Decode" data-hi="डिकोड">Decode</button>
+  <button class="btn" id="clr" data-en="Clear" data-hi="साफ करें">Clear</button>
+ </div>
+ <div class="err" id="err" hidden></div>
+</div>
+<div class="panel">
+ <label data-en="Result" data-hi="नतीजा">Result</label>
+ <textarea id="out" readonly spellcheck="false"></textarea>
+ <div class="seg"><button class="btn" id="cp" data-en="Copy" data-hi="कॉपी करें">Copy</button></div>
+</div>
+</main>
+<script src="/js/tool.js"></script>
+<script>
+function enc(s){var b=new TextEncoder().encode(s),r="";for(var i=0;i<b.length;i++)r+=String.fromCharCode(b[i]);return btoa(r)}
+function dec(s){
+ var r=atob(s.replace(/\s/g,"").replace(/-/g,"+").replace(/_/g,"/")),b=new Uint8Array(r.length);
+ for(var i=0;i<r.length;i++)b[i]=r.charCodeAt(i);
+ return new TextDecoder("utf-8",{fatal:true}).decode(b);
+}
+function go(f){
+ $("err").hidden=true;
+ try{$("out").value=f($("in").value)}
+ catch(e){$("out").value="";$("err").hidden=false;$("err").textContent=L("Invalid input for this action.","इस काम के लिए इनपुट सही नहीं है।")}
+}
+$("en").onclick=function(){go(enc)};
+$("de").onclick=function(){go(dec)};
+$("clr").onclick=function(){$("in").value="";$("out").value="";$("err").hidden=true};
+$("cp").onclick=function(){copyText($("out").value,$("cp"))};
+</script>
+</body>
+</html>

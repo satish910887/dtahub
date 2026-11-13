@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JSON Formatter - DTAhub</title>
+<meta name="description" content="Free JSON formatter and validator. Beautify, minify and check JSON online.">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/tool.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+<main class="tw">
+<a class="back" href="/#tools" data-en="← All tools" data-hi="← सभी टूल्स">← All tools</a>
+<h1 data-en="JSON Formatter" data-hi="JSON फॉर्मेटर">JSON Formatter</h1>
+<p class="lead" data-en="Beautify, minify and validate JSON. Your data never leaves your phone." data-hi="JSON सुंदर बनाएं, छोटा करें और जांचें। आपका डेटा फोन से बाहर नहीं जाता।">Format JSON.</p>
+<div class="panel">
+ <textarea id="in" spellcheck="false" placeholder='{"name":"DTAhub","tools":18}'></textarea>
+ <div class="seg">
+  <button class="btn gold" id="fm" data-en="Format" data-hi="फॉर्मेट">Format</button>
+  <button class="btn" id="mn" data-en="Minify" data-hi="छोटा करें">Minify</button>
+  <button class="btn" id="clr" data-en="Clear" data-hi="साफ करें">Clear</button>
+ </div>
+ <div class="err" id="err" hidden></div>
+ <div class="ok" id="ok" hidden></div>
+</div>
+<div class="panel">
+ <label data-en="Result" data-hi="नतीजा">Result</label>
+ <textarea id="out" readonly spellcheck="false"></textarea>
+ <div class="seg"><button class="btn" id="cp" data-en="Copy" data-hi="कॉपी करें">Copy</button></div>
+</div>
+</main>
+<script src="/js/tool.js"></script>
+<script>
+function run(m){
+ var s=$("in").value.trim();
+ $("err").hidden=true;$("ok").hidden=true;
+ if(!s){$("out").value="";return}
+ try{
+  var o=JSON.parse(s);
+  $("out").value=m==="min"?JSON.stringify(o):JSON.stringify(o,null,2);
+  $("ok").hidden=false;$("ok").textContent=L("Valid JSON ✓","सही JSON ✓");
+ }catch(e){
+  $("out").value="";$("err").hidden=false;
+  $("err").textContent=L("Invalid JSON: ","गलत JSON: ")+e.message;
+ }
+}
+$("fm").onclick=function(){run("fmt")};
+$("mn").onclick=function(){run("min")};
+$("clr").onclick=function(){$("in").value="";run()};
+$("cp").onclick=function(){copyText($("out").value,$("cp"))};
+</script>
+</body>
+</html>

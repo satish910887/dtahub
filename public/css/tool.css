@@ -31,3 +31,11 @@
 .btn.gold{background:linear-gradient(120deg,var(--gold),#ffe9a8);color:#15110a;border-color:transparent;font-weight:700}
 .tips{color:var(--muted);font-size:.88rem;line-height:1.9}
 .tips b{color:var(--gold)}
+.chk{display:flex;align-items:center;gap:10px;margin:10px 0;color:var(--text);font-size:.95rem}
+.chk input{width:20px;height:20px;accent-color:#8b5cf6}
+.panel input[type=range]{padding:0;accent-color:#8b5cf6}
+.ok{color:#5fd39a;font-size:.9rem;margin-top:10px}
+.hint{color:var(--muted);font-size:.78rem;margin-top:4px}
+.qrbox{display:flex;justify-content:center;margin-top:14px}
+.qrbox canvas{max-width:100%;height:auto;border-radius:12px;background:#fff}
+.pw{font-family:ui-monospace,Menlo,monospace;font-size:1.15rem;word-break:break-all;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;color:var(--gold)}

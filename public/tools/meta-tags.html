@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meta Tag Generator - DTAhub</title>
+<meta name="description" content="Free meta tag generator. Create SEO, Open Graph and Twitter Card tags for your web page.">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/tool.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+<main class="tw">
+<a class="back" href="/#tools" data-en="← All tools" data-hi="← सभी टूल्स">← All tools</a>
+<h1 data-en="Meta Tag Generator" data-hi="मेटा टैग जनरेटर">Meta Tag Generator</h1>
+<p class="lead" data-en="Create SEO, Open Graph and Twitter tags for your page." data-hi="अपने पेज के लिए SEO, Open Graph और Twitter टैग बनाएं।">Meta tags.</p>
+<div class="panel">
+ <label data-en="Page title" data-hi="पेज का टाइटल">Title</label>
+ <input id="ti" type="text" maxlength="120">
+ <div class="hint" id="ht"></div>
+ <label data-en="Description" data-hi="विवरण">Description</label>
+ <textarea id="de" style="min-height:90px" maxlength="320"></textarea>
+ <div class="hint" id="hd"></div>
+ <label data-en="Keywords (comma separated)" data-hi="कीवर्ड (कॉमा से अलग)">Keywords</label>
+ <input id="kw" type="text">
+ <label data-en="Author" data-hi="लेखक">Author</label>
+ <input id="au" type="text">
+ <label data-en="Page URL" data-hi="पेज का लिंक">URL</label>
+ <input id="ur" type="url" placeholder="https://">
+ <label data-en="Image URL (for sharing)" data-hi="इमेज का लिंक (शेयरिंग के लिए)">Image</label>
+ <input id="im" type="url" placeholder="https://">
+</div>
+<div class="panel">
+ <label data-en="Your tags" data-hi="आपके टैग">Output</label>
+ <textarea id="out" readonly spellcheck="false" style="min-height:240px;font-family:ui-monospace,Menlo,monospace;font-size:.85rem"></textarea>
+ <div class="seg"><button class="btn gold" id="cp" data-en="Copy" data-hi="कॉपी करें">Copy</button></div>
+</div>
+</main>
+<script src="/js/tool.js"></script>
+<script>
+function esc(s){return s.replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function gen(){
+ var ti=$("ti").value.trim(),de=$("de").value.trim(),kw=$("kw").value.trim(),au=$("au").value.trim(),ur=$("ur").value.trim(),im=$("im").value.trim();
+ $("ht").textContent=ti.length+" / 60 "+L("(best under 60)","(60 से कम बेहतर)");
+ $("hd").textContent=de.length+" / 160 "+L("(best under 160)","(160 से कम बेहतर)");
+ var o=['<meta charset="UTF-8">','<meta name="viewport" content="width=device-width, initial-scale=1">'];
+ if(ti)o.push("<title>"+esc(ti)+"</title>");
+ if(de)o.push('<meta name="description" content="'+esc(de)+'">');
+ if(kw)o.push('<meta name="keywords" content="'+esc(kw)+'">');
+ if(au)o.push('<meta name="author" content="'+esc(au)+'">');
+ o.push('<meta name="robots" content="index, follow">');
+ if(ur)o.push('<link rel="canonical" href="'+esc(ur)+'">');
+ o.push("");
+ o.push('<meta property="og:type" content="website">');
+ if(ti)o.push('<meta property="og:title" content="'+esc(ti)+'">');
+ if(de)o.push('<meta property="og:description" content="'+esc(de)+'">');
+ if(ur)o.push('<meta property="og:url" content="'+esc(ur)+'">');
+ if(im)o.push('<meta property="og:image" content="'+esc(im)+'">');
+ o.push("");
+ o.push('<meta name="twitter:card" content="'+(im?"summary_large_image":"summary")+'">');
+ if(ti)o.push('<meta name="twitter:title" content="'+esc(ti)+'">');
+ if(de)o.push('<meta name="twitter:description" content="'+esc(de)+'">');
+ if(im)o.push('<meta name="twitter:image" content="'+esc(im)+'">');
+ $("out").value=o.join("\n");
+}
+document.querySelectorAll("input,textarea").forEach(function(i){i.addEventListener("input",gen)});
+$("cp").onclick=function(){copyText($("out").value,$("cp"))};
+document.addEventListener("langchange",gen);
+gen();
+</script>
+</body>
+</html>
