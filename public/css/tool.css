@@ -24,3 +24,10 @@
 .err{color:#ff7a8a;font-size:.9rem;margin-top:10px}
 .line{font-size:1.1rem;margin:12px 0 0;color:var(--gold);font-weight:700}
 @media(max-width:360px){.two{grid-template-columns:1fr}}
+.panel textarea{width:100%;min-height:160px;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:1rem;font-family:inherit;outline:none;resize:vertical}
+.panel textarea:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(139,92,246,.2)}
+.btn{padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--card2);color:var(--text);cursor:pointer;font-size:.9rem;transition:transform .2s,border-color .2s}
+.btn:hover,.btn:active{border-color:var(--gold);transform:translateY(-2px)}
+.btn.gold{background:linear-gradient(120deg,var(--gold),#ffe9a8);color:#15110a;border-color:transparent;font-weight:700}
+.tips{color:var(--muted);font-size:.88rem;line-height:1.9}
+.tips b{color:var(--gold)}

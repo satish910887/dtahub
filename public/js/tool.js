@@ -21,3 +21,8 @@ $("langBtn").onclick=function(){lang=lang==="en"?"hi":"en";save("lang",lang);app
 $("themeBtn").onclick=function(){theme=theme==="dark"?"light":"dark";save("theme",theme);apply()};
 apply();
 })();
+window.copyText=function(text,btn){
+ function done(){var o=btn.textContent;btn.textContent=L("Copied ✓","कॉपी हो गया ✓");setTimeout(function(){btn.textContent=o},1400)}
+ if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(done,function(){fb()})}else fb();
+ function fb(){var a=document.createElement("textarea");a.value=text;document.body.appendChild(a);a.select();try{document.execCommand("copy")}catch(e){}document.body.removeChild(a);done()}
+};

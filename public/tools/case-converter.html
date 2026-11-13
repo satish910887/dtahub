@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Case Converter - DTAhub</title>
+<meta name="description" content="Free case converter. Change text to UPPERCASE, lowercase, Title Case, Sentence case and more.">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/tool.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+<main class="tw">
+<a class="back" href="/#tools" data-en="← All tools" data-hi="← सभी टूल्स">← All tools</a>
+<h1 data-en="Case Converter" data-hi="केस बदलें">Case Converter</h1>
+<p class="lead" data-en="Change English text to any letter case in one tap." data-hi="अंग्रेज़ी टेक्स्ट का केस एक टैप में बदलें।">Change case.</p>
+<div class="panel">
+ <textarea id="t" data-ph-en="Type or paste your text here..." data-ph-hi="यहां टेक्स्ट लिखें या पेस्ट करें..." placeholder="Type or paste your text here..."></textarea>
+ <div class="seg">
+  <button class="chip" id="up">UPPERCASE</button>
+  <button class="chip" id="lo">lowercase</button>
+  <button class="chip" id="ti">Title Case</button>
+  <button class="chip" id="se">Sentence case</button>
+  <button class="chip" id="to">tOGGLE cASE</button>
+ </div>
+ <div class="seg">
+  <button class="btn gold" id="cp" data-en="Copy" data-hi="कॉपी करें">Copy</button>
+  <button class="btn" id="un" data-en="Undo" data-hi="वापस">Undo</button>
+  <button class="btn" id="clr" data-en="Clear" data-hi="साफ करें">Clear</button>
+ </div>
+</div>
+</main>
+<script src="/js/tool.js"></script>
+<script>
+var prev="";
+function set(f){var t=$("t");prev=t.value;t.value=f(t.value)}
+$("up").onclick=function(){set(function(s){return s.toUpperCase()})};
+$("lo").onclick=function(){set(function(s){return s.toLowerCase()})};
+$("ti").onclick=function(){set(function(s){return s.toLowerCase().replace(/(^|[\s\-])([a-z])/g,function(m,a,b){return a+b.toUpperCase()})})};
+$("se").onclick=function(){set(function(s){return s.toLowerCase().replace(/(^\s*|[.!?]\s+)([a-z])/g,function(m,a,b){return a+b.toUpperCase()})})};
+$("to").onclick=function(){set(function(s){return s.split("").map(function(c){return c===c.toUpperCase()?c.toLowerCase():c.toUpperCase()}).join("")})};
+$("cp").onclick=function(){copyText($("t").value,$("cp"))};
+$("un").onclick=function(){$("t").value=prev};
+$("clr").onclick=function(){prev=$("t").value;$("t").value=""};
+</script>
+</body>
+</html>

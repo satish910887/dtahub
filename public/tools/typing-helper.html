@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hindi Typing Helper - DTAhub</title>
+<meta name="description" content="Free Hindi typing tool. Type Hindi using English letters (Hinglish to Devanagari) and copy the result.">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/tool.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+<main class="tw">
+<a class="back" href="/#tools" data-en="← All tools" data-hi="← सभी टूल्स">← All tools</a>
+<h1 data-en="Hindi Typing Helper" data-hi="हिंदी टाइपिंग">Hindi Typing Helper</h1>
+<p class="lead" data-en="Type Hindi sounds in English letters, get Devanagari instantly." data-hi="अंग्रेज़ी अक्षरों में हिंदी की आवाज़ लिखें, तुरंत देवनागरी पाएं।">Type Hindi.</p>
+<div class="panel">
+ <label data-en="Type here (example: namaste, kaise ho aap)" data-hi="यहां लिखें (जैसे: namaste, kaise ho aap)">Type</label>
+ <textarea id="in" autocapitalize="off" autocomplete="off" spellcheck="false" placeholder="namaste dosto"></textarea>
+ <label data-en="Hindi output" data-hi="हिंदी आउटपुट">Output</label>
+ <textarea id="out" readonly></textarea>
+ <div class="seg">
+  <button class="btn gold" id="cp" data-en="Copy" data-hi="कॉपी करें">Copy</button>
+  <button class="btn" id="clr" data-en="Clear" data-hi="साफ करें">Clear</button>
+ </div>
+</div>
+<div class="panel tips">
+ <b data-en="Quick guide" data-hi="छोटी गाइड">Guide</b><br>
+ <span data-en="aa = आ/ा, ee = ई/ी, oo = ऊ/ू, ai = ऐ/ै, au = औ/ौ" data-hi="aa = आ/ा, ee = ई/ी, oo = ऊ/ू, ai = ऐ/ै, au = औ/ौ">aa</span><br>
+ <span data-en="Capital T, D, N, Th, Dh give ट ड ण ठ ढ. Lowercase t, d, n, th, dh give त द न थ ध." data-hi="बड़े T, D, N, Th, Dh से ट ड ण ठ ढ बनते हैं। छोटे t, d, n, th, dh से त द न थ ध।">caps</span><br>
+ <span data-en="M = ं (anusvara), H = ः, ~ = ँ, | = ।" data-hi="M = ं, H = ः, ~ = ँ, | = ।">M</span><br>
+ <span data-en="Examples: kitaab = किताब, vidyaalay = विद्यालय, shikshak = शिक्षक, kshetr = क्षेत्र" data-hi="उदाहरण: kitaab = किताब, vidyaalay = विद्यालय, shikshak = शिक्षक, kshetr = क्षेत्र">ex</span>
+</div>
+</main>
+<script src="/js/tool.js"></script>
+<script>
+var C={"chh":"छ","ksh":"क्ष","shr":"श्र","kh":"ख","gh":"घ","ch":"च","jh":"झ","Th":"ठ","Dh":"ढ","th":"थ","dh":"ध","ph":"फ","bh":"भ","sh":"श","gy":"ज्ञ","tr":"त्र",
+"k":"क","g":"ग","j":"ज","T":"ट","D":"ड","N":"ण","t":"त","d":"द","n":"न","p":"प","b":"ब","m":"म","y":"य","r":"र","l":"ल","v":"व","w":"व","s":"स","h":"ह","f":"फ","z":"ज","q":"क","c":"क","x":"क्स"};
+var V={"aa":["आ","ा"],"ai":["ऐ","ै"],"au":["औ","ौ"],"ee":["ई","ी"],"ii":["ई","ी"],"oo":["ऊ","ू"],"uu":["ऊ","ू"],
+"a":["अ",""],"i":["इ","ि"],"u":["उ","ु"],"e":["ए","े"],"o":["ओ","ो"]};
+var X={"M":"ं","H":"ः","~":"ँ","|":"।"};
+function word(w){
+ var out="",i=0,pc=false;
+ while(i<w.length){
+  var hit=false;
+  for(var len=3;len>=1&&!hit;len--){
+   var s=w.substr(i,len);if(s.length<len)continue;
+   var k=(C[s]!==undefined||V[s]!==undefined||X[s]!==undefined)?s:s.toLowerCase();
+   if(len>1&&k!==s&&C[s]===undefined&&C[k]===undefined&&V[k]===undefined)continue;
+   if(X[s]!==undefined&&len===1){out+=X[s];pc=false;i++;hit=true;break}
+   if(C[k]!==undefined){out+=(pc?"्":"")+C[k];pc=true;i+=len;hit=true}
+   else if(V[k]!==undefined){out+=pc?V[k][1]:V[k][0];pc=false;i+=len;hit=true}
+  }
+  if(!hit){out+=w[i];pc=false;i++}
+ }
+ return out;
+}
+function conv(t){return t.split(/([^A-Za-z~|]+)/).map(function(p,i){return i%2?p:word(p)}).join("")}
+function run(){$("out").value=conv($("in").value)}
+$("in").addEventListener("input",run);
+$("cp").onclick=function(){copyText($("out").value,$("cp"))};
+$("clr").onclick=function(){$("in").value="";run()};
+run();
+</script>
+</body>
+</html>

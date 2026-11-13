@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Word Counter - DTAhub</title>
+<meta name="description" content="Free word counter. Count words, characters, sentences, paragraphs and reading time. Works with Hindi and English.">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/tool.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+<main class="tw">
+<a class="back" href="/#tools" data-en="← All tools" data-hi="← सभी टूल्स">← All tools</a>
+<h1 data-en="Word Counter" data-hi="शब्द गिनें">Word Counter</h1>
+<p class="lead" data-en="Count words, characters, sentences and reading time. Hindi and English both work." data-hi="शब्द, अक्षर, वाक्य और पढ़ने का समय गिनें। हिंदी और अंग्रेज़ी दोनों चलते हैं।">Count words.</p>
+<div class="panel">
+ <textarea id="t" data-ph-en="Type or paste your text here..." data-ph-hi="यहां टेक्स्ट लिखें या पेस्ट करें..." placeholder="Type or paste your text here..."></textarea>
+ <div class="seg"><button class="btn" id="clr" data-en="Clear" data-hi="साफ करें">Clear</button></div>
+</div>
+<div class="panel">
+ <div class="stats">
+  <div class="stat"><small data-en="Words" data-hi="शब्द">Words</small><b id="o-w">0</b></div>
+  <div class="stat"><small data-en="Characters" data-hi="अक्षर">Characters</small><b id="o-c">0</b></div>
+  <div class="stat"><small data-en="No spaces" data-hi="बिना स्पेस">No spaces</small><b id="o-n">0</b></div>
+  <div class="stat"><small data-en="Sentences" data-hi="वाक्य">Sentences</small><b id="o-s">0</b></div>
+  <div class="stat"><small data-en="Paragraphs" data-hi="पैराग्राफ">Paragraphs</small><b id="o-p">0</b></div>
+  <div class="stat"><small data-en="Reading time" data-hi="पढ़ने का समय">Reading</small><b id="o-r">0</b></div>
+ </div>
+</div>
+</main>
+<script src="/js/tool.js"></script>
+<script>
+function calc(){
+ var t=$("t").value,s=t.trim();
+ var words=s?s.split(/\s+/).length:0;
+ var sent=(t.match(/[^.!?।]+[.!?।]+|[^.!?।]+$/g)||[]).filter(function(x){return x.trim()}).length;
+ var para=t.split(/\n\s*\n/).filter(function(x){return x.trim()}).length;
+ var mins=words/200;
+ $("o-w").textContent=fmt(words);
+ $("o-c").textContent=fmt(t.length);
+ $("o-n").textContent=fmt(t.replace(/\s/g,"").length);
+ $("o-s").textContent=fmt(sent);
+ $("o-p").textContent=fmt(para);
+ $("o-r").textContent=words===0?"0":(mins<1?L("< 1 min","< 1 मिनट"):Math.ceil(mins)+L(" min"," मिनट"));
+}
+$("t").addEventListener("input",calc);
+$("clr").onclick=function(){$("t").value="";calc()};
+document.addEventListener("langchange",calc);
+calc();
+</script>
+</body>
+</html>
