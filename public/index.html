@@ -1,20 +1,57 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DTAhub</title>
-<style>
-body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0b0b12;color:#f5d27a;font-family:system-ui,sans-serif;text-align:center}
-h1{font-size:2.5rem;margin:0}
-p{color:#b9a8ff}
-</style>
+<title>DTAhub - Free Online Tools</title>
+<meta name="description" content="DTAhub: free PDF, image, text, developer tools and calculators. Everything You Need, All in One Place.">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div>
-<h1>DTAhub</h1>
-<p>Everything You Need, All in One Place.</p>
-<p>Coming soon...</p>
-</div>
+<div class="bg-glow"></div>
+<header class="nav">
+  <a class="logo" href="/">
+    <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true">
+      <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f5d27a"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient></defs>
+      <path d="M20 2 36 11v18L20 38 4 29V11z" fill="none" stroke="url(#lg)" stroke-width="2.5"/>
+      <path d="M14 12h6a8 8 0 0 1 0 16h-6z" fill="url(#lg)"/>
+    </svg>
+    <span>DTA<b>hub</b></span>
+  </a>
+  <nav class="links">
+    <a href="#tools" data-en="Tools" data-hi="टूल्स">Tools</a>
+    <a href="#" data-en="Blog" data-hi="ब्लॉग">Blog</a>
+    <a href="#" data-en="Contact" data-hi="संपर्क">Contact</a>
+  </nav>
+  <div class="actions">
+    <button id="langBtn" class="icon-btn" aria-label="Language">हि</button>
+    <button id="themeBtn" class="icon-btn" aria-label="Theme">☾</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <p class="badge reveal" data-en="100% Free • No Login" data-hi="100% फ्री • बिना लॉगिन">100% Free • No Login</p>
+    <h1 class="reveal"><span class="grad">Everything You Need,</span><br>All in One Place.</h1>
+    <p class="sub reveal" data-en="PDF, image, text, developer tools and calculators. Fast, private, works on your phone." data-hi="PDF, इमेज, टेक्स्ट, डेवलपर टूल्स और कैलकुलेटर। तेज़, प्राइवेट, फोन पर भी चलता है।">PDF, image, text, developer tools and calculators.</p>
+    <div class="search reveal">
+      <input id="search" type="search" autocomplete="off" data-ph-en="Search tools..." data-ph-hi="टूल खोजें..." placeholder="Search tools...">
+    </div>
+  </section>
+
+  <section id="tools" class="wrap">
+    <div id="chips" class="chips"></div>
+    <div id="grid" class="grid"></div>
+    <p id="empty" class="empty" hidden data-en="No tool found." data-hi="कोई टूल नहीं मिला।">No tool found.</p>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>© 2026 DTAhub. <span data-en="Made with care in India." data-hi="भारत में प्यार से बनाया गया।">Made with care in India.</span></p>
+  <p><a href="#" data-en="Privacy Policy" data-hi="प्राइवेसी पॉलिसी">Privacy Policy</a> · <a href="#" data-en="Terms" data-hi="शर्तें">Terms</a></p>
+</footer>
+
+<script src="js/tools-data.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
