@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Image Converter - DTAhub</title>
+<meta name="description" content="Free image converter. Convert photos between JPG, PNG and WebP online. Private, works on your device.">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/tool.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+<main class="tw">
+<a class="back" href="/#tools" data-en="← All tools" data-hi="← सभी टूल्स">← All tools</a>
+<h1 data-en="Image Converter" data-hi="इमेज कन्वर्टर">Image Converter</h1>
+<p class="lead" data-en="Convert photos between JPG, PNG and WebP." data-hi="फोटो को JPG, PNG और WebP में बदलें।">Convert.</p>
+<div class="panel">
+ <label class="drop"><input id="f" type="file" accept="image/*"><span id="dt" data-en="Tap to choose a photo" data-hi="फोटो चुनने के लिए टैप करें">Tap to choose a photo</span></label>
+ <div id="ctl" hidden>
+  <label data-en="Convert to" data-hi="इसमें बदलें">Convert to</label>
+  <select id="fmt"><option value="image/png">PNG</option><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select>
+  <div id="qbox">
+   <label><span data-en="Quality" data-hi="क्वालिटी">Quality</span>: <b id="qv">90</b>%</label>
+   <input id="q" type="range" min="10" max="100" value="90">
+  </div>
+ </div>
+ <div class="err" id="err" hidden></div>
+</div>
+<div class="panel" id="res" hidden>
+ <p class="line" id="info"></p>
+ <img id="pv" class="pimg" alt="">
+ <div class="seg" style="justify-content:center"><button class="btn gold" id="dl" data-en="Download" data-hi="डाउनलोड करें">Download</button></div>
+</div>
+</main>
+<script src="/js/tool.js"></script>
+<script src="/js/img.js"></script>
+<script>
+var im=null,file=null,blob=null,url=null,tm=null;
+function run(){
+ if(!im)return;
+ $("qv").textContent=$("q").value;
+ $("qbox").hidden=$("fmt").value==="image/png";
+ renderImg(im,im.naturalWidth,im.naturalHeight,$("fmt").value,+$("q").value/100).then(function(b){
+  if(!b||b.type!==$("fmt").value){$("err").hidden=false;$("err").textContent=L("This format is not supported on your browser.","आपके ब्राउज़र में यह फॉर्मेट सपोर्ट नहीं है।");$("res").hidden=true;return}
+  $("err").hidden=true;blob=b;
+  if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(b);$("pv").src=url;
+  $("info").textContent=(file.type||"image").replace("image/","").toUpperCase()+" → "+extOf(b.type).toUpperCase()+" • "+sizeOf(file.size)+" → "+sizeOf(b.size);
+  $("res").hidden=false;
+ });
+}
+pickImage($("f"),function(i,f){
+ if(!i){$("err").hidden=false;$("err").textContent=L("Could not open this image.","यह इमेज नहीं खुल सकी।");return}
+ im=i;file=f;$("ctl").hidden=false;$("dt").textContent=f.name;run();
+});
+$("fmt").onchange=run;
+$("q").addEventListener("input",function(){$("qv").textContent=$("q").value;clearTimeout(tm);tm=setTimeout(run,200)});
+$("dl").onclick=function(){if(blob)saveBlob(blob,baseName(file)+"."+extOf(blob.type))};
+document.addEventListener("langchange",function(){if(im)run()});
+</script>
+</body>
+</html>

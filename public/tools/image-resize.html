@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resize Image - DTAhub</title>
+<meta name="description" content="Free image resizer. Change photo width and height in pixels or percent. Private, works on your device.">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/tool.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+<main class="tw">
+<a class="back" href="/#tools" data-en="← All tools" data-hi="← सभी टूल्स">← All tools</a>
+<h1 data-en="Resize Image" data-hi="इमेज रीसाइज़">Resize Image</h1>
+<p class="lead" data-en="Change the width and height of a photo." data-hi="फोटो की चौड़ाई और ऊंचाई बदलें।">Resize.</p>
+<div class="panel">
+ <label class="drop"><input id="f" type="file" accept="image/*"><span id="dt" data-en="Tap to choose a photo" data-hi="फोटो चुनने के लिए टैप करें">Tap to choose a photo</span></label>
+ <div id="ctl" hidden>
+  <p class="hint" id="orig"></p>
+  <div class="seg">
+   <button class="chip p" data-p="25">25%</button><button class="chip p" data-p="50">50%</button><button class="chip p" data-p="75">75%</button><button class="chip p" data-p="100">100%</button>
+  </div>
+  <div class="two">
+   <div><label data-en="Width (px)" data-hi="चौड़ाई (px)">Width</label><input id="w" type="number" inputmode="numeric" min="1" max="8000"></div>
+   <div><label data-en="Height (px)" data-hi="ऊंचाई (px)">Height</label><input id="h" type="number" inputmode="numeric" min="1" max="8000"></div>
+  </div>
+  <label class="chk"><input id="lock" type="checkbox" checked><span data-en="Keep proportions" data-hi="अनुपात वही रखें">Lock</span></label>
+  <label data-en="Output format" data-hi="आउटपुट फॉर्मेट">Format</label>
+  <select id="fmt"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select>
+  <div class="seg"><button class="btn gold" id="go" data-en="Resize" data-hi="रीसाइज़ करें">Resize</button></div>
+ </div>
+ <div class="err" id="err" hidden></div>
+</div>
+<div class="panel" id="res" hidden>
+ <p class="line" id="info"></p>
+ <img id="pv" class="pimg" alt="">
+ <div class="seg" style="justify-content:center"><button class="btn gold" id="dl" data-en="Download" data-hi="डाउनलोड करें">Download</button></div>
+</div>
+</main>
+<script src="/js/tool.js"></script>
+<script src="/js/img.js"></script>
+<script>
+var im=null,file=null,blob=null,url=null,ratio=1;
+pickImage($("f"),function(i,f){
+ if(!i){$("err").hidden=false;$("err").textContent=L("Could not open this image.","यह इमेज नहीं खुल सकी।");return}
+ im=i;file=f;ratio=i.naturalWidth/i.naturalHeight;
+ $("err").hidden=true;$("ctl").hidden=false;$("res").hidden=true;$("dt").textContent=f.name;
+ $("w").value=i.naturalWidth;$("h").value=i.naturalHeight;
+ $("orig").textContent=L("Original: ","असली: ")+i.naturalWidth+" × "+i.naturalHeight+" px • "+sizeOf(f.size);
+ $("fmt").value=f.type==="image/png"?"image/png":f.type==="image/webp"?"image/webp":"image/jpeg";
+});
+$("w").addEventListener("input",function(){if($("lock").checked&&+$("w").value>0)$("h").value=Math.round($("w").value/ratio)});
+$("h").addEventListener("input",function(){if($("lock").checked&&+$("h").value>0)$("w").value=Math.round($("h").value*ratio)});
+document.querySelectorAll(".p").forEach(function(b){b.onclick=function(){
+ var p=+b.dataset.p/100;$("w").value=Math.round(im.naturalWidth*p);$("h").value=Math.round(im.naturalHeight*p);
+}});
+$("go").onclick=function(){
+ var w=Math.round(+$("w").value),h=Math.round(+$("h").value);
+ if(!(w>0&&h>0)||w>8000||h>8000){$("err").hidden=false;$("err").textContent=L("Enter width and height between 1 and 8000.","चौड़ाई और ऊंचाई 1 से 8000 के बीच डालें।");return}
+ $("err").hidden=true;
+ renderImg(im,w,h,$("fmt").value,0.92).then(function(b){
+  blob=b;if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(b);$("pv").src=url;
+  $("info").textContent=w+" × "+h+" px • "+sizeOf(b.size);$("res").hidden=false;
+ });
+};
+$("dl").onclick=function(){if(blob)saveBlob(blob,baseName(file)+"-"+$("w").value+"x"+$("h").value+"."+extOf(blob.type))};
+</script>
+</body>
+</html>
