@@ -44,3 +44,9 @@
 .drop input{display:none}
 .drop b{color:var(--gold)}
 .pimg{max-width:100%;max-height:420px;display:block;margin:14px auto 0;border-radius:12px;background:#fff}
+.fl{list-style:none;padding:0;margin:12px 0 0}
+.fl li{display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:12px;padding:8px 10px;margin-bottom:8px}
+.fl .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.9rem}
+.fl .nm small{color:var(--muted);margin-left:6px}
+.mini{width:34px;height:34px;flex:none;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem}
+.mini:hover{border-color:var(--gold)}

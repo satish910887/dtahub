@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Split PDF - DTAhub</title>
+<meta name="description" content="Free PDF splitter. Extract selected pages from a PDF. Private, works on your device.">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/tool.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+<main class="tw">
+<a class="back" href="/#tools" data-en="← All tools" data-hi="← सभी टूल्स">← All tools</a>
+<h1 data-en="Split PDF" data-hi="PDF अलग करें">Split PDF</h1>
+<p class="lead" data-en="Pick the pages you want and save them as a new PDF." data-hi="जो पेज चाहिए वो चुनें और नई PDF बनाएं।">Split.</p>
+<div class="panel">
+ <label class="drop"><input id="f" type="file" accept="application/pdf,.pdf"><span id="dt" data-en="Tap to choose a PDF" data-hi="PDF चुनने के लिए टैप करें">Tap to choose a PDF</span></label>
+ <div id="ctl" hidden>
+  <p class="hint" id="info"></p>
+  <label data-en="Pages to extract (example: 1-3, 5, 8-10)" data-hi="कौन से पेज चाहिए (जैसे: 1-3, 5, 8-10)">Pages</label>
+  <input id="rg" type="text" inputmode="text" placeholder="1-3, 5">
+  <div class="seg"><button class="btn gold" id="go" data-en="Extract and Download" data-hi="निकालें और डाउनलोड करें">Extract and Download</button></div>
+ </div>
+ <div class="err" id="err" hidden></div>
+ <div class="ok" id="ok" hidden></div>
+</div>
+</main>
+<script src="/js/vendor/pdf-lib.min.js"></script>
+<script src="/js/tool.js"></script>
+<script src="/js/img.js"></script>
+<script>
+var src=null,file=null,total=0;
+$("f").addEventListener("change",async function(){
+ var f=this.files[0];if(!f)return;
+ $("err").hidden=true;$("ok").hidden=true;
+ try{
+  src=await PDFLib.PDFDocument.load(await f.arrayBuffer());
+  file=f;total=src.getPageCount();
+  $("ctl").hidden=false;$("dt").textContent=f.name;
+  $("info").textContent=L("Total pages: ","कुल पेज: ")+total+" • "+sizeOf(f.size);
+  $("rg").value="1-"+total;
+ }catch(e){
+  src=null;$("ctl").hidden=true;$("err").hidden=false;
+  $("err").textContent=L("Could not open this PDF. It may be damaged or password protected.","यह PDF नहीं खुली। फाइल खराब या पासवर्ड वाली हो सकती है।");
+ }
+});
+function parse(s){
+ var idx=[],parts=s.replace(/\s/g,"").split(",");
+ for(var i=0;i<parts.length;i++){
+  var p=parts[i];if(!p)continue;
+  var m=p.match(/^(\d+)(?:-(\d+))?$/);if(!m)return null;
+  var a=+m[1],b=m[2]?+m[2]:a;
+  if(a<1||b<a||b>total)return null;
+  for(var k=a;k<=b;k++)idx.push(k-1);
+ }
+ return idx.length?idx:null;
+}
+$("go").onclick=async function(){
+ var err=$("err"),ok=$("ok");err.hidden=true;ok.hidden=true;
+ var idx=parse($("rg").value);
+ if(!idx){err.hidden=false;err.textContent=L("Invalid pages. Use numbers between 1 and ","गलत पेज। 1 से इतने के बीच के नंबर डालें: ")+total;return}
+ var btn=$("go"),old=btn.textContent;btn.disabled=true;btn.textContent=L("Working...","काम हो रहा है...");
+ try{
+  var out=await PDFLib.PDFDocument.create();
+  var pages=await out.copyPages(src,idx);
+  pages.forEach(function(p){out.addPage(p)});
+  var bytes=await out.save();
+  saveBlob(new Blob([bytes],{type:"application/pdf"}),baseName(file)+"-pages.pdf");
+  ok.hidden=false;ok.textContent=L("Done ✓ ","हो गया ✓ ")+idx.length+L(" pages"," पेज");
+ }catch(e){
+  err.hidden=false;err.textContent=L("Something went wrong. Try again.","कुछ गड़बड़ हुई। दोबारा कोशिश करें।");
+ }
+ btn.disabled=false;btn.textContent=old;
+};
+</script>
+</body>
+</html>
