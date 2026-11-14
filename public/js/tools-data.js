@@ -29,6 +29,15 @@
     percentage: '<path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/>',
     "meta-tags": '<path d="M3 12V4h8l10 10-8 8z"/><circle cx="7.5" cy="8.5" r="1"/>',
     password: '<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M16 7l3 3"/>',
+    career: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>',
+    "resume-maker": '<path d="M6 3h9l4 4v14H6z"/><circle cx="12" cy="11" r="2.2"/><path d="M8.500 17c.6-1.800 2-2.600 3.500-2.600s2.900.8 3.500 2.600"/>',
+    settings: '<circle cx="12" cy="12" r="3"/><path d="M12 3v2.500M12 18.500V21M3 12h2.500M18.500 12H21M5.600 5.600l1.800 1.800M16.600 16.600l1.800 1.800M5.600 18.400l1.800-1.800M16.600 7.400l1.800-1.800"/>',
+    check: '<path d="m5 12.500 4.500 4.500L19 7.500"/>',
+    trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+    upload: '<path d="M12 16V5m0 0-4 4m4-4 4 4M5 20h14"/>',
+    print: '<path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z"/>',
+    up: '<path d="m6 14 6-6 6 6"/>',
+    down: '<path d="m6 10 6 6 6-6"/>',
     search: '<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4-4"/>',
     star: '<path d="m12 3.5 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.9l6.1-.8z"/>',
     clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
@@ -48,48 +57,55 @@
   };
 
   var CATS = [
-    { id: "pdf", icon: "pdf", en: "PDF Tools", hi: "PDF टूल्स", short: { en: "PDF", hi: "PDF" },
+    { id: "pdf", icon: "pdf", hue: 350, en: "PDF Tools", hi: "PDF टूल्स", short: { en: "PDF", hi: "PDF" },
       den: "Merge, split and create PDFs", dhi: "PDF जोड़ें, अलग करें और बनाएं",
       intro: { en: "Merge, split and create PDF files right in your browser. No upload, no sign-up.", hi: "PDF जोड़ें, अलग करें और बनाएं, सीधे आपके ब्राउज़र में। न अपलोड, न साइन-अप।" },
       body: {
         en: "PDF is the standard format for forms, applications, bills and certificates. DTAhub PDF tools run entirely on your device: your documents are read by your own browser and never sent to our servers. Combine several files into one, pull out only the pages you need, or turn your photos into a clean PDF in seconds. They are free, work on slow connections and are designed to be easy on a phone.",
         hi: "फॉर्म, एप्लीकेशन, बिल और सर्टिफिकेट के लिए PDF सबसे आम फॉर्मेट है। DTAhub के PDF टूल्स पूरी तरह आपके डिवाइस पर चलते हैं: आपके दस्तावेज़ आपका अपना ब्राउज़र पढ़ता है और हमारे सर्वर पर कभी नहीं जाते। कई फाइलें एक में जोड़ें, सिर्फ ज़रूरी पेज निकालें या फोटो से साफ PDF बनाएं। ये मुफ्त हैं, धीमे इंटरनेट पर भी चलते हैं और फोन पर आसानी से इस्तेमाल होते हैं।" },
-      related: ["image", "text"] },
-    { id: "image", icon: "image", en: "Image Tools", hi: "इमेज टूल्स", short: { en: "Image", hi: "इमेज" },
+      related: ["image", "career"] },
+    { id: "image", icon: "image", hue: 165, en: "Image Tools", hi: "इमेज टूल्स", short: { en: "Image", hi: "इमेज" },
       den: "Compress, resize and convert photos", dhi: "फोटो छोटी करें, रीसाइज़ और कन्वर्ट करें",
       intro: { en: "Compress, resize and convert photos privately. Your images never leave your phone.", hi: "फोटो को प्राइवेट तरीके से छोटा करें, रीसाइज़ करें और कन्वर्ट करें। आपकी इमेज फोन से बाहर नहीं जाती।" },
       body: {
         en: "Photos taken on modern phones are large, and many websites, forms and chat apps accept only small files. The image tools on DTAhub shrink file size, change dimensions and switch between JPG, PNG and WebP using your browser's own image engine. Nothing is uploaded, so your personal photos stay private, and the tools are light enough for low-end phones.",
         hi: "आजकल के फोन की फोटो बड़ी होती हैं, जबकि कई वेबसाइट, फॉर्म और चैट ऐप छोटी फाइल ही लेते हैं। DTAhub के इमेज टूल्स ब्राउज़र के अपने इमेज इंजन से फाइल साइज़ घटाते हैं, माप बदलते हैं और JPG, PNG, WebP के बीच बदलते हैं। कुछ भी अपलोड नहीं होता, इसलिए आपकी निजी फोटो प्राइवेट रहती हैं।" },
       related: ["pdf", "text"] },
-    { id: "text", icon: "text", en: "Text Tools", hi: "टेक्स्ट टूल्स", short: { en: "Text", hi: "टेक्स्ट" },
+    { id: "text", icon: "text", hue: 45, en: "Text Tools", hi: "टेक्स्ट टूल्स", short: { en: "Text", hi: "टेक्स्ट" },
       den: "Count, convert and type Hindi", dhi: "गिनें, बदलें और हिंदी में लिखें",
       intro: { en: "Word counter, case converter and a Hindi typing helper for everyday writing.", hi: "रोज़मर्रा की लिखाई के लिए शब्द गिनती, केस कन्वर्टर और हिंदी टाइपिंग हेल्पर।" },
       body: {
         en: "Whether you are writing an essay, a social media post or an application, small text utilities save time. Count words and reading time, change the letter case of any English text, or type Hindi using English letters and copy the Devanagari result. Everything works offline once the page has loaded and your text is never stored.",
         hi: "चाहे निबंध लिखना हो, सोशल मीडिया पोस्ट या आवेदन, छोटे टेक्स्ट टूल्स समय बचाते हैं। शब्द और पढ़ने का समय गिनें, अंग्रेज़ी टेक्स्ट का केस बदलें, या अंग्रेज़ी अक्षरों से हिंदी लिखकर देवनागरी नतीजा कॉपी करें। पेज खुलने के बाद सब कुछ ऑफलाइन भी चलता है और आपका टेक्स्ट कहीं सेव नहीं होता।" },
-      related: ["dev", "seo"] },
-    { id: "dev", icon: "dev", en: "Developer Tools", hi: "डेवलपर टूल्स", short: { en: "Developer", hi: "डेवलपर" },
+      related: ["career", "dev"] },
+    { id: "dev", icon: "dev", hue: 200, en: "Developer Tools", hi: "डेवलपर टूल्स", short: { en: "Developer", hi: "डेवलपर" },
       den: "JSON, Base64 and QR utilities", dhi: "JSON, Base64 और QR यूटिलिटी",
       intro: { en: "Format JSON, encode Base64 and create QR codes. Fast, private and ad-free.", hi: "JSON फॉर्मेट करें, Base64 एनकोड करें और QR कोड बनाएं। तेज़, प्राइवेट और बिना विज्ञापन।" },
       body: {
         en: "Developers and students reach for the same small utilities again and again. DTAhub keeps them together: validate and beautify JSON, encode or decode Base64 (including Hindi and other Unicode text) and generate downloadable QR codes. Your data is processed in the browser, so it is safe to paste real examples.",
         hi: "डेवलपर और छात्र बार-बार वही छोटी यूटिलिटी इस्तेमाल करते हैं। DTAhub इन्हें एक जगह रखता है: JSON जांचें और सुंदर बनाएं, Base64 एनकोड या डिकोड करें (हिंदी और दूसरे यूनिकोड टेक्स्ट समेत) और डाउनलोड होने वाले QR कोड बनाएं। डेटा ब्राउज़र में ही प्रोसेस होता है।" },
       related: ["text", "seo"] },
-    { id: "calc", icon: "calc", en: "Calculators", hi: "कैलकुलेटर", short: { en: "Calculator", hi: "कैलकुलेटर" },
+    { id: "calc", icon: "calc", hue: 280, en: "Calculators", hi: "कैलकुलेटर", short: { en: "Calculator", hi: "कैलकुलेटर" },
       den: "EMI, GST, age and percentage", dhi: "EMI, GST, उम्र और प्रतिशत",
       intro: { en: "EMI with a chart, GST, age and percentage calculators, instant and free.", hi: "चार्ट के साथ EMI, GST, उम्र और प्रतिशत कैलकुलेटर, तुरंत और मुफ्त।" },
       body: {
         en: "Everyday money and date calculations should not need a spreadsheet. Work out your loan EMI with a principal versus interest chart, add or remove GST with the CGST and SGST split, find your exact age in years, months and days, or solve common percentage questions. Results update as you type. They are a general aid, so double-check important financial decisions.",
         hi: "रोज़ के पैसे और तारीख के हिसाब के लिए स्प्रेडशीट की ज़रूरत नहीं होनी चाहिए। मूलधन बनाम ब्याज चार्ट के साथ लोन की EMI निकालें, CGST-SGST के साथ GST जोड़ें या हटाएं, साल-महीने-दिन में सही उम्र जानें, या प्रतिशत के आम सवाल हल करें। टाइप करते ही नतीजा बदलता है। ये सामान्य मदद के लिए हैं, ज़रूरी आर्थिक फैसले दोबारा जांच लें।" },
       related: ["text", "seo"] },
-    { id: "seo", icon: "seo", en: "SEO & Utility", hi: "SEO और यूटिलिटी", short: { en: "SEO & Utility", hi: "SEO और यूटिलिटी" },
+    { id: "seo", icon: "seo", hue: 110, en: "SEO & Utility", hi: "SEO और यूटिलिटी", short: { en: "SEO & Utility", hi: "SEO और यूटिलिटी" },
       den: "Meta tags and strong passwords", dhi: "मेटा टैग और मज़बूत पासवर्ड",
       intro: { en: "Create meta tags for your pages and generate strong random passwords.", hi: "अपने पेजों के लिए मेटा टैग बनाएं और मज़बूत रैंडम पासवर्ड जनरेट करें।" },
       body: {
         en: "Good meta tags help search engines and social apps show your page properly, and strong passwords keep your accounts safe. Generate SEO, Open Graph and Twitter Card tags in one place, and create random passwords with your browser's secure random generator. Nothing you type is stored or sent anywhere.",
         hi: "अच्छे मेटा टैग सर्च इंजन और सोशल ऐप को आपका पेज सही दिखाने में मदद करते हैं, और मज़बूत पासवर्ड आपके अकाउंट सुरक्षित रखते हैं। SEO, Open Graph और Twitter Card टैग एक जगह बनाएं और ब्राउज़र के सुरक्षित रैंडम जनरेटर से पासवर्ड बनाएं। आप जो टाइप करते हैं वो कहीं सेव या भेजा नहीं जाता।" },
-      related: ["dev", "text"] }
+      related: ["dev", "text"] },
+    { id: "career", icon: "career", hue: 30, en: "Resume & Career", hi: "रिज़्यूमे और करियर", short: { en: "Career", hi: "करियर" },
+      den: "Build a resume and save it as PDF", dhi: "रिज़्यूमे बनाएं और PDF में सेव करें",
+      intro: { en: "Build a clean, professional resume with a live preview and save it as a PDF. Private, free and no sign-up.", hi: "लाइव प्रीव्यू के साथ साफ, प्रोफेशनल रिज़्यूमे बनाएं और PDF में सेव करें। प्राइवेट, मुफ्त और बिना साइन-अप।" },
+      body: {
+        en: "A good resume is short, clear and easy for both people and software to read. The DTAhub resume maker gives you four original templates, a live A4 preview and a checklist that points out what is missing. Your details are saved only on your own device and the PDF keeps real, selectable text, which is what most applicant tracking systems need.",
+        hi: "अच्छा रिज़्यूमे छोटा, साफ और इंसानों व सॉफ्टवेयर दोनों के लिए पढ़ने में आसान होता है। DTAhub का रिज़्यूमे मेकर चार ओरिजिनल टेम्पलेट, लाइव A4 प्रीव्यू और एक चेकलिस्ट देता है जो बताती है क्या छूट गया है। आपकी जानकारी सिर्फ आपके अपने डिवाइस पर सेव रहती है और PDF में असली, चुनने लायक टेक्स्ट रहता है, जो ज़्यादातर रिक्रूटमेंट सिस्टम को चाहिए।" },
+      related: ["text", "pdf"] }
   ];
 
   /* kind decides the generic "how to use" steps shown on the tool page. */
@@ -98,12 +114,19 @@
             hi: ["बॉक्स पर टैप करें (या फाइल खींचकर डालें) और अपनी फाइल चुनें।", "ज़रूरत हो तो विकल्प बदलें।", "नतीजा डाउनलोड करें। आपकी फाइल डिवाइस से बाहर नहीं जाती।"] },
     text: { en: ["Type or paste your text into the box.", "Tap the action button for the result.", "Copy the result with one tap."],
             hi: ["बॉक्स में टेक्स्ट लिखें या पेस्ट करें।", "नतीजे के लिए एक्शन बटन दबाएं।", "एक टैप में नतीजा कॉपी करें।"] },
+    builder: { en: ["Fill in your details section by section. Everything is saved on your device as you type.", "Pick a template, colour and font and watch the live preview.", "Check the checklist, then tap Download PDF and choose Save as PDF."],
+               hi: ["अपनी जानकारी सेक्शन-दर-सेक्शन भरें। टाइप करते ही सब आपके डिवाइस पर सेव होता है।", "टेम्पलेट, रंग और फॉन्ट चुनें और लाइव प्रीव्यू देखें।", "चेकलिस्ट देखें, फिर Download PDF दबाकर Save as PDF चुनें।"] },
     calc: { en: ["Enter your numbers or dates.", "Results update instantly as you type.", "Change any value to compare scenarios."],
             hi: ["अपने अंक या तारीखें डालें।", "टाइप करते ही नतीजा तुरंत बदलता है।", "अलग स्थितियां देखने के लिए कोई भी मान बदलें।"] }
   };
 
   var D = "2026-11-13";
   var TOOLS = [
+    { id: "resume-maker", cat: "career", kind: "builder", noReset: 1, pop: 0, featured: 1, added: "2026-11-14",
+      en: "Resume Maker", hi: "रिज़्यूमे मेकर", den: "Build a resume and save as PDF", dhi: "रिज़्यूमे बनाएं, PDF में सेव करें",
+      about: { en: "Resume Maker lets you build a professional resume with four original templates, a live A4 preview, your own accent colour and font, an optional photo and drag-free reordering of sections. The checklist flags a missing summary, thin experience or a resume that runs past two pages. The PDF keeps real selectable text so applicant tracking systems can read it.", hi: "Resume Maker से आप चार ओरिजिनल टेम्पलेट, लाइव A4 प्रीव्यू, अपना रंग और फॉन्ट, वैकल्पिक फोटो और सेक्शन का क्रम बदलने की सुविधा के साथ प्रोफेशनल रिज़्यूमे बना सकते हैं। चेकलिस्ट बताती है कि समरी छूटी है, अनुभव कम है या रिज़्यूमे दो पेज से लंबा है। PDF में असली चुनने लायक टेक्स्ट रहता है ताकि रिक्रूटमेंट सिस्टम उसे पढ़ सकें।" },
+      tip: { en: "Keep it to one or two pages, start each point with an action word and add numbers where you can. Use Export to keep a backup file.", hi: "एक या दो पेज रखें, हर पॉइंट किसी एक्शन शब्द से शुरू करें और जहां हो सके अंक जोड़ें। बैकअप के लिए Export से फाइल सेव रखें।" },
+      related: ["word-counter", "image-compress", "pdf-merge"] },
     { id: "pdf-merge", cat: "pdf", kind: "file", pop: 1, featured: 1, added: D,
       en: "Merge PDF", hi: "PDF जोड़ें", den: "Combine many PDFs into one", dhi: "कई PDF को एक बनाएं",
       about: { en: "Merge PDF joins two or more PDF files into a single document in the order you choose. Use the arrow buttons to reorder files before merging. The files are processed by your browser, so private documents such as certificates or bills are never uploaded.", hi: "Merge PDF दो या ज़्यादा PDF फाइलों को आपके चुने क्रम में एक दस्तावेज़ में जोड़ता है। जोड़ने से पहले तीर वाले बटन से क्रम बदलें। फाइलें ब्राउज़र में ही प्रोसेस होती हैं, इसलिए सर्टिफिकेट या बिल जैसे निजी दस्तावेज़ अपलोड नहीं होते।" },
@@ -199,6 +222,7 @@
   var STATIC_PAGES = {
     "/": { title: "DTAhub – Your Everyday Digital Toolkit | Free Online Tools", desc: "DTAhub is your everyday digital toolkit: free PDF, image, text, developer tools and calculators that run privately in your browser. No sign-up." },
     "/blog/": { title: "Guides and How-tos", desc: "Simple step-by-step guides for PDF, image and everyday online tools from DTAhub." },
+    "/settings.html": { title: "Settings", desc: "Choose language, theme and animations, and clear the favourites and data DTAhub keeps on your device." },
     "/contact.html": { title: "Contact, Feedback and Tool Requests", desc: "Send feedback, report a problem or request a new free tool for DTAhub." },
     "/privacy.html": { title: "Privacy Policy", desc: "How DTAhub handles your data: files are processed in your browser and are never uploaded." },
     "/terms.html": { title: "Terms of Use", desc: "Terms of use for DTAhub free online tools." }
@@ -214,6 +238,8 @@
       a: { en: "No. Your theme, language, favourites and recently used tools are saved only on your own device.", hi: "नहीं। आपका थीम, भाषा, पसंदीदा और हाल में इस्तेमाल किए टूल्स सिर्फ आपके अपने डिवाइस पर सेव रहते हैं।" } },
     { q: { en: "Can I use DTAhub offline or install it as an app?", hi: "क्या मैं DTAhub ऑफलाइन चला सकता हूं या ऐप की तरह इंस्टॉल कर सकता हूं?" },
       a: { en: "Yes. Open the site once, then use Install app from the menu (or your browser's Add to Home screen). Pages you have opened keep working without internet.", hi: "हां। साइट एक बार खोलें, फिर मेनू में Install app (या ब्राउज़र का Add to Home screen) चुनें। जो पेज आप खोल चुके हैं वे बिना इंटरनेट भी चलते हैं।" } },
+    { q: { en: "Will my resume be readable by hiring software?", hi: "क्या मेरा रिज़्यूमे हायरिंग सॉफ्टवेयर पढ़ पाएगा?" },
+      a: { en: "Yes. The PDF from the Resume Maker keeps real text instead of a picture, so applicant tracking systems can read it. Classic and Minimal are the safest templates.", hi: "हां। Resume Maker की PDF में तस्वीर की जगह असली टेक्स्ट रहता है, इसलिए रिक्रूटमेंट सिस्टम उसे पढ़ सकते हैं। Classic और Minimal सबसे सुरक्षित टेम्पलेट हैं।" } },
     { q: { en: "How can I request a new tool?", hi: "नया टूल कैसे मांगूं?" },
       a: { en: "Use the Contact page and choose Tool request. We read every suggestion.", hi: "Contact पेज पर जाकर Tool request चुनें। हम हर सुझाव पढ़ते हैं।" } }
   ];
@@ -231,7 +257,7 @@
   api.cardHTML = function (t, isNew) {
     var c = api.cat(t.cat), e = CARD_ESC;
     var q = (t.en + " " + t.hi + " " + t.den + " " + t.dhi + " " + t.id + " " + c.en).toLowerCase();
-    return '<article class="card reveal" data-id="' + t.id + '" data-cat="' + t.cat + '" data-q="' + e(q) + '">' +
+    return '<article class="card reveal" style="--h:' + (c.hue || 45) + '" data-id="' + t.id + '" data-cat="' + t.cat + '" data-q="' + e(q) + '">' +
       '<div class="card-top"><span class="ico">' + api.icon(t.id, 22) + '</span><h3><a class="stretch" href="' + api.toolUrl(t) + '"><span data-en="' + e(t.en) + '" data-hi="' + e(t.hi) + '">' + e(t.en) + "</span></a></h3></div>" +
       '<p data-en="' + e(t.den) + '" data-hi="' + e(t.dhi) + '">' + e(t.den) + "</p>" +
       '<div class="meta"><span class="tag" data-en="' + e(c.short.en) + '" data-hi="' + e(c.short.hi) + '">' + e(c.short.en) + "</span>" +
@@ -241,7 +267,7 @@
   };
   api.catCardHTML = function (c) {
     var n = TOOLS.filter(function (t) { return t.cat === c.id; }).length, e = CARD_ESC;
-    return '<a class="ccard reveal" href="' + api.catUrl(c) + '"><span class="ico">' + api.icon(c.icon, 22) + '</span><span><b data-en="' + e(c.en) + '" data-hi="' + e(c.hi) + '">' + e(c.en) + '</b><small data-en="' + e(c.den) + '" data-hi="' + e(c.dhi) + '">' + e(c.den) + " </small><small> · " + n + "</small></span></a>";
+    return '<a class="ccard reveal" style="--h:' + (c.hue || 45) + '" href="' + api.catUrl(c) + '"><span class="ico">' + api.icon(c.icon, 22) + '</span><span><b data-en="' + e(c.en) + '" data-hi="' + e(c.hi) + '">' + e(c.en) + '</b><small data-en="' + e(c.den) + '" data-hi="' + e(c.dhi) + '">' + e(c.den) + " </small><small> · " + n + "</small></span></a>";
   };
 
   if (typeof module !== "undefined" && module.exports) module.exports = api;

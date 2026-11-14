@@ -257,3 +257,41 @@ noscript .nojs{max-width:640px;margin:20px auto;padding:14px;border:1px solid va
 .foot ul.two li{break-inside:avoid}
 .meta{flex-wrap:wrap}
 @media(max-width:520px){.card-top{flex-direction:column;gap:10px}.card h3{padding-right:0}.meta{gap:6px}.tag{padding:2px 8px}}
+
+/* ---- category colours ---- */
+:root{--il:70%}[data-theme=light]{--il:40%}
+.card .ico,.ccard .ico,.orb,.pill .ic{color:hsl(var(--h,45) 88% var(--il))}
+.card .ico,.ccard .ico{background:hsl(var(--h,45) 75% 50%/.13);border-color:hsl(var(--h,45) 75% 50%/.3)}
+.card:hover,.ccard:hover{border-color:hsl(var(--h,260) 80% 62%/.7)}
+.card::before{background:radial-gradient(260px 140px at var(--mx,0%) var(--my,0%),hsl(var(--h,260) 85% 60%/.16),transparent 70%)}
+
+/* ---- hero visuals ---- */
+.hero-wrap{position:relative;max-width:1140px;margin:0 auto}
+.hero-wrap::before{content:"";position:absolute;inset:0;background-image:radial-gradient(var(--line2) 1px,transparent 1.2px);background-size:24px 24px;-webkit-mask-image:radial-gradient(ellipse 60% 55% at 50% 38%,#000 15%,transparent 72%);mask-image:radial-gradient(ellipse 60% 55% at 50% 38%,#000 15%,transparent 72%);opacity:.55;pointer-events:none}
+.orbs{position:absolute;inset:0;pointer-events:none;display:none}
+.orb{position:absolute;width:56px;height:56px;border-radius:17px;display:grid;place-items:center;background:var(--glass);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid hsl(var(--h) 70% 55%/.35);box-shadow:var(--shadow),0 0 30px -8px hsl(var(--h) 85% 60%/.5);animation:float 7s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-16px) rotate(3deg)}}
+@media(min-width:1000px){.orbs{display:block}}
+.marq{overflow:hidden;margin:6px 0 0;padding:6px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.marq-track{display:flex;gap:10px;width:max-content;animation:marq 60s linear infinite}
+.marq:hover .marq-track{animation-play-state:paused}
+@keyframes marq{to{transform:translateX(calc(-50% - 5px))}}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:.9rem;white-space:nowrap;transition:border-color .2s,transform .2s var(--ease)}
+.pill:hover{border-color:hsl(var(--h) 80% 60%/.7);transform:translateY(-2px)}
+
+/* ---- scroll progress, ripple, stagger, results ---- */
+.prog{position:fixed;left:0;top:0;height:2px;width:100%;z-index:70;background:linear-gradient(90deg,var(--gold),var(--violet2));transform-origin:left;transform:scaleX(0);pointer-events:none}
+.btn,.chip,.icon-btn{position:relative;overflow:hidden}
+.ripple{position:absolute;border-radius:50%;background:currentColor;opacity:.22;transform:scale(0);animation:rip .6s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(1);opacity:0}}
+.grid>.reveal:nth-child(8n+2),.cgrid>.reveal:nth-child(8n+2),.why>.reveal:nth-child(8n+2){transition-delay:.05s}
+.grid>.reveal:nth-child(8n+3),.cgrid>.reveal:nth-child(8n+3),.why>.reveal:nth-child(8n+3){transition-delay:.1s}
+.grid>.reveal:nth-child(8n+4),.cgrid>.reveal:nth-child(8n+4),.why>.reveal:nth-child(8n+4){transition-delay:.15s}
+.grid>.reveal:nth-child(8n+5){transition-delay:.05s}.grid>.reveal:nth-child(8n+6){transition-delay:.1s}.grid>.reveal:nth-child(8n+7){transition-delay:.15s}.grid>.reveal:nth-child(8n+8){transition-delay:.2s}
+#res:not([hidden]){animation:pagein .45s var(--ease) both}
+.nav{view-transition-name:site-nav}
+.logo svg{transition:transform .5s var(--ease)}.logo:hover svg{transform:rotate(60deg) scale(1.08)}
+[data-motion=off] *,[data-motion=off] *::before,[data-motion=off] *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+[data-motion=off] .reveal{opacity:1;transform:none}
+[data-motion=off] .prog{display:none}
+@media(prefers-reduced-motion:reduce){.orbs,.marq-track{animation:none}.prog{display:none}}

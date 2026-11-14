@@ -5,7 +5,7 @@
   function get(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }
   function put(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   function getList(k) { try { var a = JSON.parse(localStorage.getItem(k)); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
-  var lang = get("lang", "en") === "hi" ? "hi" : "en", theme = get("theme", "dark") === "light" ? "light" : "dark";
+  var lang = get("lang", "en") === "hi" ? "hi" : "en", theme = get("theme", "dark") === "light" ? "light" : "dark", motion = get("motion", "on") === "off" ? "off" : "on";
 
   window.L = function (en, hi) { return lang === "hi" ? hi : en; };
   window.fmt = function (n) { return Number(n).toLocaleString("en-IN", { maximumFractionDigits: 2 }); };
@@ -71,7 +71,7 @@
 
   /* ---------- apply language / theme ---------- */
   function apply() {
-    root.lang = lang; root.setAttribute("data-theme", theme);
+    root.lang = lang; root.setAttribute("data-theme", theme); root.setAttribute("data-motion", motion);
     document.querySelectorAll("[data-en]").forEach(function (el) { var v = el.getAttribute("data-" + lang); if (v !== null) el.textContent = v; });
     document.querySelectorAll("[data-ph-en]").forEach(function (el) { el.placeholder = el.getAttribute("data-ph-" + lang); });
     document.querySelectorAll("[data-label-en]").forEach(function (el) { el.setAttribute("aria-label", el.getAttribute("data-label-" + lang)); });
@@ -84,6 +84,12 @@
   window.DTAapply = apply;
   function setLang() { lang = lang === "en" ? "hi" : "en"; put("lang", lang); apply(); }
   function setTheme() { theme = theme === "dark" ? "light" : "dark"; put("theme", theme); apply(); }
+  window.DTAsettings = {
+    setLang: function (l) { lang = l === "hi" ? "hi" : "en"; put("lang", lang); apply(); },
+    setTheme: function (t) { theme = t === "light" ? "light" : "dark"; put("theme", theme); apply(); },
+    setMotion: function (m) { motion = m === "off" ? "off" : "on"; put("motion", motion); apply(); },
+    get: function () { return { lang: lang, theme: theme, motion: motion }; }
+  };
   var lb = $("langBtn"), tb = $("themeBtn"); if (lb) lb.onclick = setLang; if (tb) tb.onclick = setTheme;
 
   /* ---------- mobile nav ---------- */
@@ -169,6 +175,7 @@
     var acts = [
       { ic: D.icon(theme === "dark" ? "sun" : "moon", 20), label: theme === "dark" ? L("Switch to light mode", "लाइट मोड चालू करें") : L("Switch to dark mode", "डार्क मोड चालू करें"), fn: setTheme },
       { ic: D.icon("globe", 20), label: lang === "en" ? "हिंदी में बदलें" : "Switch to English", fn: setLang },
+      { ic: D.icon("settings", 20), label: L("Settings", "सेटिंग्स"), href: "/settings.html" },
       { ic: D.icon("plus", 20), label: L("Request a tool", "नया टूल मांगें"), href: "/contact.html#request" }
     ].filter(function (a) { return !q || a.label.toLowerCase().indexOf(q.toLowerCase()) > -1; });
     sec(L("Actions", "एक्शन"), acts);
@@ -207,6 +214,24 @@
     deferred.prompt(); deferred.userChoice.then(function () { deferred = null; b.hidden = true; });
   });
   if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) window.addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
+
+  /* ---------- motion: scroll progress, ripple, count-up ---------- */
+  var pr = document.createElement("div"); pr.className = "prog"; pr.setAttribute("aria-hidden", "true"); document.body.appendChild(pr);
+  var tick = false;
+  function prog() { tick = false; var h = document.documentElement.scrollHeight - innerHeight; pr.style.transform = "scaleX(" + (h > 0 ? Math.min(1, scrollY / h) : 0) + ")"; }
+  addEventListener("scroll", function () { if (!tick) { tick = true; requestAnimationFrame(prog); } }, { passive: true }); prog();
+  document.addEventListener("pointerdown", function (e) {
+    if (motion === "off") return;
+    var b = e.target.closest && e.target.closest(".btn,.chip,.icon-btn"); if (!b || b.disabled) return;
+    var r = b.getBoundingClientRect(), s = document.createElement("span"), d = Math.max(r.width, r.height) * 1.6;
+    s.className = "ripple"; s.style.cssText = "width:" + d + "px;height:" + d + "px;left:" + (e.clientX - r.left - d / 2) + "px;top:" + (e.clientY - r.top - d / 2) + "px";
+    b.appendChild(s); setTimeout(function () { if (s.parentNode) s.parentNode.removeChild(s); }, 650);
+  }, { passive: true });
+  window.DTAcount = function (el, to) {
+    if (motion === "off" || !window.requestAnimationFrame) { el.textContent = to; return; }
+    var t0 = performance.now(), dur = 900;
+    (function f(t) { var k = Math.min(1, (t - t0) / dur); el.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(f); })(t0);
+  };
 
   document.querySelectorAll("main").forEach(function (m) { m.classList.add("page-in"); });
   apply(); syncFavs(); DTAwatch(); menu(false);

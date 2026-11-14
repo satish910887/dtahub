@@ -33,6 +33,17 @@
   ],
   "shortcuts": [
     {
+      "name": "Resume Maker",
+      "short_name": "Resume Maker",
+      "url": "/tools/resume-maker.html",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
       "name": "Merge PDF",
       "short_name": "Merge PDF",
       "url": "/tools/pdf-merge.html",
@@ -58,17 +69,6 @@
       "name": "Hindi Typing Helper",
       "short_name": "Hindi Typing Helper",
       "url": "/tools/typing-helper.html",
-      "icons": [
-        {
-          "src": "/icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "QR Code Generator",
-      "short_name": "QR Code Generator",
-      "url": "/tools/qr-code.html",
       "icons": [
         {
           "src": "/icons/icon-192.png",

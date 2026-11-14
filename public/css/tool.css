@@ -60,3 +60,8 @@
 .form-row{display:grid;gap:10px}
 .hp{position:absolute;left:-9999px;opacity:0;height:0;width:0}
 .note{padding:12px 14px;border-radius:12px;border:1px solid var(--line2);background:var(--card2);color:var(--muted);font-size:.9rem;margin-bottom:12px}
+.set-h{font-size:1rem;margin:0 0 10px}
+.data-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.data-list li{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.data-list li:last-child{border-bottom:0}
+.data-list b{color:var(--gold);font-weight:700}

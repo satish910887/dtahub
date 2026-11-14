@@ -50,6 +50,7 @@ function header() {
  <a href="/#tools">${D.icon("search", 20)}${bi("All tools", "सभी टूल्स")}</a>
  <a href="/blog/">${D.icon("text", 20)}${bi("Guides", "गाइड्स")}</a>
  <a href="/contact.html">${D.icon("plus", 20)}${bi("Contact and requests", "संपर्क और मांग")}</a>
+ <a href="/settings.html">${D.icon("settings", 20)}${bi("Settings", "सेटिंग्स")}</a>
  <div class="sep"></div><small>${bi("Categories", "श्रेणियां")}</small>${cats}
  <div class="sep"></div><a href="#" data-install hidden>${D.icon("download", 20)}${bi("Install app", "ऐप इंस्टॉल करें")}</a>
 </nav>`;
@@ -60,7 +61,7 @@ function footer() {
   return `<footer class="foot"><div class="foot-in">
  <div><a class="logo" href="/">${logo(28)}<span>DTA<b>hub</b></span></a><p class="blurb">${bi("DTAhub – Your Everyday Digital Toolkit. Free tools that run privately in your browser.", "DTAhub – आपका रोज़ का डिजिटल टूलकिट। मुफ्त टूल्स जो आपके ब्राउज़र में प्राइवेट तरीके से चलते हैं।")}</p><p><button class="btn" type="button" data-install hidden>${D.icon("download", 18)}${bi("Install app", "ऐप इंस्टॉल करें")}</button></p></div>
  <div><h4>${bi("Categories", "श्रेणियां")}</h4><ul>${D.CATS.map((c) => li(D.catUrl(c), bi(c.en, c.hi))).join("")}</ul></div>
- <div><h4>${bi("Company", "कंपनी")}</h4><ul>${li("/blog/", bi("Guides", "गाइड्स"))}${li("/contact.html", bi("Contact", "संपर्क"))}${li("/contact.html#request", bi("Request a tool", "टूल मांगें"))}${li("/privacy.html", bi("Privacy Policy", "प्राइवेसी पॉलिसी"))}${li("/terms.html", bi("Terms", "शर्तें"))}</ul></div>
+ <div><h4>${bi("Company", "कंपनी")}</h4><ul>${li("/blog/", bi("Guides", "गाइड्स"))}${li("/contact.html", bi("Contact", "संपर्क"))}${li("/contact.html#request", bi("Request a tool", "टूल मांगें"))}${li("/settings.html", bi("Settings", "सेटिंग्स"))}${li("/privacy.html", bi("Privacy Policy", "प्राइवेसी पॉलिसी"))}${li("/terms.html", bi("Terms", "शर्तें"))}</ul></div>
  <div><h4>${bi("All tools", "सभी टूल्स")}</h4><ul class="two">${D.TOOLS.map((t) => li(D.toolUrl(t), bi(t.en, t.hi))).join("")}</ul></div>
 </div><div class="foot-bot"><span>© ${YEAR} DTAhub</span><span>${bi("Made with care in India.", "भारत में प्यार से बनाया गया।")}</span></div></footer>`;
 }
@@ -82,7 +83,7 @@ ${m.noindex ? '<meta name="robots" content="noindex">' : `<meta name="robots" co
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(m.title)}"><meta name="twitter:description" content="${e(m.desc)}"><meta name="twitter:image" content="${SITE}/og.png">
 <meta name="theme-color" content="#08080d">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
-<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);if(localStorage.getItem("lang")==="hi")document.documentElement.lang="hi"}catch(e){}</script>
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);if(localStorage.getItem("lang")==="hi")document.documentElement.lang="hi";if(localStorage.getItem("motion")==="off")document.documentElement.setAttribute("data-motion","off")}catch(e){}</script>
 <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
 ${(m.jsonld || []).map(ld).join("\n")}`;
 }
@@ -112,13 +113,14 @@ function descFor(t) {
 const PRIV = {
   file: ["Your files are processed on your device and never uploaded. Limits: 30 MB per image, 50 MB per PDF.", "आपकी फाइलें आपके डिवाइस पर प्रोसेस होती हैं, अपलोड नहीं होतीं। सीमा: हर इमेज 30 MB, हर PDF 50 MB।"],
   text: ["Your text stays in your browser. Nothing is stored or sent anywhere.", "आपका टेक्स्ट आपके ब्राउज़र में ही रहता है। कुछ भी सेव या कहीं भेजा नहीं जाता।"],
+  builder: ["Your details are saved only on this device while you type. Nothing is uploaded. Use Export to keep a backup file.", "आपकी जानकारी टाइप करते समय सिर्फ इसी डिवाइस पर सेव होती है। कुछ भी अपलोड नहीं होता। बैकअप के लिए Export इस्तेमाल करें।"],
   calc: ["Calculations run in your browser. Nothing you enter is stored or sent.", "हिसाब आपके ब्राउज़र में होता है। आप जो डालते हैं वो सेव या भेजा नहीं जाता।"]
 };
 function toolActions(t) {
   return `<div class="tool-acts">
  <button class="btn" type="button" data-fav="${t.id}" aria-pressed="false">${D.icon("star", 18)}<span class="n" data-en="Save" data-hi="सेव करें">Save</span><span class="y" data-en="Saved" data-hi="सेव हो गया">Saved</span></button>
  <button class="btn" type="button" data-share>${D.icon("share", 18)}${bi("Share", "शेयर")}</button>
- <button class="btn" type="button" data-reset>${bi("Reset", "रीसेट")}</button>
+ ${t.noReset ? "" : `<button class="btn" type="button" data-reset>${bi("Reset", "रीसेट")}</button>`}
 </div>`;
 }
 function toolExtra(t) {
@@ -217,6 +219,7 @@ function buildPages() {
   });
   const st = [["contact.html", "/contact.html", { en: "Contact", hi: "संपर्क" }], ["privacy.html", "/privacy.html", { en: "Privacy Policy", hi: "प्राइवेसी पॉलिसी" }], ["terms.html", "/terms.html", { en: "Terms of Use", hi: "उपयोग की शर्तें" }]];
   for (const [f, p, n] of st) { const cr = [H, { ...n, url: p }]; processPage(path.join(PUB, f), { type: "page", path: p, title: `${S[p].title} | DTAhub`, desc: S[p].desc, jsonld: [crumbLD(cr)] }, { crumbs: cr }); }
+  processPage(path.join(PUB, "settings.html"), { type: "page", path: "/settings.html", noindex: true, title: "Settings | DTAhub", desc: S["/settings.html"].desc }, { crumbs: [H, { en: "Settings", hi: "सेटिंग्स", url: "/settings.html" }] });
   const bcr = [H, { en: "Guides", hi: "गाइड्स", url: "/blog/" }];
   processPage(path.join(PUB, "blog/index.html"), { type: "page", path: "/blog/", title: `${S["/blog/"].title} | DTAhub`, desc: S["/blog/"].desc, jsonld: [crumbLD(bcr)] }, { crumbs: bcr });
   for (const [slug, b] of Object.entries(BLOG)) {
