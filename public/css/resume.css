@@ -131,7 +131,7 @@
 /* drag handle + versions */
 .rb-ord .drag{flex:0 0 auto!important;touch-action:none;cursor:grab;padding:8px 4px;color:var(--muted);display:inline-flex}
 .rb-ord li.dragging{outline:2px solid var(--gold);background:var(--card);box-shadow:0 10px 24px -10px rgba(0,0,0,.6)}
-.rb-ver{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}.rb-ver h3{margin:0 0 2px;font-size:1rem}
+.rb-ver{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}.rb-ver .rb-vh{margin:0 0 2px;font-size:1rem}
 .rb-vnew{display:flex;gap:8px;flex-wrap:wrap}.rb-vnew input{flex:1 1 160px;min-width:0}
 .rb-vlist{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
 .rb-vlist li{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--card2);border-radius:12px;padding:8px 10px}

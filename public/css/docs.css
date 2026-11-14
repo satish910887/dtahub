@@ -20,10 +20,10 @@
 .iv-title{font-size:30px;font-weight:800;letter-spacing:.06em;color:var(--ac,#8b6cf6);line-height:1}
 .iv-meta{text-align:right;font-size:13px}.iv-meta div{margin-top:3px}.iv-meta b{display:inline-block;min-width:74px;color:#555;font-weight:600}
 .iv-parties{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin:22px 0}
-.iv-parties h4{margin:0 0 4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#777}
+.iv-parties .h4{margin:0 0 4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#666}
 .iv-parties p{margin:0;white-space:pre-line}.iv-parties .nm{font-weight:700;font-size:16px}
 .iv-tb{width:100%;border-collapse:collapse;font-size:13px}
-.iv-tb th{background:var(--ac,#8b6cf6);color:#fff;text-align:left;padding:8px 9px;font-weight:600}
+.iv-tb th{background:color-mix(in srgb,var(--ac,#8b6cf6) 78%,#000);color:#fff;text-align:left;padding:8px 9px;font-weight:600}
 .iv-tb td{padding:9px;border-bottom:1px solid #e4e4ec;vertical-align:top}
 .iv-tb .r{text-align:right;white-space:nowrap}
 .iv-tot{margin:16px 0 0 auto;width:300px;font-size:13.5px}
@@ -31,7 +31,7 @@
 .iv-tot .gt{font-size:17px;font-weight:800;border-top:2px solid #1b1b26;border-bottom:0;margin-top:4px;padding-top:9px}
 .iv-words{margin-top:14px;font-size:13px;color:#444}.iv-words b{color:#1b1b26}
 .iv-foot{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:26px;font-size:12.5px;color:#444}
-.iv-foot h4{margin:0 0 4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#777}.iv-foot p{margin:0;white-space:pre-line}
+.iv-foot .h4{margin:0 0 4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#666}.iv-foot p{margin:0;white-space:pre-line}
 .iv-sign{margin-top:54px;text-align:right;font-size:12px;color:#666}.iv-sign span{display:inline-block;border-top:1px solid #999;padding-top:4px;min-width:170px;text-align:center}
 .iv-tb tr,.iv-tot,.iv-foot{break-inside:avoid}
 /* cover letter */

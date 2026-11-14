@@ -238,3 +238,22 @@
   document.querySelectorAll("main").forEach(function (m) { m.classList.add("page-in"); });
   apply(); syncFavs(); DTAwatch(); menu(false);
 })();
+
+/* Accessibility: connect each <label> to the field that follows it, so screen readers announce the field name. */
+(function () {
+  var n = 0, CTRL = "input:not([type=hidden]):not([type=checkbox]):not([type=radio]),select,textarea";
+  function link(root) {
+    (root || document).querySelectorAll("label:not([for])").forEach(function (lb) {
+      if (lb.querySelector("input,select,textarea")) return;
+      var c = null, s = lb.nextElementSibling;
+      while (s && !c) { c = s.matches(CTRL) ? s : s.querySelector(CTRL); s = s.nextElementSibling; if (s && s.tagName === "LABEL") break; }
+      if (!c || c.getAttribute("aria-label") || c.getAttribute("aria-labelledby")) return;
+      if (!c.id) c.id = "dta-f" + (++n);
+      lb.setAttribute("for", c.id);
+    });
+  }
+  var t;
+  function later() { clearTimeout(t); t = setTimeout(link, 60); }
+  function start() { link(); try { new MutationObserver(later).observe(document.body, { childList: true, subtree: true }); } catch (e) {} }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
+})();

@@ -52,7 +52,7 @@
 .prose ul,.prose ol{padding-left:20px}
 .bcard{display:block;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;transition:transform .25s,border-color .25s}
 .bcard:hover{transform:translateY(-3px);border-color:var(--violet)}
-.bcard h3{margin:0 0 4px}
+.bcard h2,.bcard h3{margin:0 0 4px;font-size:1.1rem}
 .bcard p{margin:0;color:var(--muted);font-size:.9rem}
 .cta{display:inline-block;margin-top:14px;padding:11px 18px;border-radius:12px;background:linear-gradient(120deg,var(--gold),#ffe9a8);color:#15110a;font-weight:700}
 .foot .fl2 a{margin:0 6px}

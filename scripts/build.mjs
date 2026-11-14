@@ -60,9 +60,9 @@ function footer() {
   const li = (h, i) => `<li><a href="${h}">${i}</a></li>`;
   return `<footer class="foot"><div class="foot-in">
  <div><a class="logo" href="/">${logo(28)}<span>DTA<b>hub</b></span></a><p class="blurb">${bi("DTAhub – Your Everyday Digital Toolkit. Free tools that run privately in your browser.", "DTAhub – आपका रोज़ का डिजिटल टूलकिट। मुफ्त टूल्स जो आपके ब्राउज़र में प्राइवेट तरीके से चलते हैं।")}</p><p><button class="btn" type="button" data-install hidden>${D.icon("download", 18)}${bi("Install app", "ऐप इंस्टॉल करें")}</button></p></div>
- <div><h4>${bi("Categories", "श्रेणियां")}</h4><ul>${D.CATS.map((c) => li(D.catUrl(c), bi(c.en, c.hi))).join("")}</ul></div>
- <div><h4>${bi("Company", "कंपनी")}</h4><ul>${li("/blog/", bi("Guides", "गाइड्स"))}${li("/contact.html", bi("Contact", "संपर्क"))}${li("/contact.html#request", bi("Request a tool", "टूल मांगें"))}${li("/settings.html", bi("Settings", "सेटिंग्स"))}${li("/privacy.html", bi("Privacy Policy", "प्राइवेसी पॉलिसी"))}${li("/terms.html", bi("Terms", "शर्तें"))}</ul></div>
- <div><h4>${bi("All tools", "सभी टूल्स")}</h4><ul class="two">${D.TOOLS.map((t) => li(D.toolUrl(t), bi(t.en, t.hi))).join("")}</ul></div>
+ <div><div class="fh">${bi("Categories", "श्रेणियां")}</div><ul>${D.CATS.map((c) => li(D.catUrl(c), bi(c.en, c.hi))).join("")}</ul></div>
+ <div><div class="fh">${bi("Company", "कंपनी")}</div><ul>${li("/blog/", bi("Guides", "गाइड्स"))}${li("/contact.html", bi("Contact", "संपर्क"))}${li("/contact.html#request", bi("Request a tool", "टूल मांगें"))}${li("/settings.html", bi("Settings", "सेटिंग्स"))}${li("/privacy.html", bi("Privacy Policy", "प्राइवेसी पॉलिसी"))}${li("/terms.html", bi("Terms", "शर्तें"))}</ul></div>
+ <div><div class="fh">${bi("All tools", "सभी टूल्स")}</div><ul class="two">${D.TOOLS.map((t) => li(D.toolUrl(t), bi(t.en, t.hi))).join("")}</ul></div>
 </div><div class="foot-bot"><span>© ${YEAR} DTAhub</span><span>${bi("Made with care in India.", "भारत में प्यार से बनाया गया।")}</span></div></footer>`;
 }
 
@@ -240,6 +240,13 @@ function buildPages() {
 
 /* ---------- sitemap, robots, manifest, headers, service worker ---------- */
 function walk(dir, out = []) { for (const f of fs.readdirSync(dir)) { const p = path.join(dir, f); fs.statSync(p).isDirectory() ? walk(p, out) : out.push(p); } return out; }
+/* speed: scripts after <body> no longer block the first paint (external ones get defer, inline ones become modules, which also wait for the page) */
+for (const f of walk(PUB).filter((x) => x.endsWith(".html"))) {
+  const h = fs.readFileSync(f, "utf8"), i = h.indexOf("<body");
+  if (i < 0) continue;
+  const out = h.slice(0, i) + h.slice(i).replace(/<script src="([^"]+)"><\/script>/g, '<script defer src="$1"></script>').replace(/<script>([\s\S]*?)<\/script>/g, (m, c) => '<script type="module">' + c + "</script>");
+  if (out !== h) fs.writeFileSync(f, out);
+}
 function buildSite() {
   const urls = ["/", ...D.CATS.map(D.catUrl), ...D.TOOLS.map(D.toolUrl), "/blog/", ...Object.keys(BLOG).map((s) => `/blog/${s}.html`), "/contact.html", "/privacy.html", "/terms.html"];
   fs.writeFileSync(path.join(PUB, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${abs(u)}</loc></url>`).join("\n")}\n</urlset>\n`);
@@ -259,6 +266,15 @@ function buildSite() {
 
 /js/vendor/*
   Cache-Control: public, max-age=604800
+
+/icons/*
+  Cache-Control: public, max-age=604800
+
+/og.png
+  Cache-Control: public, max-age=86400
+
+/favicon.svg
+  Cache-Control: public, max-age=86400
 `);
 
   /* service worker: version = hash of every public file, so any change refreshes the offline cache */
