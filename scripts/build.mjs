@@ -114,6 +114,8 @@ const PRIV = {
   file: ["Your files are processed on your device and never uploaded. Limits: 30 MB per image, 50 MB per PDF.", "आपकी फाइलें आपके डिवाइस पर प्रोसेस होती हैं, अपलोड नहीं होतीं। सीमा: हर इमेज 30 MB, हर PDF 50 MB।"],
   text: ["Your text stays in your browser. Nothing is stored or sent anywhere.", "आपका टेक्स्ट आपके ब्राउज़र में ही रहता है। कुछ भी सेव या कहीं भेजा नहीं जाता।"],
   builder: ["Your details are saved only on this device while you type. Nothing is uploaded. Use Export to keep a backup file.", "आपकी जानकारी टाइप करते समय सिर्फ इसी डिवाइस पर सेव होती है। कुछ भी अपलोड नहीं होता। बैकअप के लिए Export इस्तेमाल करें।"],
+  doc: ["Your details are saved only on this device while you type. Nothing is uploaded.", "आपकी जानकारी टाइप करते समय सिर्फ इसी डिवाइस पर सेव होती है। कुछ भी अपलोड नहीं होता।"],
+  gen: ["Everything runs in your browser. Nothing you enter is stored or sent.", "सब कुछ आपके ब्राउज़र में चलता है। आप जो डालते हैं वो सेव या भेजा नहीं जाता।"],
   calc: ["Calculations run in your browser. Nothing you enter is stored or sent.", "हिसाब आपके ब्राउज़र में होता है। आप जो डालते हैं वो सेव या भेजा नहीं जाता।"]
 };
 function toolActions(t) {
@@ -200,6 +202,10 @@ q.addEventListener("input",run);s.addEventListener("change",run)})();</script>
 
 /* ---------- home, static, blog, 404 ---------- */
 const BLOG = {
+  "ats-resume-guide": { en: "How to make an ATS-friendly resume for free", hi: "फ्री में ATS-फ्रेंडली रिज़्यूमे कैसे बनाएं", desc: "Simple rules for a resume that people and applicant tracking systems can both read, and how to build one free on your phone.", date: "2026-11-14" },
+  "sip-returns-guide": { en: "How to estimate your SIP returns", hi: "अपने SIP रिटर्न का अनुमान कैसे लगाएं", desc: "How a SIP return estimate works, with the formula, a worked example and a free calculator.", date: "2026-11-14" },
+  "gst-invoice-guide": { en: "What a GST invoice should contain and how to make one", hi: "GST इनवॉइस में क्या होना चाहिए और कैसे बनाएं", desc: "A simple checklist of what a GST tax invoice shows, and how to prepare one free with Invoice Maker.", date: "2026-11-14" },
+  "land-area-units-guide": { en: "Acre, hectare, gaj and sq ft: land area units explained", hi: "एकड़, हेक्टेयर, गज और वर्ग फुट: ज़मीन की इकाइयां समझें", desc: "Convert acre, hectare, gaj, square feet and square metres with exact conversions and a free converter.", date: "2026-11-14" },
   "compress-image-guide": { en: "How to compress an image without losing quality", hi: "क्वालिटी खोए बिना इमेज कैसे छोटी करें", desc: "Step by step guide to compress photos for forms, WhatsApp and websites without visible quality loss.", date: "2026-11-13" },
   "merge-pdf-guide": { en: "How to merge PDF files on your phone", hi: "फोन पर PDF फाइलें कैसे जोड़ें", desc: "Step by step guide to combine several PDF files into one on your phone, free and private.", date: "2026-11-13" }
 };

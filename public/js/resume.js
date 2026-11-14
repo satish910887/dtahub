@@ -5,14 +5,14 @@
   var SECS = ["summary", "experience", "education", "projects", "skills", "certs", "languages"];
   var SIDE = ["skills", "certs", "languages"];
   var HL = {
-    en: { summary: "Summary", experience: "Experience", education: "Education", projects: "Projects", skills: "Skills", certs: "Certificates", languages: "Languages", contact: "Contact", present: "Present" },
-    hi: { summary: "सारांश", experience: "अनुभव", education: "शिक्षा", projects: "प्रोजेक्ट्स", skills: "कौशल", certs: "प्रमाणपत्र", languages: "भाषाएं", contact: "संपर्क", present: "वर्तमान" }
+    en: { summary: "Summary", experience: "Experience", education: "Education", projects: "Projects", skills: "Skills", certs: "Certificates", languages: "Languages", contact: "Contact", present: "Present", objective: "Career Objective", personal: "Personal Details", dob: "Date of birth", nationality: "Nationality", place: "Place", date: "Date", sign: "Signature", decl: "I hereby declare that the information given above is true to the best of my knowledge." },
+    hi: { summary: "सारांश", experience: "अनुभव", education: "शिक्षा", projects: "प्रोजेक्ट्स", skills: "कौशल", certs: "प्रमाणपत्र", languages: "भाषाएं", contact: "संपर्क", present: "वर्तमान", objective: "करियर उद्देश्य", personal: "व्यक्तिगत जानकारी", dob: "जन्म तिथि", nationality: "राष्ट्रीयता", place: "स्थान", date: "दिनांक", sign: "हस्ताक्षर", decl: "मैं घोषणा करता/करती हूं कि ऊपर दी गई जानकारी मेरी जानकारी में सही है।" }
   };
   var FONTS = { sans: '"Segoe UI","Noto Sans","Noto Sans Devanagari",Roboto,Arial,sans-serif', serif: 'Georgia,"Noto Serif","Noto Serif Devanagari","Times New Roman",serif' };
   var SIZES = { s: "12px", m: "13px", l: "14px" };
   var SWATCHES = ["#8b6cf6", "#2563eb", "#0f766e", "#16a34a", "#dc2626", "#ea580c", "#be185d", "#111827"];
-  var TPLS = ["modern", "classic", "minimal", "bold"];
-  var TPL_NAME = { modern: ["Modern", "मॉडर्न"], classic: ["Classic", "क्लासिक"], minimal: ["Minimal", "मिनिमल"], bold: ["Bold", "बोल्ड"] };
+  var TPLS = ["modern", "classic", "minimal", "bold", "ats", "fresher"];
+  var TPL_NAME = { modern: ["Modern", "मॉडर्न"], classic: ["Classic", "क्लासिक"], ats: ["ATS Simple", "ATS सिंपल"], fresher: ["Fresher CV", "फ्रेशर CV"], minimal: ["Minimal", "मिनिमल"], bold: ["Bold", "बोल्ड"] };
   var T = function (en, hi) { return L(en, hi); };
 
   function $$(id) { return document.getElementById(id); }
@@ -29,7 +29,7 @@
 
   function blank() {
     return { v: 1, tpl: "modern", ac: "#8b6cf6", font: "sans", size: "m", hl: "en", order: SECS.slice(), hide: {}, photo: "", sample: false,
-      basics: { name: "", title: "", email: "", phone: "", location: "", website: "", link: "" }, summary: "",
+      basics: { name: "", title: "", email: "", phone: "", location: "", website: "", link: "", dob: "", nationality: "" }, summary: "",
       experience: [ex()], education: [ed()], skills: [sk()], projects: [], certs: [], languages: "" };
   }
   function sample() {
@@ -73,9 +73,11 @@
   /* ---------- persistence ---------- */
   var d, saveTimer, warned = false;
   function load() { try { var r = localStorage.getItem(KEY); if (r) return normalize(JSON.parse(r)); } catch (e) {} return sample(); }
+  addEventListener("pagehide", function () { if (saveTimer) { clearTimeout(saveTimer); try { localStorage.setItem(KEY, JSON.stringify(d)); } catch (e) {} } });
   function save() {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(function () {
+      saveTimer = 0;
       try { localStorage.setItem(KEY, JSON.stringify(d)); var t = new Date(); $$("rbSaved").textContent = T("Saved on this device at ", "इस डिवाइस पर सेव हुआ: ") + ("0" + t.getHours()).slice(-2) + ":" + ("0" + t.getMinutes()).slice(-2); }
       catch (e) { if (!warned) { warned = true; toast(T("Could not save on this device (storage full or blocked). Use Export backup.", "इस डिवाइस पर सेव नहीं हो सका (स्टोरेज भरा या बंद)। Export backup इस्तेमाल करें।"), "err"); } }
     }, 350);
@@ -94,7 +96,7 @@
   function ul(s) { var l = lines(s); return l.length ? '<ul class="rt-ul">' + l.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>" : ""; }
   function range(a, b, cur) { a = (a || "").trim(); b = cur ? HL[d.hl].present : (b || "").trim(); return a && b ? a + " – " + b : a || b; }
   function split(s) { return String(s || "").split(/[,;\n]/).map(function (x) { return x.trim(); }).filter(Boolean); }
-  function sec(id, inner, tpl) { return inner ? '<div class="rt-sec"><div class="rt-sec-h">' + esc(HL[d.hl][id]) + "</div>" + inner + "</div>" : ""; }
+  function sec(id, inner, tpl) { return inner ? '<div class="rt-sec"><div class="rt-sec-h">' + esc(HL[d.hl][tpl === "fresher" && id === "summary" ? "objective" : id]) + "</div>" + inner + "</div>" : ""; }
 
   function section(id, tpl) {
     var h = "", asTags = tpl === "modern" || tpl === "minimal";
@@ -133,6 +135,12 @@
       inner = '<div class="rt-wrap"><div class="rt-side">' + sideHtml + '</div><div class="rt-main">' + head + main + "</div></div>";
     } else if (tpl === "bold") {
       inner = '<div class="rt-head"><div>' + head + '<div class="rt-contact">' + ci.join("") + "</div></div>" + photo + '</div><div class="rt-wrap">' + order.map(function (id) { return section(id, tpl); }).join("") + "</div>";
+    } else if (tpl === "fresher") {
+      var H = HL[d.hl], kv = [[H.dob, b.dob], [H.nationality, b.nationality]].filter(function (x) { return (x[1] || "").trim(); });
+      var pers = kv.length ? '<div class="rt-sec"><div class="rt-sec-h">' + esc(H.personal) + '</div><div class="rt-kv">' + kv.map(function (x) { return "<span>" + esc(x[0]) + "</span><b>" + esc(x[1]) + "</b>"; }).join("") + "</div></div>" : "";
+      var now = new Date(), ds = now.getDate() + " " + ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][now.getMonth()] + " " + now.getFullYear();
+      var decl = '<div class="rt-decl"><p>' + esc(H.decl) + '</p><div class="rt-row"><span>' + esc(H.place) + ": " + esc(b.location) + "<br>" + esc(H.date) + ": " + esc(ds) + "</span><span>" + esc(H.sign) + ": ________________</span></div></div>";
+      inner = '<div class="rt-head"><div>' + head + '<div class="rt-contact">' + ci.join("") + "</div></div>" + photo + '</div><div class="rt-wrap">' + order.map(function (id) { return section(id, tpl); }).join("") + pers + decl + "</div>";
     } else {
       inner = '<div class="rt-wrap"><div class="rt-head">' + head + '<div class="rt-contact">' + ci.join("") + "</div></div>" + order.map(function (id) { return section(id, tpl); }).join("") + "</div>";
     }
@@ -205,7 +213,8 @@
       F(T("Full name", "पूरा नाम"), "basics.name", { ac: "name" }) + F(T("Job title", "जॉब टाइटल"), "basics.title", { ph: T("e.g. Accountant", "जैसे: अकाउंटेंट") }) +
       F("Email", "basics.email", { type: "email", ac: "email" }) + F(T("Phone", "फोन"), "basics.phone", { type: "tel", im: "tel", ac: "tel" }) +
       F(T("City, Country", "शहर, देश"), "basics.location") + F(T("Website", "वेबसाइट"), "basics.website", { ph: "example.com" }) +
-      F(T("LinkedIn or other link", "LinkedIn या दूसरा लिंक"), "basics.link", { full: true, ph: "linkedin.com/in/yourname" }) + "</div>");
+      F(T("LinkedIn or other link", "LinkedIn या दूसरा लिंक"), "basics.link", { full: true, ph: "linkedin.com/in/yourname" }) +
+      F(T("Date of birth (Fresher CV only)", "जन्म तिथि (सिर्फ Fresher CV)"), "basics.dob", { ph: "12 May 2002" }) + F(T("Nationality (Fresher CV only)", "राष्ट्रीयता (सिर्फ Fresher CV)"), "basics.nationality", { ph: "Indian" }) + "</div>");
     h += acc("summary", T("Summary", "सारांश"), null, F(T("2 to 3 lines about you", "आपके बारे में 2-3 लाइन"), "summary", { rows: 4, max: 1500, full: true, hint: "sumHint" }));
     h += acc("experience", T("Experience", "अनुभव"), d.experience.filter(has).length,
       d.experience.map(function (x, i) { return entry("experience", i, x.role || x.company, F(T("Job title", "पद"), "experience." + i + ".role") + F(T("Company", "कंपनी"), "experience." + i + ".company") + F(T("Location", "जगह"), "experience." + i + ".location") + F(T("Start (e.g. Jun 2023)", "शुरू (जैसे Jun 2023)"), "experience." + i + ".start") + F(T("End", "खत्म"), "experience." + i + ".end", { ph: x.current ? HL[d.hl].present : "" }) +
@@ -221,7 +230,7 @@
       d.certs.map(function (x, i) { return entry("certs", i, x.name, F(T("Name", "नाम"), "certs." + i + ".name", { full: true }) + F(T("Issued by", "किसने दिया"), "certs." + i + ".issuer") + F(T("Year", "साल"), "certs." + i + ".year")); }).join("") + addBtn("certs", T("Add certificate", "प्रमाणपत्र जोड़ें")));
     h += acc("languages", T("Languages", "भाषाएं"), null, F(T("Languages you know (separated by commas)", "आप कौन सी भाषाएं जानते हैं (कॉमा से अलग)"), "languages", { rows: 2, full: true, max: 300 }));
     h += acc("layout", T("Sections: order and visibility", "सेक्शन: क्रम और दिखना"), null, '<ul class="rb-ord">' + d.order.map(function (id, i) {
-      return "<li><span>" + esc(HL[L("en", "hi") === "hi" ? "hi" : "en"][id]) + "</span>" +
+      return '<li data-sec="' + id + '"><span class="drag" data-drag role="img" aria-label="Drag to reorder">' + D.icon("drag", 16) + "</span><span>" + esc(HL[L("en", "hi") === "hi" ? "hi" : "en"][id]) + "</span>" +
         '<label><input type="checkbox" data-hide="' + id + '"' + (d.hide[id] ? "" : " checked") + "> " + esc(T("Show", "दिखाएं")) + "</label>" +
         '<button type="button" class="mini" data-act="ordup:' + id + ':0"' + (i === 0 ? " disabled" : "") + ' aria-label="Up">' + D.icon("up", 16) + "</button>" +
         '<button type="button" class="mini" data-act="orddown:' + id + ':0"' + (i === d.order.length - 1 ? " disabled" : "") + ' aria-label="Down">' + D.icon("down", 16) + "</button></li>";
@@ -233,6 +242,8 @@
   function renderStatic() {
     $$("rbTpls").innerHTML = TPLS.map(function (t) {
       var svg = { modern: '<rect x="0" y="0" width="22" height="80" fill="currentColor" opacity=".25"/><rect x="28" y="8" width="26" height="5" fill="currentColor"/><rect x="28" y="20" width="26" height="3" opacity=".5" fill="currentColor"/><rect x="28" y="28" width="26" height="3" opacity=".5" fill="currentColor"/><rect x="5" y="14" width="12" height="3" fill="currentColor" opacity=".6"/>',
+        ats: '<rect x="6" y="8" width="30" height="4" fill="currentColor"/><rect x="6" y="18" width="48" height="1" fill="currentColor"/><rect x="6" y="24" width="48" height="2.500" opacity=".5" fill="currentColor"/><rect x="6" y="30" width="48" height="2.500" opacity=".5" fill="currentColor"/><rect x="6" y="40" width="48" height="1" fill="currentColor"/><rect x="6" y="46" width="48" height="2.500" opacity=".5" fill="currentColor"/>',
+        fresher: '<rect x="0" y="0" width="60" height="22" fill="currentColor" opacity=".15"/><rect x="6" y="7" width="26" height="4" fill="currentColor"/><rect x="43" y="4" width="11" height="14" rx="1.500" fill="currentColor" opacity=".5"/><rect x="6" y="28" width="22" height="4" fill="currentColor" opacity=".35"/><rect x="6" y="36" width="48" height="2.500" opacity=".5" fill="currentColor"/><rect x="6" y="42" width="48" height="2.500" opacity=".5" fill="currentColor"/><rect x="6" y="64" width="20" height="2" fill="currentColor"/>',
         classic: '<rect x="14" y="8" width="32" height="5" fill="currentColor"/><rect x="6" y="18" width="48" height="1.5" fill="currentColor"/><rect x="6" y="26" width="48" height="3" opacity=".5" fill="currentColor"/><rect x="6" y="34" width="48" height="3" opacity=".5" fill="currentColor"/>',
         minimal: '<rect x="6" y="8" width="28" height="5" fill="currentColor"/><rect x="6" y="22" width="14" height="2" fill="currentColor" opacity=".7"/><rect x="6" y="28" width="48" height="3" opacity=".4" fill="currentColor"/><rect x="6" y="40" width="14" height="2" fill="currentColor" opacity=".7"/><rect x="6" y="46" width="48" height="3" opacity=".4" fill="currentColor"/>',
         bold: '<rect x="0" y="0" width="60" height="22" fill="currentColor" opacity=".7"/><rect x="6" y="8" width="26" height="5" fill="#fff"/><rect x="6" y="30" width="48" height="3" opacity=".5" fill="currentColor"/><rect x="6" y="38" width="48" height="3" opacity=".5" fill="currentColor"/>' }[t];
@@ -320,6 +331,49 @@
     toast(T("Choose “Save as PDF” in the print window", "प्रिंट विंडो में “Save as PDF” चुनें"));
     setTimeout(function () { window.print(); setTimeout(function () { document.title = old; }, 1500); }, 250);
   };
+
+  /* drag to reorder sections (pointer events, works with touch) */
+  form.addEventListener("pointerdown", function (e) {
+    var h = e.target.closest("[data-drag]"); if (!h) return;
+    var li = h.closest("li"), ul = li.parentNode; e.preventDefault();
+    li.classList.add("dragging");
+    function move(ev) {
+      var y = ev.clientY, before = null, sibs = [].slice.call(ul.children);
+      for (var i = 0; i < sibs.length; i++) { if (sibs[i] === li) continue; var r = sibs[i].getBoundingClientRect(); if (y < r.top + r.height / 2) { before = sibs[i]; break; } }
+      if (before !== li.nextSibling) ul.insertBefore(li, before);
+    }
+    function up() {
+      document.removeEventListener("pointermove", move); document.removeEventListener("pointerup", up); document.removeEventListener("pointercancel", up);
+      li.classList.remove("dragging");
+      d.order = [].map.call(ul.children, function (x) { return x.getAttribute("data-sec"); });
+      openSet.layout = true; d.sample = false; renderForm(); renderPreview(); save();
+    }
+    document.addEventListener("pointermove", move); document.addEventListener("pointerup", up); document.addEventListener("pointercancel", up);
+  });
+
+  /* saved versions (for example one resume per job) */
+  var VKEY = "dta_resume_versions_v1";
+  function vLoad() { try { var a = JSON.parse(localStorage.getItem(VKEY) || "[]"); return Array.isArray(a) ? a.filter(function (v) { return v && typeof v.id === "string" && v.data; }).slice(0, 8) : []; } catch (e) { return []; } }
+  function vStore(a) { try { localStorage.setItem(VKEY, JSON.stringify(a)); return true; } catch (e) { toast(T("Could not save the version (storage full). Remove one or use Export backup.", "वर्ज़न सेव नहीं हुआ (स्टोरेज भरा)। एक हटाएं या Export backup इस्तेमाल करें।"), "err"); return false; } }
+  function vRender() {
+    var a = vLoad(), el = $$("rbVList");
+    el.innerHTML = a.length ? a.map(function (v) {
+      var t = new Date(v.t || 0), ds = isNaN(t) ? "" : t.getDate() + "/" + (t.getMonth() + 1) + "/" + t.getFullYear();
+      return '<li><span><b>' + esc(v.name) + '</b><small>' + esc(ds) + '</small></span><button type="button" class="btn" data-va="load:' + esc(v.id) + '">' + esc(T("Load", "खोलें")) + '</button><button type="button" class="btn" data-va="del:' + esc(v.id) + '">' + esc(T("Delete", "हटाएं")) + "</button></li>";
+    }).join("") : '<li class="empty">' + esc(T("No saved versions yet.", "अभी कोई सेव वर्ज़न नहीं।")) + "</li>";
+  }
+  $$("rbVSave").onclick = function () {
+    var a = vLoad(); if (a.length >= 8) { toast(T("You can keep up to 8 versions. Delete one first.", "आप 8 वर्ज़न तक रख सकते हैं। पहले एक हटाएं।"), "err"); return; }
+    var nm = $$("rbVName").value.trim().slice(0, 40) || T("Version ", "वर्ज़न ") + (a.length + 1);
+    a.push({ id: Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), name: nm, t: new Date().toISOString(), data: JSON.parse(JSON.stringify(d)) });
+    if (vStore(a)) { $$("rbVName").value = ""; vRender(); toast(T("Version saved", "वर्ज़न सेव हुआ")); }
+  };
+  $$("rbVList").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-va]"); if (!b) return; var p = b.getAttribute("data-va").split(":"), id = p[1], a = vLoad(), v = a.filter(function (x) { return x.id === id; })[0]; if (!v) return;
+    if (p[0] === "load") confirm2(b, T("Tap again: replaces current resume", "फिर टैप करें: मौजूदा रिज़्यूमे बदल जाएगा"), function () { d = normalize(v.data); d.sample = false; renderAll(); save(); toast(T("Version loaded", "वर्ज़न खुल गया")); });
+    else confirm2(b, T("Tap again to delete", "हटाने के लिए फिर टैप करें"), function () { vStore(a.filter(function (x) { return x.id !== id; })); vRender(); });
+  });
+  vRender();
 
   var tabs = $$("rb");
   document.querySelector(".rb-tabs").addEventListener("click", function (e) {

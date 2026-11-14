@@ -1,0 +1,56 @@
+/* Shared styles for the Invoice Maker and Cover Letter Maker (A4 paper + print) */
+.dk{display:grid;gap:16px}
+@media(min-width:1000px){.tw.wide{max-width:1240px}.dk{grid-template-columns:minmax(0,1fr) minmax(0,.95fr);align-items:start}.dk-view{position:sticky;top:76px}}
+.dk>*{min-width:0}
+.dk h2.ph{margin:0 0 4px;font-size:1.05rem}
+.dk .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:520px){.dk .g2{grid-template-columns:1fr}}
+.dk .panel textarea{min-height:76px}
+.dk .full{grid-column:1/-1}
+.dk-bar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.dk-note{background:rgba(242,201,105,.1);border:1px solid rgba(242,201,105,.3);border-radius:14px;padding:10px 14px;font-size:.88rem;margin-bottom:12px}
+.dp-stage{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:10px;overflow:hidden}
+.dp-fit{margin:0 auto;position:relative}
+.dp-scale{width:794px;transform-origin:top left}
+.dp{width:794px;min-height:1123px;box-sizing:border-box;background:#fff;color:#1b1b26;padding:52px 56px;font:14px/1.55 "Segoe UI","Noto Sans","Noto Sans Devanagari",Roboto,Arial,sans-serif;box-shadow:0 10px 40px -14px rgba(0,0,0,.6);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.dp *{box-sizing:border-box}
+.dp a{color:inherit;text-decoration:none}
+/* invoice */
+.iv-top{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;border-bottom:3px solid var(--ac,#8b6cf6);padding-bottom:16px}
+.iv-title{font-size:30px;font-weight:800;letter-spacing:.06em;color:var(--ac,#8b6cf6);line-height:1}
+.iv-meta{text-align:right;font-size:13px}.iv-meta div{margin-top:3px}.iv-meta b{display:inline-block;min-width:74px;color:#555;font-weight:600}
+.iv-parties{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin:22px 0}
+.iv-parties h4{margin:0 0 4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#777}
+.iv-parties p{margin:0;white-space:pre-line}.iv-parties .nm{font-weight:700;font-size:16px}
+.iv-tb{width:100%;border-collapse:collapse;font-size:13px}
+.iv-tb th{background:var(--ac,#8b6cf6);color:#fff;text-align:left;padding:8px 9px;font-weight:600}
+.iv-tb td{padding:9px;border-bottom:1px solid #e4e4ec;vertical-align:top}
+.iv-tb .r{text-align:right;white-space:nowrap}
+.iv-tot{margin:16px 0 0 auto;width:300px;font-size:13.5px}
+.iv-tot div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #eee}
+.iv-tot .gt{font-size:17px;font-weight:800;border-top:2px solid #1b1b26;border-bottom:0;margin-top:4px;padding-top:9px}
+.iv-words{margin-top:14px;font-size:13px;color:#444}.iv-words b{color:#1b1b26}
+.iv-foot{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:26px;font-size:12.5px;color:#444}
+.iv-foot h4{margin:0 0 4px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#777}.iv-foot p{margin:0;white-space:pre-line}
+.iv-sign{margin-top:54px;text-align:right;font-size:12px;color:#666}.iv-sign span{display:inline-block;border-top:1px solid #999;padding-top:4px;min-width:170px;text-align:center}
+.iv-tb tr,.iv-tot,.iv-foot{break-inside:avoid}
+/* cover letter */
+.cl-name{font-size:26px;font-weight:800;color:var(--ac,#8b6cf6);line-height:1.15}
+.cl-sub{color:#555;margin-top:2px}.cl-con{margin-top:6px;font-size:13px;color:#444;display:flex;flex-wrap:wrap;gap:2px 14px}
+.cl-hr{height:2px;background:var(--ac,#8b6cf6);margin:14px 0 22px}
+.cl-date{margin-bottom:16px}.cl-to{margin-bottom:18px;white-space:pre-line}
+.cl-subj{font-weight:700;margin-bottom:14px}
+.cl-b p{margin:0 0 12px;white-space:pre-line}.cl-b ul{margin:0 0 12px;padding-left:20px}
+@media print{
+ @page{size:A4;margin:0}
+ html,body{background:#fff!important;margin:0!important;padding:0!important;height:auto!important}
+ .bg-glow,.nav,.mnav,.skip,.prog,.foot,.crumbs,.back,.tw>h1,.lead,.tool-acts,.privacy-note,.seo-about,.dk-edit,.dk-bar,.dk-note,.toasts,.pal-bg,nav[aria-label=Breadcrumb]{display:none!important}
+ .tw,.tw.wide{max-width:none!important;padding:0!important;margin:0!important}
+ .dk{display:block!important}
+ .dk-view{position:static!important;margin:0!important;padding:0!important}
+ .dp-stage{padding:0!important;border:0!important;background:none!important;overflow:visible!important}
+ .dp-fit{width:auto!important;height:auto!important;margin:0!important}
+ .dp-scale{width:auto!important;transform:none!important}
+ .dp{box-shadow:none!important;width:210mm!important;min-height:288mm}
+ .page-in{animation:none!important}
+}

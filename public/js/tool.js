@@ -158,7 +158,9 @@
   }
   function tools(q) {
     var toks = q.toLowerCase().split(/\s+/).filter(Boolean);
-    return D.TOOLS.filter(function (t) { var h = (t.en + " " + t.hi + " " + t.den + " " + t.dhi + " " + t.id + " " + D.cat(t.cat).en).toLowerCase(); return toks.every(function (x) { return h.indexOf(x) > -1; }); });
+    var rank = function (t) { var n = (t.en + " " + t.hi + " " + t.id).toLowerCase(); return toks.every(function (x) { return n.indexOf(x) === 0 || n.indexOf(" " + x) > -1 || n.indexOf("-" + x) > -1; }) ? 0 : 1; };
+    return D.TOOLS.filter(function (t) { var h = (t.en + " " + t.hi + " " + t.den + " " + t.dhi + " " + t.id + " " + D.cat(t.cat).en).toLowerCase(); return toks.every(function (x) { return h.indexOf(x) > -1; }); })
+      .map(function (t, i) { return { t: t, i: i, r: rank(t) }; }).sort(function (a, b) { return a.r - b.r || a.i - b.i; }).map(function (x) { return x.t; });
   }
   function render() {
     var q = palIn.value.trim(), out = [], html = "";

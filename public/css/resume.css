@@ -10,7 +10,7 @@
  .rb-view{position:sticky;top:76px;max-height:calc(100vh - 92px);overflow:auto;overscroll-behavior:contain;padding-right:4px}
 }
 .rb .panel label{margin-top:12px}
-.rb-tpls{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px}
+.rb-tpls{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
 .rb-tpl{border:2px solid var(--line);background:var(--card2);border-radius:12px;padding:6px 4px 4px;cursor:pointer;color:var(--muted);font-size:.74rem;text-align:center;transition:border-color .2s,transform .2s var(--ease)}
 .rb-tpl:hover{transform:translateY(-2px);border-color:var(--violet)}
 .rb-tpl[aria-pressed=true]{border-color:var(--gold);color:var(--text)}
@@ -113,6 +113,31 @@
 .rt-classic .rt-photo,.rt-minimal .rt-photo{display:none}
 
 /* ---------- print: only the paper, true A4 ---------- */
+/* ats simple */
+.rt-ats .rt-name{color:#000;font-size:1.9em;font-weight:700}
+.rt-ats .rt-title{color:#000}
+.rt-ats .rt-contact{color:#000}
+.rt-ats .rt-sec-h{color:#000;border-bottom:1px solid #000;padding-bottom:.2em}
+.rt-ats .rt-photo{display:none}
+/* fresher cv */
+.rt-fresher .rt-head{background:var(--tint);border-bottom:3px solid var(--ac);padding:34px 52px 22px;display:flex;gap:20px;align-items:center}
+.rt-fresher .rt-head>div{flex:1;min-width:0}
+.rt-fresher .rt-name{font-size:2em}
+.rt-fresher .rt-photo{border-radius:8px;width:96px;height:114px}
+.rt-fresher .rt-wrap{padding:6px 52px 44px}
+.rt-fresher .rt-sec-h{background:var(--tint);border-left:4px solid var(--ac);padding:4px 10px;color:#111}
+.rt-kv{display:grid;grid-template-columns:150px 1fr;gap:3px 12px}.rt-kv span{color:#555}
+.rt-decl{margin-top:1.8em;break-inside:avoid}.rt-decl p{margin:0 0 1.8em}
+/* drag handle + versions */
+.rb-ord .drag{flex:0 0 auto!important;touch-action:none;cursor:grab;padding:8px 4px;color:var(--muted);display:inline-flex}
+.rb-ord li.dragging{outline:2px solid var(--gold);background:var(--card);box-shadow:0 10px 24px -10px rgba(0,0,0,.6)}
+.rb-ver{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}.rb-ver h3{margin:0 0 2px;font-size:1rem}
+.rb-vnew{display:flex;gap:8px;flex-wrap:wrap}.rb-vnew input{flex:1 1 160px;min-width:0}
+.rb-vlist{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.rb-vlist li{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--card2);border-radius:12px;padding:8px 10px}
+.rb-vlist li>span{flex:1 1 120px;min-width:0;display:grid}.rb-vlist small{color:var(--muted)}
+.rb-vlist .btn{min-height:38px;padding:6px 12px}.rb-vlist .empty{color:var(--muted);font-size:.9rem;display:block}
+
 @media print{
  @page{size:A4;margin:0}
  html,body{background:#fff!important}

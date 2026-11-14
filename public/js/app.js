@@ -61,7 +61,7 @@
   function suggest() {
     var v = si.value.trim().toLowerCase();
     if (!v) { sug.hidden = true; si.setAttribute("aria-expanded", "false"); sugItems = []; return; }
-    sugItems = D.TOOLS.filter(function (t) { return match(t, v); }).slice(0, 5); act = sugItems.length ? 0 : -1;
+    sugItems = D.TOOLS.filter(function (t) { return match(t, v); }).sort(function (a, b) { var f = function (t) { var n = (t.en + " " + t.id).toLowerCase(); return n.indexOf(v) === 0 || n.indexOf(" " + v) > -1 || n.indexOf("-" + v) > -1 ? 0 : 1; }; return f(a) - f(b); }).slice(0, 5); act = sugItems.length ? 0 : -1;
     sug.innerHTML = sugItems.length ? sugItems.map(function (t, i) {
       return '<a role="option" id="sg' + i + '" class="' + (i === act ? "on" : "") + '" href="' + D.toolUrl(t) + '">' + D.icon(t.id, 20) + "<span>" + D.esc(t[DTAlang()]) + "</span><small>" + D.esc(D.cat(t.cat)[DTAlang()]) + "</small></a>";
     }).join("") : '<a href="/contact.html#request">' + D.icon("plus", 20) + "<span>" + D.esc(L("No tool found. Request it?", "टूल नहीं मिला। मांगें?")) + "</span></a>";
