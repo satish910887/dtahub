@@ -2,7 +2,7 @@
 import http from "node:http"; import fs from "node:fs"; import path from "node:path";
 const PUB = path.resolve(path.dirname(new URL(import.meta.url).pathname), "../public");
 const CSP = (fs.readFileSync(path.join(PUB, "_headers"), "utf8").match(/Content-Security-Policy: (.*)/) || [])[1];
-const T = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".png": "image/png", ".json": "application/json", ".webmanifest": "application/manifest+json", ".xml": "application/xml", ".txt": "text/plain" };
+const T = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml", ".png": "image/png", ".json": "application/json", ".webmanifest": "application/manifest+json", ".xml": "application/xml", ".txt": "text/plain", ".mjs": "text/javascript", ".woff2": "font/woff2" };
 http.createServer((req, res) => {
   let p = decodeURIComponent(req.url.split("?")[0]); let f = path.join(PUB, p);
   const cand = [f, f + ".html", path.join(f, "index.html")];

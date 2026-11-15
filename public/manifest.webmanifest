@@ -44,31 +44,31 @@
       ]
     },
     {
+      "name": "Document Scanner",
+      "short_name": "Document Scanner",
+      "url": "/tools/doc-scanner.html",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Sign and Fill PDF",
+      "short_name": "Sign and Fill PDF",
+      "url": "/tools/pdf-fill.html",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
       "name": "Merge PDF",
       "short_name": "Merge PDF",
       "url": "/tools/pdf-merge.html",
-      "icons": [
-        {
-          "src": "/icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Compress Image",
-      "short_name": "Compress Image",
-      "url": "/tools/image-compress.html",
-      "icons": [
-        {
-          "src": "/icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Hindi Typing Helper",
-      "short_name": "Hindi Typing Helper",
-      "url": "/tools/typing-helper.html",
       "icons": [
         {
           "src": "/icons/icon-192.png",
