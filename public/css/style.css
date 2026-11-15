@@ -367,7 +367,7 @@ main.tw>h1::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:
 .grid .reveal:nth-child(3n+2){transition-delay:.06s}.grid .reveal:nth-child(3n){transition-delay:.12s}
 .reveal.zoom{transform:scale(.96) translateY(10px)}.reveal.zoom.in{transform:none}
 /* animated dot-grid background drift */
-.bg-glow{background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.2px);background-size:28px 28px;animation:gridmove 40s linear infinite}
+.bg-glow{background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.2px);background-size:28px 28px}
 [data-theme=light] .bg-glow{background-image:radial-gradient(rgba(20,20,40,.08) 1px,transparent 1.2px)}
 @keyframes gridmove{to{background-position:56px 28px}}
 /* section heading accent */
@@ -475,3 +475,8 @@ h1,h2{letter-spacing:-.025em}
 @media(prefers-reduced-motion:reduce){.tmed *,.tmed::before,.how b.n,.empty-sm .st{animation:none!important}}
 [data-motion=off] .tmed *,[data-motion=off] .tmed::before,[data-motion=off] .how b.n,[data-motion=off] .empty-sm .st{animation:none!important}
 [data-theme=light] .toc a{color:var(--violet)}
+
+/* ---- listing polish ---- */
+.card{display:flex;flex-direction:column}
+.card .meta{margin-top:auto;padding-top:10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.card p{margin-bottom:8px}

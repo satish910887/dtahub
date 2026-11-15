@@ -35,7 +35,7 @@
     {
       "name": "Resume Maker",
       "short_name": "Resume Maker",
-      "url": "/tools/resume-maker.html",
+      "url": "/tools/resume-maker",
       "icons": [
         {
           "src": "/icons/icon-192.png",
@@ -46,7 +46,7 @@
     {
       "name": "Document Scanner",
       "short_name": "Document Scanner",
-      "url": "/tools/doc-scanner.html",
+      "url": "/tools/doc-scanner",
       "icons": [
         {
           "src": "/icons/icon-192.png",
@@ -57,7 +57,7 @@
     {
       "name": "Sign and Fill PDF",
       "short_name": "Sign and Fill PDF",
-      "url": "/tools/pdf-fill.html",
+      "url": "/tools/pdf-fill",
       "icons": [
         {
           "src": "/icons/icon-192.png",
@@ -68,7 +68,7 @@
     {
       "name": "Merge PDF",
       "short_name": "Merge PDF",
-      "url": "/tools/pdf-merge.html",
+      "url": "/tools/pdf-merge",
       "icons": [
         {
           "src": "/icons/icon-192.png",

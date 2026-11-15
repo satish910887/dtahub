@@ -211,11 +211,11 @@
     var acts = [
       { ic: D.icon(theme === "dark" ? "sun" : "moon", 20), label: theme === "dark" ? L("Switch to light mode", "लाइट मोड चालू करें") : L("Switch to dark mode", "डार्क मोड चालू करें"), fn: setTheme },
       { ic: D.icon("globe", 20), label: lang === "en" ? "हिंदी में बदलें" : "Switch to English", fn: setLang },
-      { ic: D.icon("settings", 20), label: L("Settings", "सेटिंग्स"), href: "/settings.html" },
-      { ic: D.icon("plus", 20), label: L("Request a tool", "नया टूल मांगें"), href: "/contact.html#request" }
+      { ic: D.icon("settings", 20), label: L("Settings", "सेटिंग्स"), href: "/settings" },
+      { ic: D.icon("plus", 20), label: L("Request a tool", "नया टूल मांगें"), href: "/contact#request" }
     ].filter(function (a) { return !q || a.label.toLowerCase().indexOf(q.toLowerCase()) > -1; });
     sec(L("Actions", "एक्शन"), acts);
-    if (!out.length) html = '<h5>' + esc(L("No results", "कोई नतीजा नहीं")) + '</h5><a href="/contact.html#request">' + D.icon("plus", 20) + "<span>" + esc(L("Request this tool", "यह टूल मांगें")) + "</span></a>";
+    if (!out.length) html = '<h5>' + esc(L("No results", "कोई नतीजा नहीं")) + '</h5><a href="/contact#request">' + D.icon("plus", 20) + "<span>" + esc(L("Request this tool", "यह टूल मांगें")) + "</span></a>";
     items = out; if (sel >= out.length) sel = 0; palList.innerHTML = html;
     var on = palList.querySelector(".on"); palIn.setAttribute("aria-activedescendant", on ? on.id : "");
   }

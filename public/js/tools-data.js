@@ -340,7 +340,8 @@
   };
   api.tool = function (id) { for (var i = 0; i < TOOLS.length; i++) if (TOOLS[i].id === id) return TOOLS[i]; };
   api.cat = function (id) { for (var i = 0; i < CATS.length; i++) if (CATS[i].id === id) return CATS[i]; };
-  api.toolUrl = function (t) { return "/tools/" + t.id + ".html"; };
+  api.toolUrl = function (t) { return "/tools/" + t.id; };
+  api.LAUNCH = D;
   api.catUrl = function (c) { return "/category/" + c.id + "/"; };
 
   api.cardHTML = function (t, isNew) {

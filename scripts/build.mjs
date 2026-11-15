@@ -6,6 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import cp from "node:child_process";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
@@ -83,6 +84,7 @@ function headBlock(m) {
   const url = abs(m.path);
   return `<title>${e(m.title)}</title>
 <meta name="description" content="${e(m.desc)}">
+<link rel="preload" href="/fonts/space-grotesk-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 ${m.noindex ? '<meta name="robots" content="noindex">' : `<meta name="robots" content="index, follow, max-image-preview:large">\n<link rel="canonical" href="${url}">`}
 <meta property="og:type" content="website"><meta property="og:site_name" content="DTAhub"><meta property="og:locale" content="en_IN">
 <meta property="og:title" content="${e(m.title)}"><meta property="og:description" content="${e(m.desc)}"><meta property="og:url" content="${url}">
@@ -248,15 +250,29 @@ function buildPages() {
 /* ---------- sitemap, robots, manifest, headers, service worker ---------- */
 function walk(dir, out = []) { for (const f of fs.readdirSync(dir)) { const p = path.join(dir, f); fs.statSync(p).isDirectory() ? walk(p, out) : out.push(p); } return out; }
 /* speed: scripts after <body> no longer block the first paint (external ones get defer, inline ones become modules, which also wait for the page) */
+function finalizePages() {
 for (const f of walk(PUB).filter((x) => x.endsWith(".html"))) {
   const h = fs.readFileSync(f, "utf8"), i = h.indexOf("<body");
   if (i < 0) continue;
-  const out = h.slice(0, i) + h.slice(i).replace(/<script src="([^"]+)"><\/script>/g, '<script defer src="$1"></script>').replace(/<script>([\s\S]*?)<\/script>/g, (m, c) => '<script type="module">' + c + "</script>");
+  const cleanHref = (m, p, s) => `href="${p.endsWith("/index") ? p.slice(0, -5) : p}${s || ""}"`;
+  const out = h.slice(0, i).replace(/href="(\/[^"#?]*?)\.html([#?][^"]*)?"/g, cleanHref) + h.slice(i).replace(/href="(\/[^"#?]*?)\.html([#?][^"]*)?"/g, cleanHref).replace(/<script src="([^"]+)"><\/script>/g, '<script defer src="$1"></script>').replace(/<script>([\s\S]*?)<\/script>/g, (m, c) => '<script type="module">' + c + "</script>");
   if (out !== h) fs.writeFileSync(f, out);
 }
+}
 function buildSite() {
-  const urls = ["/", ...D.CATS.map(D.catUrl), ...D.TOOLS.map(D.toolUrl), "/blog/", ...Object.keys(BLOG).map((s) => `/blog/${s}.html`), "/contact.html", "/privacy.html", "/terms.html"];
-  fs.writeFileSync(path.join(PUB, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${abs(u)}</loc></url>`).join("\n")}\n</urlset>\n`);
+  const urls = ["/", ...D.CATS.map(D.catUrl), ...D.TOOLS.map(D.toolUrl), "/blog/", ...Object.keys(BLOG).map((s) => `/blog/${s}`), "/contact", "/privacy", "/terms"];
+  /* lastmod = date of the last git commit that touched the page's file (today if it is not committed yet) */
+  const today = new Date().toISOString().slice(0, 10), memo = {};
+  const fileOf = (u) => (u === "/" ? "index.html" : u.endsWith("/") ? u.slice(1) + "index.html" : u.slice(1) + ".html");
+  const gitDate = (rel) => { if (memo[rel]) return memo[rel]; let d = ""; try { d = cp.execFileSync("git", ["log", "-1", "--format=%cs", "--", "public/" + rel], { cwd: ROOT, stdio: ["ignore", "pipe", "ignore"] }).toString().trim(); if (d && cp.execFileSync("git", ["status", "--porcelain", "--", "public/" + rel], { cwd: ROOT, stdio: ["ignore", "pipe", "ignore"] }).toString().trim()) d = today; } catch (e) {} return (memo[rel] = d || today); };
+  const newest = (a) => a.reduce((m, x) => (x > m ? x : m), "0000-00-00");
+  const lm = {};
+  for (const u of urls) lm[u] = gitDate(fileOf(u));
+  for (const c of D.CATS) lm[D.catUrl(c)] = newest([lm[D.catUrl(c)], ...D.TOOLS.filter((t) => t.cat === c.id).map((t) => lm[D.toolUrl(t)])]);
+  lm["/blog/"] = newest(["/blog/", ...Object.keys(BLOG).map((s) => `/blog/${s}`)].map((u) => lm[u]));
+  lm["/"] = newest(Object.values(lm));
+  const meta = (u) => (u === "/" ? ["daily", "1.0"] : u.startsWith("/category/") ? ["weekly", "0.8"] : u.startsWith("/tools/") ? ["monthly", D.TOOLS.find((t) => D.toolUrl(t) === u).featured ? "0.9" : "0.7"] : u.startsWith("/blog/") ? ["monthly", u === "/blog/" ? "0.6" : "0.5"] : ["yearly", "0.3"]);
+  fs.writeFileSync(path.join(PUB, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => { const [cf, pr] = meta(u); return `<url><loc>${abs(u)}</loc><lastmod>${lm[u]}</lastmod><changefreq>${cf}</changefreq><priority>${pr}</priority></url>`; }).join("\n")}\n</urlset>\n`);
   fs.writeFileSync(path.join(PUB, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /404\n\nSitemap: ${SITE}/sitemap.xml\n`);
   const sc = D.TOOLS.filter((t) => t.featured).slice(0, 4).map((t) => ({ name: t.en, short_name: t.en, url: D.toolUrl(t), icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] }));
   fs.writeFileSync(path.join(PUB, "manifest.webmanifest"), JSON.stringify({ name: "DTAhub – Your Everyday Digital Toolkit", short_name: "DTAhub", description: D.STATIC_PAGES["/"].desc, start_url: "/", scope: "/", display: "standalone", orientation: "portrait", background_color: "#08080d", theme_color: "#08080d", lang: "en", categories: ["utilities", "productivity"], icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }, { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" }, { src: "/icons/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" }], shortcuts: sc }, null, 2) + "\n");
@@ -322,4 +338,5 @@ self.addEventListener("fetch", (e) => {
 buildTools();
 D.CATS.forEach(catPage);
 buildPages();
+finalizePages();
 buildSite();
