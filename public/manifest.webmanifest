@@ -44,31 +44,31 @@
       ]
     },
     {
+      "name": "Invoice Maker",
+      "short_name": "Invoice Maker",
+      "url": "/tools/invoice-maker.html",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "SIP Calculator",
+      "short_name": "SIP Calculator",
+      "url": "/tools/sip.html",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
       "name": "Merge PDF",
       "short_name": "Merge PDF",
       "url": "/tools/pdf-merge.html",
-      "icons": [
-        {
-          "src": "/icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Compress Image",
-      "short_name": "Compress Image",
-      "url": "/tools/image-compress.html",
-      "icons": [
-        {
-          "src": "/icons/icon-192.png",
-          "sizes": "192x192"
-        }
-      ]
-    },
-    {
-      "name": "Hindi Typing Helper",
-      "short_name": "Hindi Typing Helper",
-      "url": "/tools/typing-helper.html",
       "icons": [
         {
           "src": "/icons/icon-192.png",

@@ -1,0 +1,6 @@
+node_modules/
+*.pdf
+/a.jpg
+/bad.txt
+/big.png
+.DS_Store

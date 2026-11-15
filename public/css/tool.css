@@ -48,7 +48,8 @@
 .mini{width:34px;height:34px;flex:none;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;font-size:.9rem}
 .mini:hover{border-color:var(--gold)}
 .prose h2{font-size:1.2rem;margin:22px 0 6px;color:var(--gold)}
-.prose p,.prose li{color:var(--text);opacity:.92;line-height:1.75}
+.prose p,.prose li{color:var(--text);line-height:1.75}
+.bcard p{opacity:1!important;color:var(--muted)}
 .prose ul,.prose ol{padding-left:20px}
 .bcard{display:block;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px;transition:transform .25s,border-color .25s}
 .bcard:hover{transform:translateY(-3px);border-color:var(--violet)}
@@ -65,3 +66,5 @@
 .data-list li{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
 .data-list li:last-child{border-bottom:0}
 .data-list b{color:var(--gold);font-weight:700}
+
+.note,.hint{color:var(--muted)}

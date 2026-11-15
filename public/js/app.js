@@ -1,6 +1,8 @@
 /* DTAhub homepage: renders everything from the central registry (tools-data.js). */
 (function () {
-  var D = window.DTA, cat = "all", q = "", sort = "featured";
+  var D = window.DTA;
+  if (!D) { var g0 = document.getElementById("grid"); if (g0) g0.innerHTML = '<div class="state">Could not load the tools. Please refresh the page.</div>'; return; }
+  var cat = "all", q = "", sort = "featured";
   var DAY = 864e5;
   function $$(id) { return document.getElementById(id); }
   function isNew(t) { return Date.now() - Date.parse(t.added) < 45 * DAY; }
@@ -8,12 +10,15 @@
   function done() { DTAapply(); DTAsync(); DTAwatch(); }
 
   function stats() {
-    var n = D.TOOLS.length, c = D.CATS.length;
+    var n = D.TOOLS.length;
     $$("stats").innerHTML =
-      '<span>' + D.icon("bolt", 16) + '<b data-count="' + n + '">' + n + '</b> <span data-en="free tools" data-hi="मुफ्त टूल्स">free tools</span></span>' +
-      '<span>' + D.icon("globe", 16) + '<b data-count="' + c + '">' + c + '</b> <span data-en="categories" data-hi="श्रेणियां">categories</span></span>' +
-      '<span>' + D.icon("shield", 16) + '<span data-en="Files stay on your device" data-hi="फाइलें आपके डिवाइस पर रहती हैं">Files stay on your device</span></span>' +
-      '<span>' + D.icon("gift", 16) + '<span data-en="No sign-up" data-hi="बिना साइन-अप">No sign-up</span></span>';
+      '<span>' + D.icon("gift", 17) + '<span data-en="Free Forever" data-hi="हमेशा मुफ्त">Free Forever</span></span>' +
+      '<span>' + D.icon("check", 17) + '<span data-en="No Login Required" data-hi="लॉगिन की ज़रूरत नहीं">No Login Required</span></span>' +
+      '<span>' + D.icon("shield", 17) + '<span data-en="Privacy Friendly" data-hi="प्राइवेसी का ध्यान">Privacy Friendly</span></span>';
+    var si0 = $$("search");
+    si0.setAttribute("data-ph-en", "Search " + n + " free online tools…"); si0.setAttribute("data-ph-hi", n + " मुफ्त ऑनलाइन टूल खोजें…");
+    var ids = ["resume-maker", "pdf-merge", "image-compress", "emi", "qr-code", "invoice-maker"];
+    $$("pop").innerHTML = '<span data-en="Popular:" data-hi="लोकप्रिय:">Popular:</span>' + ids.map(D.tool).filter(Boolean).map(function (t) { return '<a href="' + D.toolUrl(t) + '" data-en="' + D.esc(t.en) + '" data-hi="' + D.esc(t.hi) + '">' + D.esc(t.en) + "</a>"; }).join("");
   }
   function visuals() {
     document.querySelectorAll("[data-count]").forEach(function (b) { DTAcount(b, +b.getAttribute("data-count")); });
@@ -23,8 +28,6 @@
       var t = D.tool(id), c = D.cat(t.cat);
       return '<span class="orb" style="--h:' + c.hue + ';left:' + pos[i][0] + ';top:' + pos[i][1] + ';animation-delay:-' + (i * 1.3) + 's">' + D.icon(id, 24) + "</span>";
     }).join("");
-    var pill = function (t, hid) { var c = D.cat(t.cat); return '<a class="pill" style="--h:' + c.hue + '" href="' + D.toolUrl(t) + '"' + (hid ? ' tabindex="-1" aria-hidden="true"' : "") + ">" + D.icon(t.id, 18) + '<span data-en="' + D.esc(t.en) + '" data-hi="' + D.esc(t.hi) + '">' + D.esc(t.en) + "</span></a>"; };
-    $$("marq").innerHTML = D.TOOLS.map(function (t) { return pill(t, false); }).join("") + D.TOOLS.map(function (t) { return pill(t, true); }).join("");
   }
   function renderCats() { $$("catGrid").innerHTML = D.CATS.map(D.catCardHTML).join(""); }
   function renderTop() { $$("topGrid").innerHTML = cards(D.TOOLS.filter(function (t) { return t.featured; })); }

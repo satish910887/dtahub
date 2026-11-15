@@ -36,7 +36,7 @@ function header() {
   return `<a class="skip" href="#main">${bi("Skip to content", "मुख्य सामग्री पर जाएं")}</a>
 <header class="nav">
  <a class="logo" href="/" aria-label="DTAhub – Your Everyday Digital Toolkit">${logo(32)}<span>DTA<b>hub</b></span></a>
- <nav class="links" aria-label="Main"><a href="/#tools">${bi("Tools", "टूल्स")}</a><a href="/#categories">${bi("Categories", "श्रेणियां")}</a><a href="/blog/">${bi("Guides", "गाइड्स")}</a><a href="/contact.html">${bi("Contact", "संपर्क")}</a></nav>
+ <nav class="links" aria-label="Main"><a href="/">${bi("Home", "होम")}</a><a href="/#tools">${bi("All Tools", "सभी टूल्स")}</a><a href="/#categories">${bi("Categories", "श्रेणियां")}</a><a href="/about.html">${bi("About", "हमारे बारे में")}</a></nav>
  <div class="actions">
   <button class="kbd-btn" type="button" data-open-palette aria-label="Search">${D.icon("search", 18)}${bi("Search tools…", "टूल खोजें…")}<kbd>Ctrl K</kbd></button>
   <button class="icon-btn s-btn" type="button" data-open-palette aria-label="Search">${D.icon("search", 19)}</button>
@@ -48,7 +48,9 @@ function header() {
 <nav class="mnav" id="mnav" aria-label="Mobile">
  <a href="/">${D.icon("bolt", 20)}${bi("Home", "होम")}</a>
  <a href="/#tools">${D.icon("search", 20)}${bi("All tools", "सभी टूल्स")}</a>
+ <a href="/#categories">${D.icon("career", 20)}${bi("Categories", "श्रेणियां")}</a>
  <a href="/blog/">${D.icon("text", 20)}${bi("Guides", "गाइड्स")}</a>
+ <a href="/about.html">${D.icon("shield", 20)}${bi("About", "हमारे बारे में")}</a>
  <a href="/contact.html">${D.icon("plus", 20)}${bi("Contact and requests", "संपर्क और मांग")}</a>
  <a href="/settings.html">${D.icon("settings", 20)}${bi("Settings", "सेटिंग्स")}</a>
  <div class="sep"></div><small>${bi("Categories", "श्रेणियां")}</small>${cats}
@@ -61,7 +63,7 @@ function footer() {
   return `<footer class="foot"><div class="foot-in">
  <div><a class="logo" href="/">${logo(28)}<span>DTA<b>hub</b></span></a><p class="blurb">${bi("DTAhub – Your Everyday Digital Toolkit. Free tools that run privately in your browser.", "DTAhub – आपका रोज़ का डिजिटल टूलकिट। मुफ्त टूल्स जो आपके ब्राउज़र में प्राइवेट तरीके से चलते हैं।")}</p><p><button class="btn" type="button" data-install hidden>${D.icon("download", 18)}${bi("Install app", "ऐप इंस्टॉल करें")}</button></p></div>
  <div><div class="fh">${bi("Categories", "श्रेणियां")}</div><ul>${D.CATS.map((c) => li(D.catUrl(c), bi(c.en, c.hi))).join("")}</ul></div>
- <div><div class="fh">${bi("Company", "कंपनी")}</div><ul>${li("/blog/", bi("Guides", "गाइड्स"))}${li("/contact.html", bi("Contact", "संपर्क"))}${li("/contact.html#request", bi("Request a tool", "टूल मांगें"))}${li("/settings.html", bi("Settings", "सेटिंग्स"))}${li("/privacy.html", bi("Privacy Policy", "प्राइवेसी पॉलिसी"))}${li("/terms.html", bi("Terms", "शर्तें"))}</ul></div>
+ <div><div class="fh">${bi("Company", "कंपनी")}</div><ul>${li("/about.html", bi("About", "हमारे बारे में"))}${li("/blog/", bi("Guides", "गाइड्स"))}${li("/contact.html", bi("Contact Us", "संपर्क करें"))}${li("/contact.html#request", bi("Request a tool", "टूल मांगें"))}${li("/settings.html", bi("Settings", "सेटिंग्स"))}${li("/privacy.html", bi("Privacy Policy", "प्राइवेसी पॉलिसी"))}${li("/terms.html", bi("Terms", "शर्तें"))}</ul></div>
  <div><div class="fh">${bi("All tools", "सभी टूल्स")}</div><ul class="two">${D.TOOLS.map((t) => li(D.toolUrl(t), bi(t.en, t.hi))).join("")}</ul></div>
 </div><div class="foot-bot"><span>© ${YEAR} DTAhub</span><span>${bi("Made with care in India.", "भारत में प्यार से बनाया गया।")}</span></div></footer>`;
 }
@@ -81,8 +83,8 @@ ${m.noindex ? '<meta name="robots" content="noindex">' : `<meta name="robots" co
 <meta property="og:title" content="${e(m.title)}"><meta property="og:description" content="${e(m.desc)}"><meta property="og:url" content="${url}">
 <meta property="og:image" content="${SITE}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(m.title)}"><meta name="twitter:description" content="${e(m.desc)}"><meta name="twitter:image" content="${SITE}/og.png">
-<meta name="theme-color" content="#08080d">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
+<meta name="theme-color" content="#f8fafc">
+<link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
 <script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);if(localStorage.getItem("lang")==="hi")document.documentElement.lang="hi";if(localStorage.getItem("motion")==="off")document.documentElement.setAttribute("data-motion","off")}catch(e){}</script>
 <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
 ${(m.jsonld || []).map(ld).join("\n")}`;
@@ -223,7 +225,7 @@ function buildPages() {
       { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: D.FAQ.map((f) => ({ "@type": "Question", name: f.q.en, acceptedAnswer: { "@type": "Answer", text: f.a.en } })) }
     ]
   });
-  const st = [["contact.html", "/contact.html", { en: "Contact", hi: "संपर्क" }], ["privacy.html", "/privacy.html", { en: "Privacy Policy", hi: "प्राइवेसी पॉलिसी" }], ["terms.html", "/terms.html", { en: "Terms of Use", hi: "उपयोग की शर्तें" }]];
+  const st = [["contact.html", "/contact.html", { en: "Contact", hi: "संपर्क" }], ["privacy.html", "/privacy.html", { en: "Privacy Policy", hi: "प्राइवेसी पॉलिसी" }], ["terms.html", "/terms.html", { en: "Terms of Use", hi: "उपयोग की शर्तें" }], ["about.html", "/about.html", { en: "About", hi: "हमारे बारे में" }]];
   for (const [f, p, n] of st) { const cr = [H, { ...n, url: p }]; processPage(path.join(PUB, f), { type: "page", path: p, title: `${S[p].title} | DTAhub`, desc: S[p].desc, jsonld: [crumbLD(cr)] }, { crumbs: cr }); }
   processPage(path.join(PUB, "settings.html"), { type: "page", path: "/settings.html", noindex: true, title: "Settings | DTAhub", desc: S["/settings.html"].desc }, { crumbs: [H, { en: "Settings", hi: "सेटिंग्स", url: "/settings.html" }] });
   const bcr = [H, { en: "Guides", hi: "गाइड्स", url: "/blog/" }];
@@ -248,7 +250,7 @@ for (const f of walk(PUB).filter((x) => x.endsWith(".html"))) {
   if (out !== h) fs.writeFileSync(f, out);
 }
 function buildSite() {
-  const urls = ["/", ...D.CATS.map(D.catUrl), ...D.TOOLS.map(D.toolUrl), "/blog/", ...Object.keys(BLOG).map((s) => `/blog/${s}.html`), "/contact.html", "/privacy.html", "/terms.html"];
+  const urls = ["/", ...D.CATS.map(D.catUrl), ...D.TOOLS.map(D.toolUrl), "/blog/", ...Object.keys(BLOG).map((s) => `/blog/${s}.html`), "/about.html", "/contact.html", "/privacy.html", "/terms.html"];
   fs.writeFileSync(path.join(PUB, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `<url><loc>${abs(u)}</loc></url>`).join("\n")}\n</urlset>\n`);
   fs.writeFileSync(path.join(PUB, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /404\n\nSitemap: ${SITE}/sitemap.xml\n`);
   const sc = D.TOOLS.filter((t) => t.featured).slice(0, 4).map((t) => ({ name: t.en, short_name: t.en, url: D.toolUrl(t), icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] }));

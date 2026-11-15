@@ -71,42 +71,42 @@
         en: "PDF is the standard format for forms, applications, bills and certificates. DTAhub PDF tools run entirely on your device: your documents are read by your own browser and never sent to our servers. Combine several files into one, pull out only the pages you need, or turn your photos into a clean PDF in seconds. They are free, work on slow connections and are designed to be easy on a phone.",
         hi: "फॉर्म, एप्लीकेशन, बिल और सर्टिफिकेट के लिए PDF सबसे आम फॉर्मेट है। DTAhub के PDF टूल्स पूरी तरह आपके डिवाइस पर चलते हैं: आपके दस्तावेज़ आपका अपना ब्राउज़र पढ़ता है और हमारे सर्वर पर कभी नहीं जाते। कई फाइलें एक में जोड़ें, सिर्फ ज़रूरी पेज निकालें या फोटो से साफ PDF बनाएं। ये मुफ्त हैं, धीमे इंटरनेट पर भी चलते हैं और फोन पर आसानी से इस्तेमाल होते हैं।" },
       related: ["image", "career"] },
-    { id: "image", icon: "image", hue: 165, en: "Image Tools", hi: "इमेज टूल्स", short: { en: "Image", hi: "इमेज" },
+    { id: "image", icon: "image", hue: 265, en: "Image Tools", hi: "इमेज टूल्स", short: { en: "Image", hi: "इमेज" },
       den: "Compress, resize and convert photos", dhi: "फोटो छोटी करें, रीसाइज़ और कन्वर्ट करें",
       intro: { en: "Compress, resize and convert photos privately. Your images never leave your phone.", hi: "फोटो को प्राइवेट तरीके से छोटा करें, रीसाइज़ करें और कन्वर्ट करें। आपकी इमेज फोन से बाहर नहीं जाती।" },
       body: {
         en: "Photos taken on modern phones are large, and many websites, forms and chat apps accept only small files. The image tools on DTAhub shrink file size, change dimensions and switch between JPG, PNG and WebP using your browser's own image engine. Nothing is uploaded, so your personal photos stay private, and the tools are light enough for low-end phones.",
         hi: "आजकल के फोन की फोटो बड़ी होती हैं, जबकि कई वेबसाइट, फॉर्म और चैट ऐप छोटी फाइल ही लेते हैं। DTAhub के इमेज टूल्स ब्राउज़र के अपने इमेज इंजन से फाइल साइज़ घटाते हैं, माप बदलते हैं और JPG, PNG, WebP के बीच बदलते हैं। कुछ भी अपलोड नहीं होता, इसलिए आपकी निजी फोटो प्राइवेट रहती हैं।" },
       related: ["pdf", "text"] },
-    { id: "text", icon: "text", hue: 45, en: "Text Tools", hi: "टेक्स्ट टूल्स", short: { en: "Text", hi: "टेक्स्ट" },
+    { id: "text", icon: "text", hue: 215, en: "Text Tools", hi: "टेक्स्ट टूल्स", short: { en: "Text", hi: "टेक्स्ट" },
       den: "Count, convert, type Hindi and lorem text", dhi: "गिनें, बदलें, हिंदी में लिखें और नमूना टेक्स्ट",
       intro: { en: "Word counter, case converter and a Hindi typing helper for everyday writing.", hi: "रोज़मर्रा की लिखाई के लिए शब्द गिनती, केस कन्वर्टर और हिंदी टाइपिंग हेल्पर।" },
       body: {
         en: "Whether you are writing an essay, a social media post or an application, small text utilities save time. Count words and reading time, change the letter case of any English text, or type Hindi using English letters and copy the Devanagari result. Everything works offline once the page has loaded and your text is never stored.",
         hi: "चाहे निबंध लिखना हो, सोशल मीडिया पोस्ट या आवेदन, छोटे टेक्स्ट टूल्स समय बचाते हैं। शब्द और पढ़ने का समय गिनें, अंग्रेज़ी टेक्स्ट का केस बदलें, या अंग्रेज़ी अक्षरों से हिंदी लिखकर देवनागरी नतीजा कॉपी करें। पेज खुलने के बाद सब कुछ ऑफलाइन भी चलता है और आपका टेक्स्ट कहीं सेव नहीं होता।" },
       related: ["career", "dev"] },
-    { id: "dev", icon: "dev", hue: 200, en: "Developer Tools", hi: "डेवलपर टूल्स", short: { en: "Developer", hi: "डेवलपर" },
+    { id: "dev", icon: "dev", hue: 145, en: "Developer Tools", hi: "डेवलपर टूल्स", short: { en: "Developer", hi: "डेवलपर" },
       den: "JSON, Base64, QR and colour tools", dhi: "JSON, Base64, QR और रंग के टूल",
       intro: { en: "Format JSON, encode Base64 and create QR codes. Fast, private and ad-free.", hi: "JSON फॉर्मेट करें, Base64 एनकोड करें और QR कोड बनाएं। तेज़, प्राइवेट और बिना विज्ञापन।" },
       body: {
         en: "Developers and students reach for the same small utilities again and again. DTAhub keeps them together: validate and beautify JSON, encode or decode Base64 (including Hindi and other Unicode text) and generate downloadable QR codes. Your data is processed in the browser, so it is safe to paste real examples.",
         hi: "डेवलपर और छात्र बार-बार वही छोटी यूटिलिटी इस्तेमाल करते हैं। DTAhub इन्हें एक जगह रखता है: JSON जांचें और सुंदर बनाएं, Base64 एनकोड या डिकोड करें (हिंदी और दूसरे यूनिकोड टेक्स्ट समेत) और डाउनलोड होने वाले QR कोड बनाएं। डेटा ब्राउज़र में ही प्रोसेस होता है।" },
       related: ["text", "seo"] },
-    { id: "calc", icon: "calc", hue: 280, en: "Calculators", hi: "कैलकुलेटर", short: { en: "Calculator", hi: "कैलकुलेटर" },
+    { id: "calc", icon: "calc", hue: 28, en: "Calculators", hi: "कैलकुलेटर", short: { en: "Calculator", hi: "कैलकुलेटर" },
       den: "EMI, SIP, GST, age, percentage and units", dhi: "EMI, SIP, GST, उम्र, प्रतिशत और इकाइयां",
       intro: { en: "EMI with a chart, GST, age and percentage calculators, instant and free.", hi: "चार्ट के साथ EMI, GST, उम्र और प्रतिशत कैलकुलेटर, तुरंत और मुफ्त।" },
       body: {
         en: "Everyday money and date calculations should not need a spreadsheet. Work out your loan EMI with a principal versus interest chart, add or remove GST with the CGST and SGST split, find your exact age in years, months and days, or solve common percentage questions. Results update as you type. They are a general aid, so double-check important financial decisions.",
         hi: "रोज़ के पैसे और तारीख के हिसाब के लिए स्प्रेडशीट की ज़रूरत नहीं होनी चाहिए। मूलधन बनाम ब्याज चार्ट के साथ लोन की EMI निकालें, CGST-SGST के साथ GST जोड़ें या हटाएं, साल-महीने-दिन में सही उम्र जानें, या प्रतिशत के आम सवाल हल करें। टाइप करते ही नतीजा बदलता है। ये सामान्य मदद के लिए हैं, ज़रूरी आर्थिक फैसले दोबारा जांच लें।" },
       related: ["text", "seo"] },
-    { id: "seo", icon: "seo", hue: 110, en: "SEO & Utility", hi: "SEO और यूटिलिटी", short: { en: "SEO & Utility", hi: "SEO और यूटिलिटी" },
+    { id: "seo", icon: "seo", hue: 175, en: "SEO & Utility", hi: "SEO और यूटिलिटी", short: { en: "SEO & Utility", hi: "SEO और यूटिलिटी" },
       den: "Meta tags and strong passwords", dhi: "मेटा टैग और मज़बूत पासवर्ड",
       intro: { en: "Create meta tags for your pages and generate strong random passwords.", hi: "अपने पेजों के लिए मेटा टैग बनाएं और मज़बूत रैंडम पासवर्ड जनरेट करें।" },
       body: {
         en: "Good meta tags help search engines and social apps show your page properly, and strong passwords keep your accounts safe. Generate SEO, Open Graph and Twitter Card tags in one place, and create random passwords with your browser's secure random generator. Nothing you type is stored or sent anywhere.",
         hi: "अच्छे मेटा टैग सर्च इंजन और सोशल ऐप को आपका पेज सही दिखाने में मदद करते हैं, और मज़बूत पासवर्ड आपके अकाउंट सुरक्षित रखते हैं। SEO, Open Graph और Twitter Card टैग एक जगह बनाएं और ब्राउज़र के सुरक्षित रैंडम जनरेटर से पासवर्ड बनाएं। आप जो टाइप करते हैं वो कहीं सेव या भेजा नहीं जाता।" },
       related: ["dev", "text"] },
-    { id: "career", icon: "career", hue: 30, en: "Resume & Career", hi: "रिज़्यूमे और करियर", short: { en: "Career", hi: "करियर" },
+    { id: "career", icon: "career", hue: 245, en: "Resume & Career", hi: "रिज़्यूमे और करियर", short: { en: "Career", hi: "करियर" },
       den: "Resume, cover letter and invoice makers", dhi: "रिज़्यूमे, कवर लेटर और इनवॉइस मेकर",
       intro: { en: "Build a clean, professional resume with a live preview and save it as a PDF. Private, free and no sign-up.", hi: "लाइव प्रीव्यू के साथ साफ, प्रोफेशनल रिज़्यूमे बनाएं और PDF में सेव करें। प्राइवेट, मुफ्त और बिना साइन-अप।" },
       body: {
@@ -143,7 +143,7 @@
       about: { en: "Cover Letter Maker turns a few short answers into a clean one-page letter. It fills your name and contact details from your saved resume, offers three tones, and lets you edit the final text before you save it as a PDF. It uses a template, not artificial intelligence, so read and personalise the letter before you send it.", hi: "Cover Letter Maker कुछ छोटे जवाबों से साफ एक पेज का पत्र बना देता है। यह आपका नाम और संपर्क सेव किए रिज़्यूमे से भर देता है, तीन अंदाज़ देता है और PDF बनाने से पहले आप पूरा टेक्स्ट बदल सकते हैं। यह टेम्पलेट से बनता है, कृत्रिम बुद्धिमत्ता से नहीं, इसलिए भेजने से पहले पत्र पढ़कर अपने हिसाब से बदलें।" },
       tip: { en: "Name the company and the role, and mention one real result you achieved. Keep the letter under one page.", hi: "कंपनी और पद का नाम लिखें और अपनी एक असली उपलब्धि बताएं। पत्र एक पेज से छोटा रखें।" },
       related: ["resume-maker","word-counter","pdf-merge"] },
-    { id: "invoice-maker", cat: "career", kind: "doc", noReset: 1, pop: 31, added: "2026-11-14",
+    { id: "invoice-maker", cat: "career", kind: "doc", featured: 1, noReset: 1, pop: 31, added: "2026-11-14",
       en: "Invoice Maker", hi: "इनवॉइस मेकर", den: "Create a GST invoice and save as PDF", dhi: "GST इनवॉइस बनाएं, PDF में सेव करें",
       about: { en: "Invoice Maker creates a clean invoice with your details, your client, line items, optional GST per item and a discount. It totals everything, writes the amount in words and lets you save the invoice as a PDF. Your details stay on your device. It does not file GST returns or replace an accountant.", hi: "Invoice Maker आपकी जानकारी, ग्राहक, आइटम, हर आइटम पर वैकल्पिक GST और छूट के साथ साफ इनवॉइस बनाता है। यह सब जोड़ता है, राशि शब्दों में लिखता है और इनवॉइस को PDF में सेव करने देता है। आपकी जानकारी आपके डिवाइस पर ही रहती है। यह GST रिटर्न नहीं भरता और अकाउंटेंट की जगह नहीं लेता।" },
       tip: { en: "Number your invoices in order and check the GST rate and your GSTIN with your accountant.", hi: "इनवॉइस को क्रम से नंबर दें और GST दर और अपना GSTIN अपने अकाउंटेंट से जांच लें।" },
@@ -153,7 +153,7 @@
       about: { en: "Unit Converter changes values between common units of length, weight, area, volume, temperature, speed, data size and time. It shows the converted value as you type and a table with every unit in the group. Area includes acre, hectare, square feet and gaj (square yard).", hi: "Unit Converter लंबाई, वज़न, क्षेत्रफल, आयतन, तापमान, गति, डेटा साइज़ और समय की आम इकाइयों के बीच मान बदलता है। टाइप करते ही बदला हुआ मान और ग्रुप की हर इकाई की तालिका दिखती है। क्षेत्रफल में एकड़, हेक्टेयर, वर्ग फुट और गज (वर्ग गज) शामिल हैं।" },
       tip: { en: "Use the swap button to reverse the direction. Land records can use local units, so check the unit before relying on a result.", hi: "दिशा उलटने के लिए swap बटन दबाएं। ज़मीन के रिकॉर्ड में स्थानीय इकाइयां हो सकती हैं, इसलिए नतीजे पर भरोसा करने से पहले इकाई जांच लें।" },
       related: ["percentage","age","emi"] },
-    { id: "sip", cat: "calc", kind: "calc", pop: 33, added: "2026-11-14",
+    { id: "sip", cat: "calc", kind: "calc", featured: 1, pop: 33, added: "2026-11-14",
       en: "SIP Calculator", hi: "SIP कैलकुलेटर", den: "Estimate mutual fund SIP growth", dhi: "म्यूचुअल फंड SIP का अनुमान",
       about: { en: "SIP Calculator estimates how a monthly investment could grow at an assumed yearly return, using monthly compounding. It shows the amount you invest, the estimated gain and the final value with a simple bar. Real returns change from year to year and are never guaranteed.", hi: "SIP Calculator अनुमान लगाता है कि मासिक निवेश मानी हुई सालाना दर पर मासिक चक्रवृद्धि से कितना बढ़ सकता है। यह आपका निवेश, अनुमानित लाभ और अंतिम मूल्य एक सरल बार के साथ दिखाता है। असली रिटर्न हर साल बदलता है और कभी पक्का नहीं होता।" },
       tip: { en: "Try a lower return than you hope for. This is an estimate, not advice or a promise.", hi: "जितनी उम्मीद हो उससे कम रिटर्न भी आज़माएं। यह सिर्फ अनुमान है, सलाह या वादा नहीं।" },
@@ -265,6 +265,7 @@
     "/blog/": { title: "Guides and How-tos", desc: "Simple step-by-step guides for PDF, image and everyday online tools from DTAhub." },
     "/settings.html": { title: "Settings", desc: "Choose language, theme and animations, and clear the favourites and data DTAhub keeps on your device." },
     "/contact.html": { title: "Contact, Feedback and Tool Requests", desc: "Send feedback, report a problem or request a new free tool for DTAhub." },
+    "/about.html": { title: "About DTAhub", desc: "DTAhub is a free, private collection of online tools for PDF, images, text, developers and everyday calculations, built in India." },
     "/privacy.html": { title: "Privacy Policy", desc: "How DTAhub handles your data: files are processed in your browser and are never uploaded." },
     "/terms.html": { title: "Terms of Use", desc: "Terms of use for DTAhub free online tools." }
   };
@@ -307,8 +308,8 @@
       '<button class="fav" type="button" aria-pressed="false" data-fav="' + t.id + '" aria-label="Favourite">' + api.icon("star", 18) + "</button></article>";
   };
   api.catCardHTML = function (c) {
-    var n = TOOLS.filter(function (t) { return t.cat === c.id; }).length, e = CARD_ESC;
-    return '<a class="ccard reveal" style="--h:' + (c.hue || 45) + '" href="' + api.catUrl(c) + '"><span class="ico">' + api.icon(c.icon, 22) + '</span><span><b data-en="' + e(c.en) + '" data-hi="' + e(c.hi) + '">' + e(c.en) + '</b><small data-en="' + e(c.den) + '" data-hi="' + e(c.dhi) + '">' + e(c.den) + " </small><small> · " + n + "</small></span></a>";
+    var n = TOOLS.filter(function (t) { return t.cat === c.id; }).length, e = CARD_ESC, cnt = n + (n === 1 ? " tool" : " tools");
+    return '<a class="ccard reveal" style="--h:' + (c.hue || 45) + '" href="' + api.catUrl(c) + '"><span class="ico">' + api.icon(c.icon, 22) + '</span><span><b data-en="' + e(c.en) + '" data-hi="' + e(c.hi) + '">' + e(c.en) + '</b><small data-en="' + e(c.den) + '" data-hi="' + e(c.dhi) + '">' + e(c.den) + ' </small><small class="cn" data-en="' + cnt + '" data-hi="' + n + ' टूल्स">' + cnt + "</small></span></a>";
   };
 
   if (typeof module !== "undefined" && module.exports) module.exports = api;
