@@ -295,3 +295,37 @@ noscript .nojs{max-width:640px;margin:20px auto;padding:14px;border:1px solid va
 [data-motion=off] .reveal{opacity:1;transform:none}
 [data-motion=off] .prog{display:none}
 @media(prefers-reduced-motion:reduce){.orbs,.marq-track{animation:none}.prog{display:none}}
+
+/* ---- Motion graphics (original SVG/CSS; disabled by data-motion=off and reduced motion) ---- */
+.hero-wrap{position:relative;overflow:hidden}
+.scene{position:absolute;inset:0;width:100%;height:100%;opacity:.55;pointer-events:none;z-index:0}
+.hero{position:relative;z-index:1}
+.sc-rings circle{transform-origin:400px 200px;animation:scspin 60s linear infinite}
+.sc-rings circle:nth-child(2){animation-duration:90s;animation-direction:reverse}
+.sc-rings circle:nth-child(3){animation-duration:140s}
+.sc-o1,.sc-o2,.sc-o3{transform-origin:400px 200px;animation:scspin 18s linear infinite}
+.sc-o2{animation-duration:28s;animation-direction:reverse}.sc-o3{animation-duration:40s}
+.sc-wave{stroke-dasharray:1;stroke-dashoffset:1;animation:scdraw 3.2s .3s cubic-bezier(.2,.8,.2,1) forwards,scflow 9s 3.5s ease-in-out infinite alternate}
+.sc-wave.w2{opacity:.6;animation-delay:.7s,4s}
+@keyframes scspin{to{transform:rotate(360deg)}}
+@keyframes scdraw{to{stroke-dashoffset:0}}
+@keyframes scflow{from{transform:translateY(-6px)}to{transform:translateY(8px)}}
+/* animated underline on tool and page titles */
+main.tw>h1{position:relative;padding-bottom:10px}
+main.tw>h1::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:72px;border-radius:3px;background:linear-gradient(90deg,#f2c969,#8b6cf6);transform-origin:left;animation:h1line .9s .15s cubic-bezier(.2,.8,.2,1) both}
+@keyframes h1line{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+/* tool card icon motion */
+.card .ico{transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.card:hover .ico,.card:focus-within .ico{transform:translateY(-3px) rotate(-6deg) scale(1.08)}
+.card .ico svg path,.card .ico svg rect,.card .ico svg circle{stroke-dasharray:60;stroke-dashoffset:0}
+.card:hover .ico svg path,.card:hover .ico svg rect,.card:hover .ico svg circle{animation:icdraw .8s ease both}
+@keyframes icdraw{from{stroke-dashoffset:60}to{stroke-dashoffset:0}}
+/* smooth page transitions */
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:vtout .18s ease both}
+::view-transition-new(root){animation:vtin .28s ease both}
+@keyframes vtout{to{opacity:0}}@keyframes vtin{from{opacity:0;transform:translateY(6px)}}
+.tool-acts .btn.gold:hover,.btn.gold:hover{box-shadow:0 0 0 0 rgba(242,201,105,.5);animation:gpulse 1.2s ease-out infinite}
+@keyframes gpulse{to{box-shadow:0 0 0 12px rgba(242,201,105,0)}}
+@media(prefers-reduced-motion:reduce){.scene *{animation:none!important}.sc-wave{stroke-dashoffset:0}}
+[data-motion=off] .scene *{animation:none!important}[data-motion=off] .sc-wave{stroke-dashoffset:0}
