@@ -10,10 +10,10 @@
 [data-theme=light][data-accent=rose]{--gold:#b0123f;--gold2:#ff9ab0;--violet:#8a3fd1;--violet2:#9d58e0;--a1:#d6336c;--a2:#8a3fd1;--a1r:214 51 108;--a2r:138 63 209}
 /* DTAhub design system. Token names kept (--gold, --violet ...) so existing tool pages keep working. */
 :root{
-  --bg:#08080d;--bg2:#0d0d15;--card:#111119;--card2:#191925;--line:#262638;--line2:#34344d;
+  --bg:#070716;--bg2:#0b0b1e;--card:#0e0e22;--card2:#161632;--line:#26264a;--line2:#363670;
   --text:#ececf4;--muted:#9a9ab2;--gold:var(--a1);--gold2:#ffe3a1;--violet:var(--a2);--violet2:#b5a1ff;
   --ok:#5fd39a;--err:#ff7a8a;--on-gold:#17120a;
-  --glass:rgba(13,13,21,.72);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 12px 32px -12px rgba(0,0,0,.6);
+  --glass:rgba(9,9,28,.72);--shadow:0 1px 0 rgba(255,255,255,.04) inset,0 12px 32px -12px rgba(0,0,0,.6);
   --glow:0 0 0 1px rgb(var(--a2r)/.5),0 14px 40px -12px rgb(var(--a2r)/.45);
   --r:16px;--ease:cubic-bezier(.2,.7,.2,1);
   color-scheme:dark;
@@ -513,3 +513,78 @@ h1,h2{letter-spacing:-.025em}
 [data-motion=off] .fx-bg .au,[data-motion=off] .fx>.sec-h h2::before,[data-motion=off] #grid.sweep::after,[data-motion=off] .card.reveal.in{animation:none!important}
 [data-motion=off] .chip-ink{transition:none}[data-motion=off] .fx-bg canvas{display:none}
 @media(max-width:600px){.fx-bg .au{width:90vmax;height:90vmax}.fx-bg canvas{height:240px}}
+
+/* ---- 3D: hero crystal canvas + depth on cards, buttons, headers (CSS 3D, original) ---- */
+.gem{position:absolute;left:50%;top:47%;width:min(420px,84vw);height:min(420px,84vw);transform:translate(-50%,-50%);opacity:.55;pointer-events:none;z-index:0}
+@media(max-width:600px){.gem{opacity:.45;width:92vw;height:92vw;top:40%}}
+.hero{pointer-events:none}.hero>*{pointer-events:auto}
+/* preserve-3d needs overflow:clip and no isolation */
+.card,.ccard{overflow:hidden;overflow:clip;isolation:auto;transform-style:preserve-3d}
+.card .ico{transform:translateZ(34px)}
+.card h3{transform:translateZ(22px)}
+.card p{transform:translateZ(10px)}
+.card .meta{transform:translateZ(16px)}
+.card .fav{transform:translateZ(30px)}
+.card:hover .ico,.card:focus-within .ico{transform:translateZ(48px) translateY(-3px) rotate(-6deg) scale(1.08)}
+.card .fav:hover{transform:translateZ(30px) scale(1.12)}
+.ccard .ico{transform:translateZ(30px)}.ccard:hover .ico{transform:translateZ(44px) rotate(-8deg) scale(1.1)}
+.ccard>span:not(.ico),.ccard>div{transform:translateZ(14px)}
+/* tactile buttons */
+.btn{box-shadow:0 3px 0 rgb(0 0 0/.35)}
+.btn.gold{box-shadow:0 4px 0 rgb(var(--a1r)/.45),0 14px 24px -14px rgb(var(--a1r)/.7)}
+.btn:active{transform:translateY(3px);box-shadow:0 0 0 rgb(0 0 0/.35)}
+.btn.gold:active{box-shadow:0 1px 0 rgb(var(--a1r)/.45)}
+/* tool medallion: a coin that slowly swings */
+.thero{perspective:700px}
+.tmed{transform-style:preserve-3d;animation:coin 9s ease-in-out infinite}
+.tmed .ic{transform:translateZ(18px)}
+@keyframes coin{0%,100%{transform:rotateY(-22deg) rotateX(6deg)}50%{transform:rotateY(22deg) rotateX(-4deg)}}
+/* sections tilt up into place as they scroll in (where scroll-driven animation is supported) */
+@supports (animation-timeline:view()){
+ .sec-h,.how>div,.cta-band{animation:secin linear both;animation-timeline:view();animation-range:entry 0% entry 55%;transform-origin:50% 100%}
+ @keyframes secin{from{transform:perspective(900px) rotateX(16deg) translateY(28px)}to{transform:none}}
+}
+/* 3D stat pills in the hero */
+.hero .stats b,.hero .hero-stats b{text-shadow:0 2px 0 rgb(var(--a1r)/.25),0 8px 18px rgb(0 0 0/.4)}
+@media(prefers-reduced-motion:reduce){.tmed{animation:none;transform:rotateY(-12deg)}.sec-h,.how>div,.cta-band{animation:none!important}}
+[data-motion=off] .tmed{animation:none;transform:rotateY(-12deg)}[data-motion=off] .sec-h,[data-motion=off] .how>div,[data-motion=off] .cta-band{animation:none!important}
+
+/* ---- 3D hero scene (reference style): neon portal ring, perspective grid floor, floating glass tiles ---- */
+.hero-wrap{perspective:1100px}
+.floor{position:absolute;left:-30%;right:-30%;bottom:-10%;height:72%;overflow:hidden;z-index:0;pointer-events:none;transform:rotateX(68deg);transform-origin:50% 100%;-webkit-mask-image:linear-gradient(transparent,#000 55%);mask-image:linear-gradient(transparent,#000 55%)}
+.floor i{position:absolute;left:0;right:0;top:-60px;bottom:0;background:linear-gradient(rgb(var(--a2r)/.6) 1.5px,transparent 1.5px) 0 0/100% 60px,linear-gradient(90deg,rgb(var(--a2r)/.55) 1.5px,transparent 1.5px) 0 0/70px 100%;animation:floorgo 2.6s linear infinite}
+@keyframes floorgo{to{transform:translateY(60px)}}
+.portal{position:absolute;left:50%;top:50%;width:0;height:0;z-index:0;pointer-events:none;transform-style:preserve-3d}
+.portal b{position:absolute;display:block;border-radius:50%;transform:translate(-50%,-50%)}
+.portal .r1{width:min(340px,72vw);height:min(340px,72vw);top:-3%;border:5px solid rgb(var(--a2r)/.95);box-shadow:0 0 18px rgb(var(--a2r)/.95),0 0 70px rgb(var(--a2r)/.6),inset 0 0 22px rgb(var(--a2r)/.8);animation:ringpulse 5s ease-in-out infinite}
+.portal .r2{width:min(300px,64vw);height:min(300px,64vw);top:-3%;border:2px solid rgb(var(--a1r)/.85);box-shadow:0 0 14px rgb(var(--a1r)/.8),inset 0 0 14px rgb(var(--a1r)/.5)}
+.portal .fr,.portal .fr2{left:0;top:min(250px,50vw);transform:translate(-50%,-50%) rotateX(74deg)}
+.portal .fr{width:min(640px,150vw);height:min(640px,150vw);border:3px solid rgb(var(--a2r)/.95);box-shadow:0 0 22px rgb(var(--a2r)/.9),0 0 80px rgb(var(--a2r)/.5),inset 0 0 26px rgb(var(--a2r)/.7)}
+.portal .fr2{width:min(520px,124vw);height:min(520px,124vw);border:2px dashed rgb(var(--a1r)/.8);box-shadow:0 0 16px rgb(var(--a1r)/.55);animation:ringspin 40s linear infinite}
+@keyframes ringspin{to{rotate:360deg}}
+@keyframes ringpulse{50%{box-shadow:0 0 26px rgb(var(--a2r)/1),0 0 100px rgb(var(--a2r)/.75),inset 0 0 30px rgb(var(--a2r)/.9)}}
+.gt-wrap{position:absolute;inset:0;z-index:0;pointer-events:none;transform-style:preserve-3d}
+.gt{position:absolute;left:var(--x);top:var(--y);width:var(--s);height:var(--s);display:grid;place-items:center;border-radius:24%;color:#fff;
+ background:linear-gradient(145deg,rgb(255 255 255/.26),rgb(255 255 255/.05) 55%,rgb(var(--a2r)/.2));border:1px solid rgb(255 255 255/.3);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+ box-shadow:inset 0 1px 0 rgb(255 255 255/.5),inset 0 -12px 20px rgb(var(--a2r)/.28),7px 9px 0 -3px rgb(var(--a2r)/.38),0 26px 40px -16px rgb(var(--a2r)/.7);
+ transform:translate3d(calc(var(--mx,0)*var(--k)*-6px),calc(var(--my,0)*var(--k)*-6px),0) rotateX(var(--rx)) rotateY(var(--ry));
+ animation:gtfloat var(--t) var(--dl) ease-in-out infinite}
+.gt .ic{filter:drop-shadow(0 4px 8px rgb(0 0 0/.4));stroke-width:1.7}
+@keyframes gtfloat{50%{translate:0 -16px}}
+@media(max-width:700px){.gt:nth-child(n+5){display:none}.gt{opacity:.8}.floor{height:38%}}
+/* glass category tiles ("floating tool icons") */
+.ccard .ico{background:linear-gradient(145deg,rgb(255 255 255/.2),rgb(255 255 255/.04) 60%,hsl(var(--h,45) 80% 55%/.2));border:1px solid rgb(255 255 255/.22);box-shadow:inset 0 1px 0 rgb(255 255 255/.4),5px 7px 0 -3px hsl(var(--h,45) 80% 50%/.4),0 16px 26px -12px hsl(var(--h,45) 90% 55%/.7);animation:gtfloat 6s ease-in-out infinite}
+.cgrid>*:nth-child(2n) .ico{animation-delay:-1.4s}.cgrid>*:nth-child(3n) .ico{animation-delay:-2.8s}.cgrid>*:nth-child(5n) .ico{animation-delay:-4.1s}
+/* glass depth on tool cards */
+.card{background-image:linear-gradient(160deg,rgb(255 255 255/.07),rgb(255 255 255/.012) 42%,transparent);box-shadow:var(--shadow),inset 0 1px 0 rgb(255 255 255/.1),inset 0 -22px 30px -26px rgb(var(--a2r)/.5)}
+@media(prefers-reduced-motion:reduce){.floor i,.portal b,.gt,.ccard .ico{animation:none!important}}
+[data-motion=off] .floor i,[data-motion=off] .portal b,[data-motion=off] .gt,[data-motion=off] .ccard .ico{animation:none!important}
+
+/* readability scrim behind hero text */
+.hero::before{content:"";position:absolute;inset:-6% -4%;z-index:-1;pointer-events:none;background:radial-gradient(ellipse 60% 55% at 50% 46%,rgb(7 7 22/.55),rgb(7 7 22/.22) 60%,transparent 78%)}
+[data-theme=light] .hero::before{background:radial-gradient(ellipse 60% 55% at 50% 46%,rgb(247 246 251/.8),rgb(247 246 251/.4) 60%,transparent 78%)}
+.hero p{text-shadow:0 1px 10px rgb(0 0 0/.45)}[data-theme=light] .hero p{text-shadow:none}
+
+@media(max-width:700px){.gt{-webkit-backdrop-filter:none;backdrop-filter:none}}
+.gem{opacity:0;transition:opacity 1.2s ease}.gem.on{opacity:.55}@media(max-width:600px){.gem.on{opacity:.45}}[data-motion=off] .gem{transition:none}
+.gt{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
