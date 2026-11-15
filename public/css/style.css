@@ -329,3 +329,75 @@ main.tw>h1::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:
 @keyframes gpulse{to{box-shadow:0 0 0 12px rgba(242,201,105,0)}}
 @media(prefers-reduced-motion:reduce){.scene *{animation:none!important}.sc-wave{stroke-dashoffset:0}}
 [data-motion=off] .scene *{animation:none!important}[data-motion=off] .sc-wave{stroke-dashoffset:0}
+
+/* ---- Stylish cards + site-wide motion (original CSS; off with data-motion=off / reduced motion) ---- */
+.grid{perspective:1200px}
+.card,.ccard{--c:hsl(var(--h,260) 85% 62%);isolation:isolate;background:linear-gradient(160deg,color-mix(in srgb,var(--card) 92%,hsl(var(--h,260) 90% 60%)) 0%,var(--card) 55%);transform:perspective(800px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(var(--ty,0px));transition:transform .25s var(--ease),border-color .28s,box-shadow .28s;will-change:transform}
+.card::before{background:radial-gradient(240px 160px at var(--mx,50%) var(--my,0%),hsl(var(--h,260) 90% 60%/.24),transparent 70%);z-index:-1}
+.card::after,.ccard::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--ang,0deg),transparent 0 55%,var(--c) 78%,#f2c969 90%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .35s;pointer-events:none;animation:cardspin 3.2s linear infinite;z-index:1}
+@property --ang{syntax:"<angle>";initial-value:0deg;inherits:false}
+@keyframes cardspin{to{--ang:360deg}}
+.card:hover,.card:focus-within,.ccard:hover{--ty:-5px;box-shadow:0 18px 40px -18px hsl(var(--h,260) 90% 55%/.55),0 0 0 1px hsl(var(--h,260) 80% 62%/.25)}
+.card:hover::after,.card:focus-within::after,.ccard:hover::after{opacity:1}
+.card .ico,.ccard .ico{position:relative;box-shadow:0 8px 20px -10px hsl(var(--h,45) 90% 55%/.7),inset 0 1px 0 rgba(255,255,255,.12)}
+.card .ico::after,.ccard .ico::after{content:"";position:absolute;inset:-5px;border-radius:inherit;border:1px solid hsl(var(--h,45) 85% 60%/.35);opacity:0;transform:scale(.85)}
+.card:hover .ico::after,.ccard:hover .ico::after{animation:icring 1.4s ease-out infinite}
+@keyframes icring{0%{opacity:.8;transform:scale(.9)}100%{opacity:0;transform:scale(1.35)}}
+.card .tag{backdrop-filter:blur(4px)}
+.card .tag.free{background:linear-gradient(90deg,rgba(74,222,128,.18),rgba(74,222,128,.06));border-color:rgba(74,222,128,.35)}
+.card-open{padding:3px 10px;border-radius:99px;background:hsl(var(--h,260) 80% 60%/.12);transition:background .25s}
+.card:hover .card-open{background:hsl(var(--h,45) 85% 58%/.22)}
+.card .fav{z-index:3}
+.card>*:not(.fav){position:relative}
+.card .card-top::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.09),transparent);transform:skewX(-18deg);pointer-events:none}
+.card:hover .card-top::after{animation:shine .9s ease}
+@keyframes shine{to{left:130%}}
+.ccard .ico{transition:transform .35s var(--ease)}.ccard:hover .ico{transform:rotate(-8deg) scale(1.1)}
+/* staggered reveal */
+.grid .reveal:nth-child(3n+2){transition-delay:.06s}.grid .reveal:nth-child(3n){transition-delay:.12s}
+.reveal.zoom{transform:scale(.96) translateY(10px)}.reveal.zoom.in{transform:none}
+/* animated dot-grid background drift */
+.bg-glow{background-image:radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.2px);background-size:28px 28px;animation:gridmove 40s linear infinite}
+[data-theme=light] .bg-glow{background-image:radial-gradient(rgba(20,20,40,.08) 1px,transparent 1.2px)}
+@keyframes gridmove{to{background-position:56px 28px}}
+/* section heading accent */
+.sec-h h2{position:relative;padding-bottom:8px}
+.sec-h h2::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:44px;border-radius:3px;background:linear-gradient(90deg,#f2c969,#8b6cf6);transform-origin:left;animation:h1line .8s .1s both}
+/* panels, results and notices pop in */
+.panel:not([hidden]),.seo-about,.privacy-note{animation:panelin .55s var(--ease) both}
+@keyframes panelin{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.ok:not([hidden]){animation:okpop .45s cubic-bezier(.3,1.6,.5,1) both}.err:not([hidden]){animation:shake .4s both}
+@keyframes okpop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+@keyframes shake{20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+.stat b{display:inline-block;animation:numin .5s var(--ease) both}@keyframes numin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.privacy-note .ic{animation:shieldpulse 3s ease-in-out infinite}@keyframes shieldpulse{50%{transform:scale(1.14);filter:drop-shadow(0 0 6px rgba(242,201,105,.6))}}
+/* drop zone + gold buttons */
+.drop{position:relative;overflow:hidden}
+.drop::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(242,201,105,.12) 50%,transparent 70%);background-size:250% 100%;animation:dropsweep 4s linear infinite;pointer-events:none}
+@keyframes dropsweep{from{background-position:150% 0}to{background-position:-100% 0}}
+.btn.gold{position:relative;overflow:hidden}
+.btn.gold::after{content:"";position:absolute;top:0;left:-70%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);animation:btnshine 3.6s 1s ease-in-out infinite;pointer-events:none}
+@keyframes btnshine{60%,100%{left:140%}}
+/* tool pages: floating ring + breadcrumbs */
+main.tw{position:relative}
+main.tw::before{content:"";position:absolute;right:0;top:6px;width:150px;height:150px;border-radius:50%;border:1.5px dashed rgba(139,108,246,.35);animation:scspin 50s linear infinite;pointer-events:none;z-index:-1}
+main.tw::after{content:"";position:absolute;right:20px;top:56px;width:10px;height:10px;border-radius:50%;background:#f2c969;box-shadow:0 0 14px #f2c969;animation:float 5s ease-in-out infinite;pointer-events:none}
+@keyframes float{50%{transform:translateY(-14px)}}
+.crumbs li{animation:numin .5s var(--ease) both}.crumbs li:nth-child(2){animation-delay:.08s}.crumbs li:nth-child(3){animation-delay:.16s}
+/* nav links + logo + footer */
+.nav a,.mnav a{position:relative}
+.logo svg{transition:transform .6s var(--ease)}.logo:hover svg{transform:rotate(360deg) scale(1.08)}
+.foot{position:relative}
+.foot::before{content:"";position:absolute;top:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#f2c969,#8b6cf6,transparent);background-size:200% 100%;animation:footflow 6s linear infinite}
+@keyframes footflow{to{background-position:200% 0}}
+.foot a{transition:color .2s,transform .2s}.foot a:hover{transform:translateX(3px)}
+@media(max-width:520px){main.tw::before{width:100px;height:100px;right:0}main.tw::after{display:none}.card:hover{--ty:0px}}
+@media(hover:none){.card::after,.ccard::after{display:none}}
+@media(prefers-reduced-motion:reduce){.card,.ccard{transform:none!important}.card::after,.ccard::after,.drop::before,.btn.gold::after,main.tw::before,main.tw::after,.foot::before{animation:none!important}}
+[data-motion=off] .card,[data-motion=off] .ccard{transform:none!important}
+[data-motion=off] .card::after,[data-motion=off] .ccard::after,[data-motion=off] .drop::before,[data-motion=off] .btn.gold::after{display:none}
+.card.reveal.in,.card.reveal.in:hover,.card:not(.reveal),.card:not(.reveal):hover,.ccard.reveal.in,.ccard.reveal.in:hover,.ccard:not(.reveal),.ccard:not(.reveal):hover{transform:perspective(800px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(var(--ty,0px))}
+.card.reveal:not(.in){transform:translateY(16px) scale(.98)}
+@media(prefers-reduced-motion:reduce){.card.reveal.in,.card.reveal.in:hover,.ccard.reveal.in,.ccard.reveal.in:hover{transform:none!important}}
+[data-motion=off] .card.reveal.in,[data-motion=off] .card.reveal.in:hover,[data-motion=off] .ccard.reveal.in,[data-motion=off] .ccard.reveal.in:hover{transform:none!important}
+html,body{overflow-x:clip}

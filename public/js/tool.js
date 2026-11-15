@@ -42,6 +42,10 @@
     document.addEventListener("pointermove", function (e) {
       var c = e.target.closest && e.target.closest(".card"); if (!c) return;
       var r = c.getBoundingClientRect(); c.style.setProperty("--mx", (e.clientX - r.left) + "px"); c.style.setProperty("--my", (e.clientY - r.top) + "px");
+      c.style.setProperty("--ry", (((e.clientX - r.left) / r.width - .5) * 7).toFixed(2) + "deg"); c.style.setProperty("--rx", (((e.clientY - r.top) / r.height - .5) * -7).toFixed(2) + "deg");
+    }, { passive: true });
+    document.addEventListener("pointerout", function (e) {
+      var c = e.target.closest && e.target.closest(".card,.ccard"); if (c && !c.contains(e.relatedTarget)) { c.style.setProperty("--rx", "0deg"); c.style.setProperty("--ry", "0deg"); }
     }, { passive: true });
   }
 
