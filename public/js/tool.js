@@ -5,7 +5,8 @@
   function get(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }
   function put(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   function getList(k) { try { var a = JSON.parse(localStorage.getItem(k)); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
-  var lang = get("lang", "en") === "hi" ? "hi" : "en", theme = get("theme", "dark") === "light" ? "light" : "dark", motion = get("motion", "on") === "off" ? "off" : "on";
+  var lang = get("lang", "en") === "hi" ? "hi" : "en", theme = get("theme", "dark") === "light" ? "light" : "dark", motion = get("motion", "on") === "off" ? "off" : "on", accent = get("accent", "gold");
+  if (accent !== "emerald" && accent !== "rose") accent = "gold";
 
   window.L = function (en, hi) { return lang === "hi" ? hi : en; };
   window.fmt = function (n) { return Number(n).toLocaleString("en-IN", { maximumFractionDigits: 2 }); };
@@ -27,7 +28,7 @@
   window.copyText = function (text, btn) {
     function done() {
       toast(L("Copied to clipboard", "कॉपी हो गया"));
-      if (btn) { var o = btn.textContent; btn.textContent = L("Copied ✓", "कॉपी हो गया ✓"); setTimeout(function () { btn.textContent = o; }, 1400); }
+      if (btn) { var o = btn.textContent; btn.textContent = L("Copied", "कॉपी हो गया"); btn.classList.add("copied"); setTimeout(function () { btn.textContent = o; btn.classList.remove("copied"); }, 1400); }
     }
     function fb() { var a = document.createElement("textarea"); a.value = text; a.style.position = "fixed"; a.style.opacity = "0"; document.body.appendChild(a); a.select(); var ok = false; try { ok = document.execCommand("copy"); } catch (e) {} document.body.removeChild(a); if (ok) done(); else toast(L("Could not copy. Select the text and copy manually.", "कॉपी नहीं हुआ। टेक्स्ट चुनकर खुद कॉपी करें।"), "err"); }
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fb); else fb();
@@ -73,9 +74,37 @@
   var cur = document.body.getAttribute("data-tool");
   if (cur) { var r = getList("dta_recent").filter(function (x) { return x !== cur; }); r.unshift(cur); put("dta_recent", JSON.stringify(r.slice(0, 8))); }
 
+  /* ---------- tool page header, guide TOC, bottom-nav state ---------- */
+  (function () {
+    var main = document.getElementById("main"), id = document.body.getAttribute("data-tool");
+    var h1 = main && main.querySelector(":scope > h1"), lead = main && main.querySelector(":scope > p.lead");
+    if (id && h1 && D.tool(id)) {
+      var t = D.tool(id), c = D.cat(t.cat), w = document.createElement("div"); w.className = "thero"; w.style.setProperty("--h", c.hue || 45);
+      var med = document.createElement("span"); med.className = "tmed"; med.setAttribute("aria-hidden", "true"); med.innerHTML = D.icon(id, 30) + "<i></i>";
+      var txt = document.createElement("div"); h1.parentNode.insertBefore(w, h1); w.appendChild(med); w.appendChild(txt); txt.appendChild(h1); if (lead) txt.appendChild(lead);
+      var bd = document.createElement("div"); bd.className = "tbadges";
+      [["Free", "मुफ्त"], ["Stays on your device", "आपके डिवाइस पर ही"], ["No sign-up", "साइन-अप नहीं"]].forEach(function (p) { var s = document.createElement("span"); s.setAttribute("data-en", p[0]); s.setAttribute("data-hi", p[1]); s.textContent = p[0]; bd.appendChild(s); });
+      w.appendChild(bd);
+    }
+    if (document.body.getAttribute("data-page") === "article" && main) {
+      var hs = main.querySelectorAll("h2");
+      if (hs.length > 1) {
+        var box = document.createElement("nav"); box.className = "toc"; box.setAttribute("aria-label", "Contents");
+        box.innerHTML = '<b data-en="In this guide" data-hi="इस गाइड में">In this guide</b><ol></ol>'; var ol = box.querySelector("ol");
+        hs.forEach(function (h, i) { h.id = h.id || "s" + (i + 1); var li = document.createElement("li"), a = document.createElement("a"); a.href = "#" + h.id; a.setAttribute("data-en", h.getAttribute("data-en") || h.textContent); a.setAttribute("data-hi", h.getAttribute("data-hi") || h.textContent); a.textContent = h.textContent; li.appendChild(a); ol.appendChild(li); });
+        var first = main.querySelector(":scope > h1 ~ p"); if (first) first.parentNode.insertBefore(box, first.nextSibling);
+      }
+    }
+    var p = location.pathname;
+    document.querySelectorAll(".bnav a").forEach(function (a) {
+      var k = a.getAttribute("data-b"), on = (k === "home" && (p === "/" || p === "/index.html")) || (k === "blog" && p.indexOf("/blog") === 0) || (k === "settings" && p.indexOf("/settings") === 0) || (k === "tools" && (p.indexOf("/tools/") === 0 || p.indexOf("/category/") === 0));
+      if (on) a.classList.add("on");
+    });
+  })();
+
   /* ---------- apply language / theme ---------- */
   function apply() {
-    root.lang = lang; root.setAttribute("data-theme", theme); root.setAttribute("data-motion", motion);
+    root.lang = lang; root.setAttribute("data-theme", theme); root.setAttribute("data-motion", motion); if (accent === "gold") root.removeAttribute("data-accent"); else root.setAttribute("data-accent", accent);
     document.querySelectorAll("[data-en]").forEach(function (el) { var v = el.getAttribute("data-" + lang); if (v !== null) el.textContent = v; });
     document.querySelectorAll("[data-ph-en]").forEach(function (el) { el.placeholder = el.getAttribute("data-ph-" + lang); });
     document.querySelectorAll("[data-label-en]").forEach(function (el) { el.setAttribute("aria-label", el.getAttribute("data-label-" + lang)); });
@@ -92,7 +121,8 @@
     setLang: function (l) { lang = l === "hi" ? "hi" : "en"; put("lang", lang); apply(); },
     setTheme: function (t) { theme = t === "light" ? "light" : "dark"; put("theme", theme); apply(); },
     setMotion: function (m) { motion = m === "off" ? "off" : "on"; put("motion", motion); apply(); },
-    get: function () { return { lang: lang, theme: theme, motion: motion }; }
+    setAccent: function (a) { accent = a === "emerald" || a === "rose" ? a : "gold"; put("accent", accent); apply(); },
+    get: function () { return { lang: lang, theme: theme, motion: motion, accent: accent }; }
   };
   var lb = $("langBtn"), tb = $("themeBtn"); if (lb) lb.onclick = setLang; if (tb) tb.onclick = setTheme;
 

@@ -53,6 +53,13 @@ function header() {
  <a href="/settings.html">${D.icon("settings", 20)}${bi("Settings", "सेटिंग्स")}</a>
  <div class="sep"></div><small>${bi("Categories", "श्रेणियां")}</small>${cats}
  <div class="sep"></div><a href="#" data-install hidden>${D.icon("download", 20)}${bi("Install app", "ऐप इंस्टॉल करें")}</a>
+</nav>
+<nav class="bnav" aria-label="Quick">
+ <a href="/" data-b="home">${D.icon("bolt", 22)}${bi("Home", "होम")}</a>
+ <a href="/#tools" data-b="tools">${D.icon("calc", 22)}${bi("Tools", "टूल्स")}</a>
+ <button type="button" data-open-palette>${D.icon("search", 22)}${bi("Search", "खोजें")}</button>
+ <a href="/blog/" data-b="blog">${D.icon("text", 22)}${bi("Guides", "गाइड्स")}</a>
+ <a href="/settings.html" data-b="settings">${D.icon("settings", 22)}${bi("Settings", "सेटिंग्स")}</a>
 </nav>`;
 }
 
@@ -83,7 +90,7 @@ ${m.noindex ? '<meta name="robots" content="noindex">' : `<meta name="robots" co
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(m.title)}"><meta name="twitter:description" content="${e(m.desc)}"><meta name="twitter:image" content="${SITE}/og.png">
 <meta name="theme-color" content="#08080d">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
-<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);if(localStorage.getItem("lang")==="hi")document.documentElement.lang="hi";if(localStorage.getItem("motion")==="off")document.documentElement.setAttribute("data-motion","off")}catch(e){}</script>
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var ac=localStorage.getItem("accent");if(ac==="emerald"||ac==="rose")document.documentElement.setAttribute("data-accent",ac);if(localStorage.getItem("lang")==="hi")document.documentElement.lang="hi";if(localStorage.getItem("motion")==="off")document.documentElement.setAttribute("data-motion","off")}catch(e){}</script>
 <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
 ${(m.jsonld || []).map(ld).join("\n")}`;
 }
@@ -266,6 +273,9 @@ function buildSite() {
 
 /js/vendor/*
   Cache-Control: public, max-age=604800
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
 
 /icons/*
   Cache-Control: public, max-age=604800

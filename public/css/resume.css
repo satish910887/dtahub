@@ -141,7 +141,7 @@
 @media print{
  @page{size:A4;margin:0}
  html,body{background:#fff!important}
- .bg-glow,.nav,.mnav,.skip,.prog,.foot,.crumbs,.back,.tw>h1,.lead,.tool-acts,.privacy-note,.seo-about,.rb-edit,.rb-bar,.rb-check,.rb-tabs,.toasts,.pal-bg,.rb-view>.hint,.rb-guides,nav[aria-label=Breadcrumb]{display:none!important}
+ .bg-glow,.nav,.mnav,.bnav,.skip,.prog,.foot,.crumbs,.back,.tw>h1,.lead,.tool-acts,.privacy-note,.seo-about,.rb-edit,.rb-bar,.rb-check,.rb-tabs,.toasts,.pal-bg,.rb-view>.hint,.rb-guides,nav[aria-label=Breadcrumb]{display:none!important}
  .tw.wide{max-width:none!important;padding:0!important;margin:0!important}
  .rb{display:block!important}
  .rb-view{display:block!important;position:static!important;max-height:none!important;overflow:visible!important;padding:0!important}

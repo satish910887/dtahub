@@ -44,7 +44,7 @@
 @media print{
  @page{size:A4;margin:0}
  html,body{background:#fff!important;margin:0!important;padding:0!important;height:auto!important}
- .bg-glow,.nav,.mnav,.skip,.prog,.foot,.crumbs,.back,.tw>h1,.lead,.tool-acts,.privacy-note,.seo-about,.dk-edit,.dk-bar,.dk-note,.toasts,.pal-bg,nav[aria-label=Breadcrumb]{display:none!important}
+ .bg-glow,.nav,.mnav,.bnav,.skip,.prog,.foot,.crumbs,.back,.tw>h1,.lead,.tool-acts,.privacy-note,.seo-about,.dk-edit,.dk-bar,.dk-note,.toasts,.pal-bg,nav[aria-label=Breadcrumb]{display:none!important}
  .tw,.tw.wide{max-width:none!important;padding:0!important;margin:0!important}
  .dk{display:block!important}
  .dk-view{position:static!important;margin:0!important;padding:0!important}
