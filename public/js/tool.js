@@ -5,7 +5,7 @@
   function get(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }
   function put(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   function getList(k) { try { var a = JSON.parse(localStorage.getItem(k)); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
-  var lang = get("lang", "en") === "hi" ? "hi" : "en", theme = get("theme", "light") === "dark" ? "dark" : "light", motion = get("motion", "on") === "off" ? "off" : "on";
+  var lang = get("lang", "en") === "hi" ? "hi" : "en", theme = get("theme", "dark") === "light" ? "light" : "dark", motion = get("motion", "on") === "off" ? "off" : "on";
 
   window.L = function (en, hi) { return lang === "hi" ? hi : en; };
   window.fmt = function (n) { return Number(n).toLocaleString("en-IN", { maximumFractionDigits: 2 }); };
@@ -78,7 +78,7 @@
     var lb = $("langBtn"), tb = $("themeBtn");
     if (lb) lb.textContent = lang === "en" ? "हि" : "EN";
     if (tb) tb.innerHTML = D.icon(theme === "dark" ? "sun" : "moon", 19);
-    var meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute("content", theme === "dark" ? "#08080d" : "#f8fafc");
+    var meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute("content", theme === "dark" ? "#08080d" : "#f7f6fb");
     document.dispatchEvent(new Event("langchange"));
   }
   window.DTAapply = apply;
@@ -86,7 +86,7 @@
   function setTheme() { theme = theme === "dark" ? "light" : "dark"; put("theme", theme); apply(); }
   window.DTAsettings = {
     setLang: function (l) { lang = l === "hi" ? "hi" : "en"; put("lang", lang); apply(); },
-    setTheme: function (t) { theme = t === "dark" ? "dark" : "light"; put("theme", theme); apply(); },
+    setTheme: function (t) { theme = t === "light" ? "light" : "dark"; put("theme", theme); apply(); },
     setMotion: function (m) { motion = m === "off" ? "off" : "on"; put("motion", motion); apply(); },
     get: function () { return { lang: lang, theme: theme, motion: motion }; }
   };

@@ -9,7 +9,7 @@ og = '''<html><body style="margin:0;width:1200px;height:630px;background:#08080d
 <div style="position:absolute;left:80px;top:80px;display:flex;align-items:center;gap:20px">
 <svg width="84" height="84" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2c969"/><stop offset="1" stop-color="#8b6cf6"/></linearGradient></defs><path d="M32 6 54 18.500v27L32 58 10 45.500v-27z" fill="none" stroke="url(#g)" stroke-width="3.400" stroke-linejoin="round"/><path d="M23 21h9a11 11 0 0 1 0 22h-9z" fill="url(#g)"/></svg>
 <span style="font-size:56px;font-weight:800;letter-spacing:-.02em">DTA<span style="color:#f2c969">hub</span></span></div>
-<div style="position:absolute;left:80px;top:250px;font-size:84px;font-weight:800;line-height:1.05;letter-spacing:-.035em">Your Everyday<br><span style="background:linear-gradient(110deg,#a79bff,#635bdb);-webkit-background-clip:text;color:transparent">Digital Toolkit.</span></div>
+<div style="position:absolute;left:80px;top:250px;font-size:84px;font-weight:800;line-height:1.05;letter-spacing:-.035em">Everything You Need.<br><span style="background:linear-gradient(110deg,#f2c969,#b5a1ff);-webkit-background-clip:text;color:transparent">One Powerful Toolkit.</span></div>
 <div style="position:absolute;left:80px;bottom:70px;font-size:30px;color:#9a9ab2">Free PDF, image, text and developer tools, calculators. Private, in your browser.</div>
 </body></html>'''
 jobs = [("icons/icon-192.png", 192, 0.0), ("icons/icon-512.png", 512, 0.0), ("icons/maskable-512.png", 512, 0.22), ("icons/apple-touch-icon.png", 180, 0.0)]
