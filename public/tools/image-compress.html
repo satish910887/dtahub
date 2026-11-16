@@ -61,12 +61,15 @@
  <button class="btn" type="button" data-reset><span data-en="Reset" data-hi="रीसेट">Reset</span></button>
 </div><!--/DTA:ACTIONS-->
 <div class="panel">
- <label class="drop"><input id="f" type="file" accept="image/*"><span id="dt" data-en="Tap to choose a photo" data-hi="फोटो चुनने के लिए टैप करें">Tap to choose a photo</span></label>
+ <label class="drop"><input id="f" type="file" accept="image/*" multiple><span id="dt" data-en="Tap to choose photos (one or many)" data-hi="फोटो चुनने के लिए टैप करें (एक या कई)">Tap to choose photos (one or many)</span></label>
  <div id="ctl" hidden>
-  <label><span data-en="Quality" data-hi="क्वालिटी">Quality</span>: <b id="qv">70</b>%</label>
-  <input id="q" type="range" min="10" max="100" value="70">
-  <label data-en="Output format" data-hi="आउटपुट फॉर्मेट">Format</label>
-  <select id="fmt"><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select>
+  <div class="seg" role="group" aria-label="Mode"><button class="chip on" type="button" id="mq" data-en="By quality" data-hi="क्वालिटी से">By quality</button><button class="chip" type="button" id="mt" data-en="Target size" data-hi="टारगेट साइज़">Target size</button></div>
+  <div id="bq"><label for="q"><span data-en="Quality" data-hi="क्वालिटी">Quality</span>: <b id="qv">70</b>%</label><input id="q" type="range" min="10" max="100" value="70"></div>
+  <div id="bt" hidden><label for="tk" data-en="Target size (KB) per image" data-hi="हर इमेज का टारगेट साइज़ (KB)">Target size (KB)</label><input id="tk" type="number" inputmode="numeric" min="5" value="100"></div>
+  <div class="two">
+   <div><label for="fmt" data-en="Output format" data-hi="आउटपुट फॉर्मेट">Format</label><select id="fmt"><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select></div>
+   <div><label for="mx" data-en="Max width/height (px, 0 = keep)" data-hi="अधिकतम चौड़ाई/ऊंचाई (px, 0 = वही)">Max side</label><input id="mx" type="number" inputmode="numeric" min="0" value="0"></div>
+  </div>
  </div>
  <div class="err" id="err" hidden></div>
 </div>
@@ -76,9 +79,11 @@
   <div class="stat"><small data-en="Compressed" data-hi="छोटा साइज़">Compressed</small><b id="sn"></b></div>
   <div class="stat big"><small data-en="Saved" data-hi="बचत">Saved</small><b id="sv"></b></div>
  </div>
- <img id="pv" class="pimg" alt="">
- <div class="seg" style="justify-content:center"><button class="btn gold" id="dl" data-en="Download" data-hi="डाउनलोड करें">Download</button></div>
+ <div id="cmpw" class="cmpw" hidden><img id="pv" class="pimg" alt=""><div id="cmpt"></div></div>
+ <div id="list" class="flist"></div>
+ <div class="seg" style="justify-content:center"><button class="btn gold" id="dl" data-en="Download" data-hi="डाउनलोड करें">Download</button><button class="btn" id="dz" hidden data-en="Download all (ZIP)" data-hi="सब डाउनलोड करें (ZIP)">Download all (ZIP)</button></div>
 </div>
+<style>.flist{display:grid;gap:6px;margin:10px 0}.flist div{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:.9rem}.flist span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.flist b{white-space:nowrap}.cmpw{position:relative}.cmpw img{width:100%;max-height:60vh;object-fit:contain}.cmpw .cmpt{display:none}</style>
 <!--DTA:EXTRA--><aside class="privacy-note"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5.500c0 4.200 2.800 7.500 7 9.500 4.200-2 7-5.300 7-9.500V6z"/><path d="m9 12 2.200 2.200L15.500 10"/></svg><p data-en="Your files are processed on your device and never uploaded. Limits: 30 MB per image, 50 MB per PDF." data-hi="आपकी फाइलें आपके डिवाइस पर प्रोसेस होती हैं, अपलोड नहीं होतीं। सीमा: हर इमेज 30 MB, हर PDF 50 MB।">Your files are processed on your device and never uploaded. Limits: 30 MB per image, 50 MB per PDF.</p></aside>
 <section class="seo-about">
  <h2 data-en="About Compress Image" data-hi="इमेज छोटी करें के बारे में">About Compress Image</h2>
@@ -100,30 +105,61 @@
 <script defer src="/js/tools-data.js"></script>
 <script defer src="/js/tool.js"></script>
 <script defer src="/js/img.js"></script>
+<script defer src="/js/zip.js"></script>
 <script type="module">
-var im=null,file=null,blob=null,url=null,tm=null;
-function run(){
- if(!im)return;
- $("qv").textContent=$("q").value;
- renderImg(im,im.naturalWidth,im.naturalHeight,$("fmt").value,+$("q").value/100).then(function(b){
-  if(!b){$("err").hidden=false;$("err").textContent=L("This format is not supported on your browser.","आपके ब्राउज़र में यह फॉर्मेट सपोर्ट नहीं है।");return}
-  $("err").hidden=true;blob=b;
-  if(url)URL.revokeObjectURL(url);
-  url=URL.createObjectURL(b);$("pv").src=url;
-  var saved=(1-b.size/file.size)*100;
-  $("so").textContent=sizeOf(file.size);$("sn").textContent=sizeOf(b.size);
-  $("sv").textContent=saved>0?saved.toFixed(1)+" %":L("Already small. Try lower quality.","पहले से छोटी है। क्वालिटी कम करके देखें।");
-  $("res").hidden=false;
- });
+var items=[],tm=null,busy=0;
+function enc(im,type,q,mx){
+ var w=im.naturalWidth,h=im.naturalHeight,m=Math.max(w,h);
+ if(mx>0&&m>mx){var k=mx/m;w=Math.max(1,Math.round(w*k));h=Math.max(1,Math.round(h*k))}
+ return renderImg(im,w,h,type,q);
 }
-pickImage($("f"),function(i,f){
- if(!i){$("err").hidden=false;$("err").textContent=L("Could not open this image.","यह इमेज नहीं खुल सकी।");return}
- im=i;file=f;$("ctl").hidden=false;$("dt").textContent=f.name;run();
+async function fit(im,type,kb,mx){
+ var lo=.05,hi=.95,best=null,b;
+ b=await enc(im,type,hi,mx);if(b&&b.size<=kb*1024)return b;
+ for(var i=0;i<7;i++){var mid=(lo+hi)/2;b=await enc(im,type,mid,mx);if(!b)return null;
+  if(b.size<=kb*1024){best=b;lo=mid}else hi=mid}
+ return best||await enc(im,type,.05,mx);
+}
+function load(f){return new Promise(function(r){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){URL.revokeObjectURL(u);r({f:f,im:im})};im.onerror=function(){URL.revokeObjectURL(u);r({f:f,im:null})}; im.src=u})}
+async function run(){
+ if(!items.length)return;var my=++busy,type=$("fmt").value,byT=$("mt").classList.contains("on"),mx=+$("mx").value||0,kb=+$("tk").value||100;
+ $("qv").textContent=$("q").value;$("err").hidden=true;
+ for(var it of items){if(!it.im)continue;
+  it.out=byT?await fit(it.im,type,kb,mx):await enc(it.im,type,+$("q").value/100,mx);
+  if(my!==busy)return}
+ show();
+}
+function show(){
+ var ok=items.filter(function(i){return i.out}),bad=items.length-items.filter(function(i){return i.im}).length;
+ if(!ok.length){$("err").hidden=false;$("err").textContent=L("Could not open this image.","यह इमेज नहीं खुल सकी।");return}
+ var so=0,sn=0;ok.forEach(function(i){so+=i.f.size;sn+=i.out.size});
+ var sv=(1-sn/so)*100;
+ $("so").textContent=sizeOf(so);$("sn").textContent=sizeOf(sn);
+ $("sv").textContent=sv>0?sv.toFixed(1)+" %":L("Already small. Try lower quality.","पहले से छोटी है। क्वालिटी कम करके देखें।");
+ $("list").innerHTML="";
+ ok.forEach(function(i){var d=document.createElement("div"),a=document.createElement("span"),b=document.createElement("b");a.textContent=i.f.name;b.textContent=sizeOf(i.f.size)+" → "+sizeOf(i.out.size);d.append(a,b);$("list").append(d)});
+ if(bad){$("err").hidden=false;$("err").textContent=bad+L(" file(s) could not be opened."," फाइल नहीं खुल सकीं।")}
+ var one=ok.length===1;$("cmpw").hidden=!one;$("list").hidden=one;$("dz").hidden=one;
+ if(one){if(items.u)URL.revokeObjectURL(items.u);items.u=URL.createObjectURL(ok[0].out);$("pv").src=items.u}
+ $("dl").textContent=one?L("Download","डाउनलोड करें"):L("Download first","पहली डाउनलोड करें");$("dl").hidden=!one;
+ $("res").hidden=false;
+}
+$("f").addEventListener("change",async function(){
+ var fs=[].slice.call($("f").files);if(!fs.length)return;
+ $("dt").textContent=fs.length>1?fs.length+L(" photos selected"," फोटो चुनी गईं"):fs[0].name;
+ items=await Promise.all(fs.map(load));$("ctl").hidden=false;run();
 });
 $("q").addEventListener("input",function(){$("qv").textContent=$("q").value;clearTimeout(tm);tm=setTimeout(run,200)});
-$("fmt").onchange=run;
-$("dl").onclick=function(){if(blob)saveBlob(blob,baseName(file)+"-compressed."+extOf(blob.type))};
-document.addEventListener("langchange",function(){if(im)run()});
+["fmt","mx","tk"].forEach(function(i){$(i).addEventListener("input",function(){clearTimeout(tm);tm=setTimeout(run,300)})});
+function mode(t){$("mt").classList.toggle("on",t);$("mq").classList.toggle("on",!t);$("bt").hidden=!t;$("bq").hidden=t;run()}
+$("mq").onclick=function(){mode(false)};$("mt").onclick=function(){mode(true)};
+function nm(i){return baseName(i.f)+"-compressed."+extOf(i.out.type)}
+$("dl").onclick=function(){var i=items.find(function(x){return x.out});if(i)saveBlob(i.out,nm(i))};
+$("dz").onclick=async function(){
+ var fl=[];for(var i of items){if(i.out)fl.push({name:nm(i),data:new Uint8Array(await i.out.arrayBuffer())})}
+ saveBlob(DTAzip.build(fl),"dtahub-compressed.zip");
+};
+document.addEventListener("langchange",function(){if(items.length)show()});
 </script>
 </body>
 </html>
