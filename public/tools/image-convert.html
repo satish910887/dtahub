@@ -61,22 +61,22 @@
  <button class="btn" type="button" data-reset><span data-en="Reset" data-hi="रीसेट">Reset</span></button>
 </div><!--/DTA:ACTIONS-->
 <div class="panel">
- <label class="drop"><input id="f" type="file" accept="image/*"><span id="dt" data-en="Tap to choose a photo" data-hi="फोटो चुनने के लिए टैप करें">Tap to choose a photo</span></label>
+ <label class="drop"><input id="f" type="file" accept="image/*" multiple><span id="dt" data-en="Tap to choose photos (one or many)" data-hi="फोटो चुनने के लिए टैप करें (एक या कई)">Tap to choose photos (one or many)</span></label>
  <div id="ctl" hidden>
-  <label data-en="Convert to" data-hi="इसमें बदलें">Convert to</label>
-  <select id="fmt"><option value="image/png">PNG</option><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select>
-  <div id="qbox">
-   <label><span data-en="Quality" data-hi="क्वालिटी">Quality</span>: <b id="qv">90</b>%</label>
-   <input id="q" type="range" min="10" max="100" value="90">
-  </div>
+  <label for="fmt" data-en="Convert to" data-hi="इसमें बदलें">Convert to</label>
+  <select id="fmt"><option value="image/png">PNG</option><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option><option value="image/avif">AVIF (if your browser supports it)</option></select>
+  <div id="qbox"><label for="q"><span data-en="Quality" data-hi="क्वालिटी">Quality</span>: <b id="qv">90</b>%</label><input id="q" type="range" min="10" max="100" value="90"></div>
+  <div id="bgbox"><label for="bg" data-en="Background for transparent areas (JPG)" data-hi="पारदर्शी हिस्से का बैकग्राउंड (JPG)">Background</label><input id="bg" type="color" value="#ffffff"></div>
  </div>
  <div class="err" id="err" hidden></div>
 </div>
 <div class="panel" id="res" hidden>
  <p class="line" id="info"></p>
  <img id="pv" class="pimg" alt="">
- <div class="seg" style="justify-content:center"><button class="btn gold" id="dl" data-en="Download" data-hi="डाउनलोड करें">Download</button></div>
+ <div id="list" class="flist"></div>
+ <div class="seg" style="justify-content:center"><button class="btn gold" id="dl" data-en="Download" data-hi="डाउनलोड करें">Download</button><button class="btn" id="dz" hidden data-en="Download all (ZIP)" data-hi="सब डाउनलोड करें (ZIP)">Download all (ZIP)</button></div>
 </div>
+<style>.flist{display:grid;gap:6px;margin:10px 0}.flist div{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:.9rem}.flist span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.flist b{white-space:nowrap}#bg{height:44px;padding:2px}</style>
 <!--DTA:EXTRA--><aside class="privacy-note"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5.500c0 4.200 2.800 7.500 7 9.500 4.200-2 7-5.300 7-9.500V6z"/><path d="m9 12 2.200 2.200L15.500 10"/></svg><p data-en="Your files are processed on your device and never uploaded. Limits: 30 MB per image, 50 MB per PDF." data-hi="आपकी फाइलें आपके डिवाइस पर प्रोसेस होती हैं, अपलोड नहीं होतीं। सीमा: हर इमेज 30 MB, हर PDF 50 MB।">Your files are processed on your device and never uploaded. Limits: 30 MB per image, 50 MB per PDF.</p></aside>
 <section class="seo-about">
  <h2 data-en="About Image Converter" data-hi="इमेज कन्वर्टर के बारे में">About Image Converter</h2>
@@ -98,28 +98,43 @@
 <script defer src="/js/tools-data.js"></script>
 <script defer src="/js/tool.js"></script>
 <script defer src="/js/img.js"></script>
+<script defer src="/js/zip.js"></script>
 <script type="module">
-var im=null,file=null,blob=null,url=null,tm=null;
-function run(){
- if(!im)return;
- $("qv").textContent=$("q").value;
- $("qbox").hidden=$("fmt").value==="image/png";
- renderImg(im,im.naturalWidth,im.naturalHeight,$("fmt").value,+$("q").value/100).then(function(b){
-  if(!b||b.type!==$("fmt").value){$("err").hidden=false;$("err").textContent=L("This format is not supported on your browser.","आपके ब्राउज़र में यह फॉर्मेट सपोर्ट नहीं है।");$("res").hidden=true;return}
-  $("err").hidden=true;blob=b;
-  if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(b);$("pv").src=url;
-  $("info").textContent=(file.type||"image").replace("image/","").toUpperCase()+" → "+extOf(b.type).toUpperCase()+" • "+sizeOf(file.size)+" → "+sizeOf(b.size);
-  $("res").hidden=false;
- });
+var items=[],tm=null,busy=0;
+function enc(im,type,q,bg){
+ var c=document.createElement("canvas");c.width=im.naturalWidth;c.height=im.naturalHeight;var x=c.getContext("2d");
+ if(type!=="image/png"&&type!=="image/webp"&&type!=="image/avif"){x.fillStyle=bg;x.fillRect(0,0,c.width,c.height)}
+ x.imageSmoothingQuality="high";x.drawImage(im,0,0);
+ return new Promise(function(r){c.toBlob(r,type,q)});
 }
-pickImage($("f"),function(i,f){
- if(!i){$("err").hidden=false;$("err").textContent=L("Could not open this image.","यह इमेज नहीं खुल सकी।");return}
- im=i;file=f;$("ctl").hidden=false;$("dt").textContent=f.name;run();
+function load(f){return new Promise(function(r){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){URL.revokeObjectURL(u);r({f:f,im:im})};im.onerror=function(){URL.revokeObjectURL(u);r({f:f,im:null})};im.src=u})}
+async function run(){
+ if(!items.length)return;var my=++busy,t=$("fmt").value;
+ $("qv").textContent=$("q").value;$("qbox").hidden=t==="image/png";$("bgbox").hidden=t!=="image/jpeg";
+ for(var it of items){it.out=it.im?await enc(it.im,t,+$("q").value/100,$("bg").value):null;if(my!==busy)return}
+ var ok=items.filter(function(i){return i.out&&i.out.type===t});
+ if(!ok.length){$("err").hidden=false;$("err").textContent=L("This format is not supported on your browser.","आपके ब्राउज़र में यह फॉर्मेट सपोर्ट नहीं है।");$("res").hidden=true;return}
+ $("err").hidden=true;var one=ok.length===1,o=ok[0];
+ $("info").textContent=ok.length>1?ok.length+L(" images converted to "," इमेज बदली गईं → ")+extOf(t).toUpperCase():(o.f.type||"image").replace("image/","").toUpperCase()+" → "+extOf(o.out.type).toUpperCase()+" • "+sizeOf(o.f.size)+" → "+sizeOf(o.out.size);
+ $("pv").hidden=!one;$("list").hidden=one;$("dl").hidden=!one;$("dz").hidden=one;
+ if(one){if(items.u)URL.revokeObjectURL(items.u);items.u=URL.createObjectURL(o.out);$("pv").src=items.u}
+ $("list").innerHTML="";ok.forEach(function(i){var d=document.createElement("div"),a=document.createElement("span"),b=document.createElement("b");a.textContent=i.f.name;b.textContent=sizeOf(i.f.size)+" → "+sizeOf(i.out.size);d.append(a,b);$("list").append(d)});
+ $("res").hidden=false;
+}
+$("f").addEventListener("change",async function(){
+ var fs=[].slice.call($("f").files);if(!fs.length)return;
+ $("dt").textContent=fs.length>1?fs.length+L(" photos selected"," फोटो चुनी गईं"):fs[0].name;
+ items=await Promise.all(fs.map(load));$("ctl").hidden=false;run();
 });
-$("fmt").onchange=run;
+["fmt","bg"].forEach(function(i){$(i).addEventListener("input",run)});
 $("q").addEventListener("input",function(){$("qv").textContent=$("q").value;clearTimeout(tm);tm=setTimeout(run,200)});
-$("dl").onclick=function(){if(blob)saveBlob(blob,baseName(file)+"."+extOf(blob.type))};
-document.addEventListener("langchange",function(){if(im)run()});
+function nm(i){return baseName(i.f)+"."+extOf(i.out.type)}
+$("dl").onclick=function(){var i=items.find(function(x){return x.out});if(i)saveBlob(i.out,nm(i))};
+$("dz").onclick=async function(){
+ var t=$("fmt").value,fl=[];for(var i of items){if(i.out&&i.out.type===t)fl.push({name:nm(i),data:new Uint8Array(await i.out.arrayBuffer())})}
+ saveBlob(DTAzip.build(fl),"dtahub-converted.zip");
+};
+document.addEventListener("langchange",function(){if(items.length)run()});
 </script>
 </body>
 </html>

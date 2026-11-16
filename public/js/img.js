@@ -14,7 +14,7 @@ window.renderImg=function(im,w,h,type,q){
  x.imageSmoothingQuality="high";x.drawImage(im,0,0,w,h);
  return new Promise(function(res){c.toBlob(res,type,q)});
 };
-window.extOf=function(t){return t==="image/jpeg"?"jpg":t==="image/webp"?"webp":"png"};
+window.extOf=function(t){return t==="image/jpeg"?"jpg":t==="image/webp"?"webp":t==="image/avif"?"avif":"png"};
 window.sizeOf=function(b){return b<1024?b+" B":b<1048576?(b/1024).toFixed(1)+" KB":(b/1048576).toFixed(2)+" MB"};
 window.saveBlob=function(blob,name){
  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;
