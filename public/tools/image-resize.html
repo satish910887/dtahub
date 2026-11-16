@@ -61,28 +61,40 @@
  <button class="btn" type="button" data-reset><span data-en="Reset" data-hi="रीसेट">Reset</span></button>
 </div><!--/DTA:ACTIONS-->
 <div class="panel">
- <label class="drop"><input id="f" type="file" accept="image/*"><span id="dt" data-en="Tap to choose a photo" data-hi="फोटो चुनने के लिए टैप करें">Tap to choose a photo</span></label>
+ <label class="drop"><input id="f" type="file" accept="image/*" multiple><span id="dt" data-en="Tap to choose photos (one or many)" data-hi="फोटो चुनने के लिए टैप करें (एक या कई)">Tap to choose photos (one or many)</span></label>
  <div id="ctl" hidden>
   <p class="hint" id="orig"></p>
+  <label for="ps" data-en="Preset size" data-hi="प्रीसेट साइज़">Preset size</label>
+  <select id="ps"><option value="">Custom</option><option value="1080x1080">Instagram post 1080×1080</option><option value="1080x1350">Instagram portrait 1080×1350</option><option value="1080x1920">Story / Reel 1080×1920</option><option value="1280x720">YouTube thumbnail 1280×720</option><option value="1584x396">LinkedIn banner 1584×396</option><option value="820x312">Facebook cover 820×312</option><option value="500x500">WhatsApp DP 500×500</option><option value="413x531">Passport photo 35×45 mm (300 dpi)</option><option value="2480x3508">A4 at 300 dpi</option></select>
   <div class="seg">
-   <button class="chip p" data-p="25">25%</button><button class="chip p" data-p="50">50%</button><button class="chip p" data-p="75">75%</button><button class="chip p" data-p="100">100%</button>
+   <button class="chip p" type="button" data-p="25">25%</button><button class="chip p" type="button" data-p="50">50%</button><button class="chip p" type="button" data-p="75">75%</button><button class="chip p" type="button" data-p="100">100%</button>
   </div>
   <div class="two">
-   <div><label data-en="Width (px)" data-hi="चौड़ाई (px)">Width</label><input id="w" type="number" inputmode="numeric" min="1" max="8000"></div>
-   <div><label data-en="Height (px)" data-hi="ऊंचाई (px)">Height</label><input id="h" type="number" inputmode="numeric" min="1" max="8000"></div>
+   <div><label for="w" data-en="Width" data-hi="चौड़ाई">Width</label><input id="w" type="number" inputmode="decimal" min="0.1" step="any"></div>
+   <div><label for="h" data-en="Height" data-hi="ऊंचाई">Height</label><input id="h" type="number" inputmode="decimal" min="0.1" step="any"></div>
+  </div>
+  <div class="two">
+   <div><label for="un" data-en="Unit" data-hi="यूनिट">Unit</label><select id="un"><option value="px">px</option><option value="cm">cm</option><option value="mm">mm</option><option value="in">inch</option></select></div>
+   <div><label for="dpi" data-en="DPI (for cm / mm / inch)" data-hi="DPI (cm / mm / inch के लिए)">DPI</label><input id="dpi" type="number" inputmode="numeric" min="30" max="1200" value="300"></div>
   </div>
   <label class="chk"><input id="lock" type="checkbox" checked><span data-en="Keep proportions" data-hi="अनुपात वही रखें">Lock</span></label>
-  <label data-en="Output format" data-hi="आउटपुट फॉर्मेट">Format</label>
+  <div class="two">
+   <div><label for="fit" data-en="If proportions differ" data-hi="अनुपात अलग हो तो">Fit mode</label><select id="fit"><option value="stretch">Stretch</option><option value="contain">Fit inside (add background)</option><option value="cover">Fill and crop</option></select></div>
+   <div><label for="bg" data-en="Background" data-hi="बैकग्राउंड">Background</label><input id="bg" type="color" value="#ffffff"></div>
+  </div>
+  <label for="fmt" data-en="Output format" data-hi="आउटपुट फॉर्मेट">Format</label>
   <select id="fmt"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select>
-  <div class="seg"><button class="btn gold" id="go" data-en="Resize" data-hi="रीसाइज़ करें">Resize</button></div>
+  <div class="seg"><button class="btn gold" id="go" type="button" data-en="Resize" data-hi="रीसाइज़ करें">Resize</button></div>
  </div>
  <div class="err" id="err" hidden></div>
 </div>
 <div class="panel" id="res" hidden>
  <p class="line" id="info"></p>
  <img id="pv" class="pimg" alt="">
- <div class="seg" style="justify-content:center"><button class="btn gold" id="dl" data-en="Download" data-hi="डाउनलोड करें">Download</button></div>
+ <div id="list" class="flist"></div>
+ <div class="seg" style="justify-content:center"><button class="btn gold" id="dl" data-en="Download" data-hi="डाउनलोड करें">Download</button><button class="btn" id="dz" hidden data-en="Download all (ZIP)" data-hi="सब डाउनलोड करें (ZIP)">Download all (ZIP)</button></div>
 </div>
+<style>.flist{display:grid;gap:6px;margin:10px 0}.flist div{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;font-size:.9rem}.flist span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.flist b{white-space:nowrap}#bg{height:44px;padding:2px}</style>
 <!--DTA:EXTRA--><aside class="privacy-note"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5.500c0 4.200 2.800 7.500 7 9.500 4.200-2 7-5.300 7-9.500V6z"/><path d="m9 12 2.200 2.200L15.500 10"/></svg><p data-en="Your files are processed on your device and never uploaded. Limits: 30 MB per image, 50 MB per PDF." data-hi="आपकी फाइलें आपके डिवाइस पर प्रोसेस होती हैं, अपलोड नहीं होतीं। सीमा: हर इमेज 30 MB, हर PDF 50 MB।">Your files are processed on your device and never uploaded. Limits: 30 MB per image, 50 MB per PDF.</p></aside>
 <section class="seo-about">
  <h2 data-en="About Resize Image" data-hi="इमेज रीसाइज़ के बारे में">About Resize Image</h2>
@@ -104,31 +116,61 @@
 <script defer src="/js/tools-data.js"></script>
 <script defer src="/js/tool.js"></script>
 <script defer src="/js/img.js"></script>
+<script defer src="/js/zip.js"></script>
 <script type="module">
-var im=null,file=null,blob=null,url=null,ratio=1;
-pickImage($("f"),function(i,f){
+var items=[],ratio=1,unit="px",MAXD=8000;
+var F={px:null,cm:2.54,mm:25.4,in:1};
+function dpi(){return Math.min(1200,Math.max(30,+$("dpi").value||300))}
+function toPx(v){return unit==="px"?v:v/F[unit]*dpi()}
+function fromPx(v){return unit==="px"?Math.round(v):+(v*F[unit]/dpi()).toFixed(2)}
+function load(f){return new Promise(function(r){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){URL.revokeObjectURL(u);r({f:f,im:im})};im.onerror=function(){URL.revokeObjectURL(u);r({f:f,im:null})};im.src=u})}
+function first(){return items.find(function(i){return i.im})}
+$("f").addEventListener("change",async function(){
+ var fs=[].slice.call($("f").files);if(!fs.length)return;
+ items=(await Promise.all(fs.map(load)));var i=first();
  if(!i){$("err").hidden=false;$("err").textContent=L("Could not open this image.","यह इमेज नहीं खुल सकी।");return}
- im=i;file=f;ratio=i.naturalWidth/i.naturalHeight;
- $("err").hidden=true;$("ctl").hidden=false;$("res").hidden=true;$("dt").textContent=f.name;
- $("w").value=i.naturalWidth;$("h").value=i.naturalHeight;
- $("orig").textContent=L("Original: ","असली: ")+i.naturalWidth+" × "+i.naturalHeight+" px • "+sizeOf(f.size);
+ var im=i.im,f=i.f;ratio=im.naturalWidth/im.naturalHeight;
+ $("err").hidden=true;$("ctl").hidden=false;$("res").hidden=true;$("dt").textContent=fs.length>1?fs.length+L(" photos selected"," फोटो चुनी गईं"):f.name;
+ $("w").value=fromPx(im.naturalWidth);$("h").value=fromPx(im.naturalHeight);
+ $("orig").textContent=(fs.length>1?L("First image — ","पहली इमेज — "):"")+L("Original: ","असली: ")+im.naturalWidth+" × "+im.naturalHeight+" px • "+sizeOf(f.size);
  $("fmt").value=f.type==="image/png"?"image/png":f.type==="image/webp"?"image/webp":"image/jpeg";
 });
-$("w").addEventListener("input",function(){if($("lock").checked&&+$("w").value>0)$("h").value=Math.round($("w").value/ratio)});
-$("h").addEventListener("input",function(){if($("lock").checked&&+$("h").value>0)$("w").value=Math.round($("h").value*ratio)});
-document.querySelectorAll(".p").forEach(function(b){b.onclick=function(){
- var p=+b.dataset.p/100;$("w").value=Math.round(im.naturalWidth*p);$("h").value=Math.round(im.naturalHeight*p);
+$("w").addEventListener("input",function(){$("ps").value="";if($("lock").checked&&+$("w").value>0)$("h").value=fromPx(toPx(+$("w").value)/ratio)});
+$("h").addEventListener("input",function(){$("ps").value="";if($("lock").checked&&+$("h").value>0)$("w").value=fromPx(toPx(+$("h").value)*ratio)});
+$("un").onchange=function(){var w=toPx(+$("w").value),h=toPx(+$("h").value);unit=$("un").value;$("w").value=fromPx(w);$("h").value=fromPx(h)};
+$("dpi").addEventListener("input",function(){if(unit!=="px"){}});
+document.querySelectorAll(".p").forEach(function(b){b.onclick=function(){var i=first();if(!i)return;
+ var p=+b.dataset.p/100;$("w").value=fromPx(i.im.naturalWidth*p);$("h").value=fromPx(i.im.naturalHeight*p);$("ps").value="";
 }});
-$("go").onclick=function(){
- var w=Math.round(+$("w").value),h=Math.round(+$("h").value);
- if(!(w>0&&h>0)||w>8000||h>8000){$("err").hidden=false;$("err").textContent=L("Enter width and height between 1 and 8000.","चौड़ाई और ऊंचाई 1 से 8000 के बीच डालें।");return}
- $("err").hidden=true;
- renderImg(im,w,h,$("fmt").value,0.92).then(function(b){
-  blob=b;if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(b);$("pv").src=url;
-  $("info").textContent=w+" × "+h+" px • "+sizeOf(b.size);$("res").hidden=false;
- });
+$("ps").onchange=function(){var v=$("ps").value;if(!v)return;var a=v.split("x");$("lock").checked=false;$("w").value=fromPx(+a[0]);$("h").value=fromPx(+a[1]);
+ if($("fit").value==="stretch")$("fit").value="cover"};
+function draw(im,W,H,type,fit,bg){
+ var c=document.createElement("canvas");c.width=W;c.height=H;var x=c.getContext("2d");
+ if(type!=="image/png"||fit==="contain"){x.fillStyle=bg;if(type!=="image/png"||fit==="contain")x.fillRect(0,0,W,H)}
+ x.imageSmoothingQuality="high";
+ var iw=im.naturalWidth,ih=im.naturalHeight;
+ if(fit==="stretch")x.drawImage(im,0,0,W,H);
+ else{var k=fit==="cover"?Math.max(W/iw,H/ih):Math.min(W/iw,H/ih),dw=iw*k,dh=ih*k;x.drawImage(im,(W-dw)/2,(H-dh)/2,dw,dh)}
+ return new Promise(function(r){c.toBlob(r,type,0.92)});
+}
+$("go").onclick=async function(){
+ var w=Math.round(toPx(+$("w").value)),h=Math.round(toPx(+$("h").value)),lock=$("lock").checked;
+ if(!(w>0&&h>0)||w>MAXD||h>MAXD){$("err").hidden=false;$("err").textContent=L("Enter width and height between 1 and 8000 px.","चौड़ाई और ऊंचाई 1 से 8000 px के बीच डालें।");return}
+ $("err").hidden=true;var t=$("fmt").value;
+ for(var it of items){if(!it.im)continue;
+  var W=w,H=lock?Math.max(1,Math.round(w*it.im.naturalHeight/it.im.naturalWidth)):h;
+  if(H>MAXD)H=MAXD;
+  it.W=W;it.H=H;it.out=await draw(it.im,W,H,t,lock?"stretch":$("fit").value,$("bg").value)}
+ var ok=items.filter(function(i){return i.out}),one=ok.length===1,o=ok[0];
+ $("info").textContent=one?o.W+" × "+o.H+" px • "+sizeOf(o.out.size):ok.length+L(" images resized"," इमेज रीसाइज़ हुईं");
+ $("pv").hidden=!one;$("list").hidden=one;$("dl").hidden=!one;$("dz").hidden=one;
+ if(one){if(items.u)URL.revokeObjectURL(items.u);items.u=URL.createObjectURL(o.out);$("pv").src=items.u}
+ $("list").innerHTML="";ok.forEach(function(i){var d=document.createElement("div"),a=document.createElement("span"),b=document.createElement("b");a.textContent=i.f.name;b.textContent=i.W+"×"+i.H+" • "+sizeOf(i.out.size);d.append(a,b);$("list").append(d)});
+ $("res").hidden=false;
 };
-$("dl").onclick=function(){if(blob)saveBlob(blob,baseName(file)+"-"+$("w").value+"x"+$("h").value+"."+extOf(blob.type))};
+function nm(i){return baseName(i.f)+"-"+i.W+"x"+i.H+"."+extOf(i.out.type)}
+$("dl").onclick=function(){var i=items.find(function(x){return x.out});if(i)saveBlob(i.out,nm(i))};
+$("dz").onclick=async function(){var fl=[];for(var i of items){if(i.out)fl.push({name:nm(i),data:new Uint8Array(await i.out.arrayBuffer())})}saveBlob(DTAzip.build(fl),"dtahub-resized.zip")};
 </script>
 </body>
 </html>
