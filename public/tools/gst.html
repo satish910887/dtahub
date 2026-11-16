@@ -69,22 +69,39 @@
  <input id="amt" type="number" inputmode="decimal" value="1000" min="0">
  <label data-en="GST rate (%)" data-hi="GST दर (%)">GST rate</label>
  <input id="rate" type="number" inputmode="decimal" value="18" min="0" step="0.01">
- <div class="seg">
+ <div class="seg" id="rch">
+  <button class="chip r" data-r="0.25">0.25%</button>
+  <button class="chip r" data-r="3">3%</button>
+  <button class="chip r" data-r="0.25">0.25%</button>
+  <button class="chip r" data-r="3">3%</button>
   <button class="chip r" data-r="5">5%</button>
   <button class="chip r" data-r="12">12%</button>
   <button class="chip r on" data-r="18">18%</button>
   <button class="chip r" data-r="28">28%</button>
  </div>
+ <div class="seg"><button class="chip on" type="button" id="tin" data-en="Same state (CGST + SGST)" data-hi="एक ही राज्य (CGST + SGST)">Same state (CGST + SGST)</button><button class="chip" type="button" id="tout" data-en="Other state (IGST)" data-hi="दूसरा राज्य (IGST)">Other state (IGST)</button></div>
+ <label class="chk"><input id="rnd" type="checkbox"><span data-en="Round total to nearest rupee" data-hi="कुल राशि को पास के रुपये में राउंड करें">Round total</span></label>
 </div>
 <div class="panel" id="res" hidden>
  <div class="stats">
   <div class="stat"><small data-en="Price without GST" data-hi="GST के बिना कीमत">Net</small><b id="o-net"></b></div>
   <div class="stat"><small data-en="GST amount" data-hi="GST राशि">GST</small><b id="o-gst"></b></div>
-  <div class="stat"><small>CGST</small><b id="o-c"></b></div>
-  <div class="stat"><small>SGST</small><b id="o-s"></b></div>
+  <div class="stat" id="wc"><small>CGST</small><b id="o-c"></b></div>
+  <div class="stat" id="ws"><small>SGST</small><b id="o-s"></b></div>
+  <div class="stat" id="wi" hidden><small>IGST</small><b id="o-i"></b></div>
+  <div class="stat" id="wr" hidden><small data-en="Round-off" data-hi="राउंड-ऑफ">Round-off</small><b id="o-r"></b></div>
   <div class="stat big"><small data-en="Price with GST" data-hi="GST के साथ कीमत">Total</small><b id="o-tot"></b></div>
  </div>
+ <div class="seg" style="justify-content:center"><button class="btn" type="button" id="cpy" data-en="Copy summary" data-hi="सार कॉपी करें">Copy summary</button></div>
 </div>
+<div class="panel"><details id="bill"><summary data-en="Itemised bill (many items, different rates)" data-hi="आइटम वाला बिल (कई आइटम, अलग दरें)">Itemised bill (many items, different rates)</summary>
+ <p class="hint" data-en="Prices here are without GST. Uses the same-state / other-state choice above." data-hi="यहां कीमतें GST के बिना हैं। ऊपर का एक राज्य / दूसरा राज्य विकल्प लागू होता है।">Prices are without GST.</p>
+ <div id="rows"></div>
+ <div class="seg"><button class="btn" type="button" id="addr" data-en="+ Add item" data-hi="+ आइटम जोड़ें">+ Add item</button><button class="btn" type="button" id="csv" data-en="Download CSV" data-hi="CSV डाउनलोड">Download CSV</button></div>
+ <div class="stats" id="bt"></div>
+</details></div>
+<style>.irow{display:grid;grid-template-columns:2fr 1fr 1.3fr 1fr auto;gap:6px;margin:6px 0}.irow input{min-width:0}.irow button{padding:0 10px}@media(max-width:520px){.irow{grid-template-columns:1fr 1fr 1fr auto}.irow .nm{grid-column:1/5}}</style>
+
 <!--DTA:EXTRA--><aside class="privacy-note"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5.500c0 4.200 2.800 7.500 7 9.500 4.200-2 7-5.300 7-9.500V6z"/><path d="m9 12 2.200 2.200L15.500 10"/></svg><p data-en="Calculations run in your browser. Nothing you enter is stored or sent." data-hi="हिसाब आपके ब्राउज़र में होता है। आप जो डालते हैं वो सेव या भेजा नहीं जाता।">Calculations run in your browser. Nothing you enter is stored or sent.</p></aside>
 <section class="seo-about">
  <h2 data-en="About GST Calculator" data-hi="GST कैलकुलेटर के बारे में">About GST Calculator</h2>
@@ -105,26 +122,67 @@
 </div><div class="foot-bot"><span>© 2026 DTAhub</span><span><span data-en="Made with care in India." data-hi="भारत में प्यार से बनाया गया।">Made with care in India.</span></span></div></footer><!--/DTA:FOOT-->
 <script defer src="/js/tools-data.js"></script>
 <script defer src="/js/tool.js"></script>
+<script defer src="/js/img.js"></script>
 <script type="module">
-var mode="add";
+var mode="add",inter=false,last="",lines=[{n:"",q:1,p:1000,r:18}];
+var inr=function(v){return"₹\u00a0"+fmt(v)};
 function calc(){
  var A=+$("amt").value,R=+$("rate").value;
  document.querySelectorAll(".r").forEach(function(b){b.classList.toggle("on",+b.dataset.r===R)});
+ bill();
  if(!(A>=0)||!(R>=0)||$("amt").value===""){$("res").hidden=true;return}
  var net,gst,tot;
  if(mode==="add"){net=A;gst=A*R/100;tot=A+gst}
  else{net=A*100/(100+R);gst=A-net;tot=A}
+ var ro=0;if($("rnd").checked){ro=Math.round(tot)-tot;tot=Math.round(tot)}
  $("res").hidden=false;
- $("o-net").textContent="₹\u00a0"+fmt(net);
- $("o-gst").textContent="₹\u00a0"+fmt(gst);
- $("o-c").textContent="₹\u00a0"+fmt(gst/2);
- $("o-s").textContent="₹\u00a0"+fmt(gst/2);
- $("o-tot").textContent="₹\u00a0"+fmt(tot);
+ $("o-net").textContent=inr(net);$("o-gst").textContent=inr(gst);
+ $("o-c").textContent=inr(gst/2);$("o-s").textContent=inr(gst/2);$("o-i").textContent=inr(gst);
+ $("wc").hidden=$("ws").hidden=inter;$("wi").hidden=!inter;
+ $("wr").hidden=!$("rnd").checked;$("o-r").textContent=(ro>=0?"+":"−")+inr(Math.abs(ro));
+ $("o-tot").textContent=inr(tot);
+ last=L("Net","बिना GST")+" "+inr(net)+" | GST "+R+"% "+inr(gst)+(inter?" (IGST)":" (CGST+SGST)")+" | "+L("Total","कुल")+" "+inr(tot);
 }
-document.querySelectorAll("input").forEach(function(i){i.addEventListener("input",calc)});
+function bill(){
+ var box=$("rows");
+ if(box.children.length!==lines.length){
+  box.innerHTML="";
+  lines.forEach(function(l,i){
+   var d=document.createElement("div");d.className="irow";
+   d.innerHTML='<input class="nm" aria-label="Item" placeholder="Item" value=""><input data-k="q" type="number" inputmode="decimal" min="0" aria-label="Qty" placeholder="Qty"><input data-k="p" type="number" inputmode="decimal" min="0" aria-label="Price" placeholder="Price"><select data-k="r" aria-label="GST %"><option>0</option><option>0.25</option><option>3</option><option>5</option><option>12</option><option>18</option><option>28</option></select><button class="btn" type="button" aria-label="Remove">✕</button>';
+   var ins=d.querySelectorAll("input,select");
+   ins[0].value=l.n;ins[1].value=l.q;ins[2].value=l.p;ins[3].value=l.r;
+   ins[0].oninput=function(){l.n=ins[0].value};
+   [1,2,3].forEach(function(k){ins[k].oninput=ins[k].onchange=function(){l[["","q","p","r"][k]]=+ins[k].value;bill()}});
+   d.querySelector("button").onclick=function(){if(lines.length>1){lines.splice(i,1);box.innerHTML="";bill()}};
+   box.appendChild(d);
+  });
+ }
+ var by={},net=0,gst=0;
+ lines.forEach(function(l){var n=(l.q||0)*(l.p||0),g=n*(l.r||0)/100;net+=n;gst+=g;by[l.r]=(by[l.r]||0)+g});
+ var tot=net+gst,ro=0;if($("rnd").checked){ro=Math.round(tot)-tot;tot=Math.round(tot)}
+ var h='<div class="stat"><small>'+L("Taxable value","कर योग्य मूल्य")+'</small><b>'+inr(net)+'</b></div>';
+ Object.keys(by).sort(function(a,b){return a-b}).forEach(function(r){
+  h+=inter?'<div class="stat"><small>IGST '+r+'%</small><b>'+inr(by[r])+'</b></div>':'<div class="stat"><small>CGST '+(r/2)+'%</small><b>'+inr(by[r]/2)+'</b></div><div class="stat"><small>SGST '+(r/2)+'%</small><b>'+inr(by[r]/2)+'</b></div>'});
+ h+='<div class="stat big"><small>'+L("Invoice total","बिल कुल")+'</small><b>'+inr(tot)+'</b></div>';
+ $("bt").innerHTML=h;bill.t={net:net,gst:gst,tot:tot,ro:ro};
+}
+$("addr").onclick=function(){lines.push({n:"",q:1,p:0,r:18});bill()};
+$("csv").onclick=function(){
+ var q=function(x){return'"'+String(x).replace(/"/g,'""')+'"'};
+ var t="Item,Qty,Price,GST %,Taxable,GST,"+(inter?"IGST":"CGST,SGST")+",Total\n"+lines.map(function(l){var n=l.q*l.p,g=n*l.r/100;return[q(l.n),l.q,l.p,l.r,n.toFixed(2),g.toFixed(2)].concat(inter?[g.toFixed(2)]:[(g/2).toFixed(2),(g/2).toFixed(2)],[(n+g).toFixed(2)]).join(",")}).join("\n");
+ var T=bill.t;t+="\nTOTAL,,,,"+T.net.toFixed(2)+","+T.gst.toFixed(2)+(inter?","+T.gst.toFixed(2):","+(T.gst/2).toFixed(2)+","+(T.gst/2).toFixed(2))+","+T.tot.toFixed(2);
+ saveBlob(new Blob([t],{type:"text/csv"}),"gst-bill.csv");
+};
+document.querySelectorAll("#res ~ * input,input").forEach(function(i){i.addEventListener("input",calc)});
+$("rnd").addEventListener("change",calc);
 document.querySelectorAll(".r").forEach(function(b){b.onclick=function(){$("rate").value=b.dataset.r;calc()}});
 $("madd").onclick=function(){mode="add";$("madd").classList.add("on");$("mrem").classList.remove("on");calc()};
 $("mrem").onclick=function(){mode="rem";$("mrem").classList.add("on");$("madd").classList.remove("on");calc()};
+$("tin").onclick=function(){inter=false;$("tin").classList.add("on");$("tout").classList.remove("on");calc()};
+$("tout").onclick=function(){inter=true;$("tout").classList.add("on");$("tin").classList.remove("on");calc()};
+$("cpy").onclick=function(){if(last)copyText(last)};
+document.addEventListener("langchange",calc);
 calc();
 </script>
 </body>
