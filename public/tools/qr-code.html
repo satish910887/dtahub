@@ -61,19 +61,39 @@
  <button class="btn" type="button" data-reset><span data-en="Reset" data-hi="रीसेट">Reset</span></button>
 </div><!--/DTA:ACTIONS-->
 <div class="panel">
- <label data-en="Text or link" data-hi="टेक्स्ट या लिंक">Text</label>
- <textarea id="t" style="min-height:90px" placeholder="https://dtahub.pages.dev"></textarea>
+ <label for="ty" data-en="What should the QR hold?" data-hi="QR में क्या रखना है?">QR type</label>
+ <select id="ty"><option value="text">Text / Link</option><option value="wifi">WiFi</option><option value="upi">UPI payment</option><option value="vcard">Contact (vCard)</option><option value="mail">Email</option><option value="sms">SMS</option><option value="wa">WhatsApp</option><option value="geo">Location</option></select>
+ <div data-ty="text"><label for="t" data-en="Text or link" data-hi="टेक्स्ट या लिंक">Text</label><textarea id="t" style="min-height:90px" placeholder="https://dtahub.pages.dev"></textarea></div>
+ <div data-ty="wifi" hidden><label for="wn" data-en="Network name (SSID)" data-hi="नेटवर्क नाम (SSID)">Network name</label><input id="wn" data-f><label for="wp" data-en="Password" data-hi="पासवर्ड">Password</label><input id="wp" data-f><label for="wt" data-en="Security" data-hi="सिक्योरिटी">Security</label><select id="wt" data-f><option>WPA</option><option>WEP</option><option value="nopass">None</option></select></div>
+ <div data-ty="upi" hidden><label for="ua" data-en="UPI ID (e.g. name@bank)" data-hi="UPI ID (जैसे name@bank)">UPI ID</label><input id="ua" data-f><label for="un" data-en="Payee name" data-hi="पाने वाले का नाम">Payee name</label><input id="un" data-f><label for="um" data-en="Amount (optional)" data-hi="राशि (वैकल्पिक)">Amount</label><input id="um" type="number" inputmode="decimal" data-f><label for="uo" data-en="Note (optional)" data-hi="नोट (वैकल्पिक)">Note</label><input id="uo" data-f></div>
+ <div data-ty="vcard" hidden><label for="vn" data-en="Full name" data-hi="पूरा नाम">Full name</label><input id="vn" data-f><label for="vp" data-en="Phone" data-hi="फोन">Phone</label><input id="vp" type="tel" data-f><label for="ve" data-en="Email" data-hi="ईमेल">Email</label><input id="ve" type="email" data-f><label for="vo" data-en="Company" data-hi="कंपनी">Company</label><input id="vo" data-f><label for="vu" data-en="Website" data-hi="वेबसाइट">Website</label><input id="vu" data-f></div>
+ <div data-ty="mail" hidden><label for="mt" data-en="To" data-hi="किसे">To</label><input id="mt" type="email" data-f><label for="ms" data-en="Subject" data-hi="विषय">Subject</label><input id="ms" data-f><label for="mb" data-en="Message" data-hi="संदेश">Message</label><textarea id="mb" data-f></textarea></div>
+ <div data-ty="sms" hidden><label for="sn" data-en="Phone number" data-hi="फोन नंबर">Phone number</label><input id="sn" type="tel" data-f><label for="sm" data-en="Message" data-hi="संदेश">Message</label><textarea id="sm" data-f></textarea></div>
+ <div data-ty="wa" hidden><label for="wan" data-en="Number with country code (e.g. 919876543210)" data-hi="देश कोड के साथ नंबर (जैसे 919876543210)">Number</label><input id="wan" type="tel" data-f><label for="wam" data-en="Message (optional)" data-hi="संदेश (वैकल्पिक)">Message</label><textarea id="wam" data-f></textarea></div>
+ <div data-ty="geo" hidden><div class="two"><div><label for="gl" data-en="Latitude" data-hi="अक्षांश">Latitude</label><input id="gl" inputmode="decimal" data-f></div><div><label for="go" data-en="Longitude" data-hi="देशांतर">Longitude</label><input id="go" inputmode="decimal" data-f></div></div></div>
+ <details style="margin-top:12px"><summary data-en="Style &amp; options" data-hi="स्टाइल और विकल्प">Style &amp; options</summary>
  <div class="two">
-  <div><label data-en="Size" data-hi="साइज़">Size</label>
-   <select id="sz"><option value="256">256 px</option><option value="512" selected>512 px</option><option value="1024">1024 px</option></select></div>
-  <div><label data-en="Error correction" data-hi="एरर करेक्शन">Level</label>
+  <div><label for="sz" data-en="Size" data-hi="साइज़">Size</label>
+   <select id="sz"><option value="256">256 px</option><option value="512" selected>512 px</option><option value="1024">1024 px</option><option value="2048">2048 px</option></select></div>
+  <div><label for="ec" data-en="Error correction" data-hi="एरर करेक्शन">Level</label>
    <select id="ec"><option value="L">Low</option><option value="M" selected>Medium</option><option value="Q">Quartile</option><option value="H">High</option></select></div>
  </div>
+ <div class="two">
+  <div><label for="fg" data-en="QR colour" data-hi="QR रंग">QR colour</label><input id="fg" type="color" value="#000000"></div>
+  <div><label for="bg" data-en="Background" data-hi="बैकग्राउंड">Background</label><input id="bg" type="color" value="#ffffff"></div>
+ </div>
+ <div class="two">
+  <div><label for="st" data-en="Dot style" data-hi="डॉट स्टाइल">Dot style</label><select id="st"><option value="sq">Square</option><option value="dot">Dots</option><option value="rd">Rounded</option></select></div>
+  <div><label for="mg" data-en="Margin (modules)" data-hi="मार्जिन (मॉड्यूल)">Margin</label><input id="mg" type="number" inputmode="numeric" min="0" max="10" value="4"></div>
+ </div>
+ <label for="lg" data-en="Logo in the centre (optional)" data-hi="बीच में लोगो (वैकल्पिक)">Logo</label><input id="lg" type="file" accept="image/*"><button class="btn" type="button" id="lgx" hidden data-en="Remove logo" data-hi="लोगो हटाएं">Remove logo</button>
+ </details>
  <div class="err" id="err" hidden></div>
 </div>
 <div class="panel" id="res" hidden>
  <div class="qrbox"><canvas id="cv" width="256" height="256"></canvas></div>
- <div class="seg" style="justify-content:center"><button class="btn gold" id="dl" data-en="Download PNG" data-hi="PNG डाउनलोड करें">Download PNG</button></div>
+ <p class="hint" id="wn2" hidden data-en="Low contrast: some scanners may not read this. Use a dark QR on a light background." data-hi="कम कंट्रास्ट: कुछ स्कैनर पढ़ नहीं पाएंगे। हल्के बैकग्राउंड पर गहरा QR रखें।">Low contrast.</p>
+ <div class="seg" style="justify-content:center"><button class="btn gold" id="dl" data-en="Download PNG" data-hi="PNG डाउनलोड करें">Download PNG</button><button class="btn" id="dsv" data-en="Download SVG" data-hi="SVG डाउनलोड करें">Download SVG</button></div>
 </div>
 <!--DTA:EXTRA--><aside class="privacy-note"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5.500c0 4.200 2.800 7.500 7 9.500 4.200-2 7-5.300 7-9.500V6z"/><path d="m9 12 2.200 2.200L15.500 10"/></svg><p data-en="Your text stays in your browser. Nothing is stored or sent anywhere." data-hi="आपका टेक्स्ट आपके ब्राउज़र में ही रहता है। कुछ भी सेव या कहीं भेजा नहीं जाता।">Your text stays in your browser. Nothing is stored or sent anywhere.</p></aside>
 <section class="seo-about">
@@ -98,26 +118,61 @@
 <script defer src="/js/tool.js"></script>
 <script type="module">
 if(qrcode.stringToBytesFuncs&&qrcode.stringToBytesFuncs["UTF-8"])qrcode.stringToBytes=qrcode.stringToBytesFuncs["UTF-8"];
+var logo=null,cur=null;
+function v(i){return($(i).value||"").trim()}
+function esc(x){return x.replace(/([\\;,:"])/g,"\\$1")}
+function payload(){
+ var t=$("ty").value;
+ if(t==="text")return $("t").value;
+ if(t==="wifi"){if(!v("wn"))return"";return"WIFI:T:"+($("wt").value)+";S:"+esc(v("wn"))+";P:"+esc($("wp").value)+";;"}
+ if(t==="upi"){if(!v("ua"))return"";var q="pa="+encodeURIComponent(v("ua"));if(v("un"))q+="&pn="+encodeURIComponent(v("un"));if(+v("um")>0)q+="&am="+(+v("um"));q+="&cu=INR";if(v("uo"))q+="&tn="+encodeURIComponent(v("uo"));return"upi://pay?"+q}
+ if(t==="vcard"){if(!v("vn"))return"";return["BEGIN:VCARD","VERSION:3.0","FN:"+v("vn"),v("vo")?"ORG:"+v("vo"):"",v("vp")?"TEL:"+v("vp"):"",v("ve")?"EMAIL:"+v("ve"):"",v("vu")?"URL:"+v("vu"):"","END:VCARD"].filter(Boolean).join("\n")}
+ if(t==="mail"){if(!v("mt"))return"";return"mailto:"+v("mt")+"?subject="+encodeURIComponent(v("ms"))+"&body="+encodeURIComponent($("mb").value)}
+ if(t==="sms"){if(!v("sn"))return"";return"SMSTO:"+v("sn")+":"+$("sm").value}
+ if(t==="wa"){var n=v("wan").replace(/\D/g,"");if(!n)return"";return"https://wa.me/"+n+($("wam").value?"?text="+encodeURIComponent($("wam").value):"")}
+ if(t==="geo"){if(!isFinite(+v("gl"))||!isFinite(+v("go"))||!v("gl")||!v("go"))return"";return"geo:"+v("gl")+","+v("go")}
+ return"";
+}
+function lum(h){var n=parseInt(h.slice(1),16),c=[n>>16&255,n>>8&255,n&255].map(function(x){x/=255;return x<=.03928?x/12.92:Math.pow((x+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]}
+function shape(x,y,st,fg){ // returns [canvasFn, svgString]
+ if(st==="dot")return{svg:'<circle cx="'+(x+.5)+'" cy="'+(y+.5)+'" r=".5"/>',cv:function(g,k){g.beginPath();g.arc((x+.5)*k,(y+.5)*k,.5*k,0,7);g.fill()}};
+ if(st==="rd")return{svg:'<rect x="'+x+'" y="'+y+'" width="1" height="1" rx=".3"/>',cv:function(g,k){g.beginPath();g.roundRect?g.roundRect(x*k,y*k,k,k,.3*k):g.rect(x*k,y*k,k,k);g.fill()}};
+ return{svg:'<rect x="'+x+'" y="'+y+'" width="1" height="1"/>',cv:function(g,k){g.fillRect(x*k,y*k,k+.5,k+.5)}};
+}
 function draw(){
- var t=$("t").value,err=$("err");
- err.hidden=true;
+ var t=payload(),err=$("err");err.hidden=true;
  if(!t){$("res").hidden=true;return}
  try{
-  var q=qrcode(0,$("ec").value);q.addData(t);q.make();
-  var n=q.getModuleCount(),size=+$("sz").value,margin=4,cell=Math.max(1,Math.floor(size/(n+margin*2)));
-  var px=cell*(n+margin*2),c=$("cv"),x=c.getContext("2d");
-  c.width=px;c.height=px;
-  x.fillStyle="#fff";x.fillRect(0,0,px,px);x.fillStyle="#000";
-  for(var r=0;r<n;r++)for(var k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+margin)*cell,(r+margin)*cell,cell,cell);
+  var ec=logo?"H":$("ec").value;
+  var q=qrcode(0,ec);q.addData(t);q.make();
+  var n=q.getModuleCount(),mg=Math.max(0,Math.min(10,+$("mg").value||0)),tot=n+mg*2,size=+$("sz").value,k=Math.max(1,Math.floor(size/tot)),px=k*tot;
+  var fg=$("fg").value,bg=$("bg").value,st=$("st").value,c=$("cv"),g=c.getContext("2d");
+  c.width=px;c.height=px;g.fillStyle=bg;g.fillRect(0,0,px,px);g.fillStyle=fg;
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+tot+' '+tot+'" width="'+size+'" height="'+size+'" shape-rendering="geometricPrecision"><rect width="'+tot+'" height="'+tot+'" fill="'+bg+'"/><g fill="'+fg+'">';
+  var skip=logo?Math.ceil(n*.22):0,lo=Math.floor((n-skip)/2);
+  for(var r=0;r<n;r++)for(var j=0;j<n;j++){
+   if(!q.isDark(r,j))continue;
+   if(logo&&r>=lo-1&&r<=lo+skip&&j>=lo-1&&j<=lo+skip)continue;
+   var sh=shape(j+mg,r+mg,st,fg);sh.cv(g,k);svg+=sh.svg}
+  svg+="</g>";
+  if(logo){var ls=(skip+2)*k,lx=(lo-1+mg)*k;g.fillStyle=bg;g.fillRect(lx,lx,ls,ls);var rr=Math.min(logo.width,logo.height),sc=(ls*.84)/Math.max(logo.width,logo.height);var lw=logo.width*sc,lh=logo.height*sc;g.drawImage(logo,lx+(ls-lw)/2,lx+(ls-lh)/2,lw,lh);
+   var u=document.createElement("canvas");u.width=logo.width;u.height=logo.height;u.getContext("2d").drawImage(logo,0,0);var kk=ls/k;
+   svg+='<rect x="'+(lo-1+mg)+'" y="'+(lo-1+mg)+'" width="'+kk+'" height="'+kk+'" fill="'+bg+'"/><image href="'+u.toDataURL("image/png")+'" x="'+((lo-1+mg)+(kk-lw/k)/2)+'" y="'+((lo-1+mg)+(kk-lh/k)/2)+'" width="'+(lw/k)+'" height="'+(lh/k)+'"/>'}
+  svg+="</svg>";cur=svg;
+  $("wn2").hidden=Math.abs(lum(bg)-lum(fg))>.35||lum(fg)>lum(bg)?Math.abs(lum(bg)-lum(fg))>.35&&lum(fg)<=lum(bg):false;
+  $("wn2").hidden=!(lum(fg)>lum(bg)||Math.abs(lum(bg)-lum(fg))<.35);
   $("res").hidden=false;
  }catch(e){
   $("res").hidden=true;err.hidden=false;
   err.textContent=L("Text is too long for a QR code.","टेक्स्ट QR कोड के लिए बहुत लंबा है।");
  }
 }
-$("t").addEventListener("input",draw);
-$("sz").onchange=draw;$("ec").onchange=draw;
+$("ty").onchange=function(){document.querySelectorAll("[data-ty]").forEach(function(d){d.hidden=d.dataset.ty!==$("ty").value});draw()};
+document.querySelectorAll("input,textarea,select").forEach(function(e){if(e.id!=="lg"&&e.id!=="ty")e.addEventListener("input",draw)});
+$("lg").onchange=function(){var f=this.files[0];if(!f){logo=null;draw();return}var u=URL.createObjectURL(f),im=new Image();im.onload=function(){logo=im;$("lgx").hidden=false;draw()};im.src=u};
+$("lgx").onclick=function(){logo=null;$("lg").value="";$("lgx").hidden=true;draw()};
 $("dl").onclick=function(){var a=document.createElement("a");a.href=$("cv").toDataURL("image/png");a.download="dtahub-qr.png";document.body.appendChild(a);a.click();document.body.removeChild(a)};
+$("dsv").onclick=function(){if(!cur)return;var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([cur],{type:"image/svg+xml"}));a.download="dtahub-qr.svg";document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(a.href)},3000)};
 </script>
 </body>
 </html>
