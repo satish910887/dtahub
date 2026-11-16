@@ -64,8 +64,11 @@
  <label class="drop"><input id="f" type="file" accept="application/pdf,.pdf"><span id="dt" data-en="Tap to choose a PDF" data-hi="PDF चुनने के लिए टैप करें">Tap to choose a PDF</span></label>
  <div id="ctl" hidden>
   <p class="hint" id="info"></p>
-  <label data-en="Pages to extract (example: 1-3, 5, 8-10)" data-hi="कौन से पेज चाहिए (जैसे: 1-3, 5, 8-10)">Pages</label>
-  <input id="rg" type="text" inputmode="text" placeholder="1-3, 5">
+  <label for="md" data-en="Split mode" data-hi="कैसे अलग करें">Split mode</label>
+  <select id="md"><option value="pick">Extract pages into one PDF</option><option value="ranges">Separate PDF for each range (ZIP)</option><option value="each">Every page as its own PDF (ZIP)</option><option value="n">Every N pages (ZIP)</option><option value="odd">Odd pages only</option><option value="even">Even pages only</option></select>
+  <div id="rgw"><label for="rg" data-en="Pages (example: 1-3, 5, 8-10)" data-hi="कौन से पेज (जैसे: 1-3, 5, 8-10)">Pages</label>
+  <input id="rg" type="text" inputmode="text" placeholder="1-3, 5"><p class="hint" id="rh" data-en="In ranges mode, each comma-separated part becomes its own PDF." data-hi="रेंज मोड में हर कॉमा-वाला हिस्सा अलग PDF बनेगा।" hidden>In ranges mode, each comma-separated part becomes its own PDF.</p></div>
+  <div id="nw" hidden><label for="nn" data-en="Pages per file" data-hi="हर फाइल में पेज">Pages per file</label><input id="nn" type="number" inputmode="numeric" min="1" value="1"></div>
   <div class="seg"><button class="btn gold" id="go" data-en="Extract and Download" data-hi="निकालें और डाउनलोड करें">Extract and Download</button></div>
  </div>
  <div class="err" id="err" hidden></div>
@@ -93,6 +96,7 @@
 <script defer src="/js/tools-data.js"></script>
 <script defer src="/js/tool.js"></script>
 <script defer src="/js/img.js"></script>
+<script defer src="/js/zip.js"></script>
 <script type="module">
 var src=null,file=null,total=0;
 $("f").addEventListener("change",async function(){
@@ -120,18 +124,29 @@ function parse(s){
  }
  return idx.length?idx:null;
 }
+function parts(str){
+ var out=[],ps=str.replace(/\s/g,"").split(",");
+ for(var i=0;i<ps.length;i++){var q=ps[i];if(!q)continue;var m=q.match(/^(\d+)(?:-(\d+))?$/);if(!m)return null;
+  var a=+m[1],b=m[2]?+m[2]:a;if(a<1||b<a||b>total)return null;var r=[];for(var k=a;k<=b;k++)r.push(k-1);out.push({r:r,l:a===b?""+a:a+"-"+b})}
+ return out.length?out:null;
+}
+$("md").onchange=function(){var v=$("md").value;$("rgw").hidden=!(v==="pick"||v==="ranges");$("nw").hidden=v!=="n";$("rh").hidden=v!=="ranges";$("ok").hidden=true};
+async function mk(idx){var o=await PDFLib.PDFDocument.create();(await o.copyPages(src,idx)).forEach(function(p){o.addPage(p)});return o.save()}
 $("go").onclick=async function(){
  var err=$("err"),ok=$("ok");err.hidden=true;ok.hidden=true;
- var idx=parse($("rg").value);
- if(!idx){err.hidden=false;err.textContent=L("Invalid pages. Use numbers between 1 and ","गलत पेज। 1 से इतने के बीच के नंबर डालें: ")+total;return}
+ var v=$("md").value,jobs=[],all=[];for(var i=0;i<total;i++)all.push(i);
+ if(v==="pick"){var idx=parse($("rg").value);if(idx)jobs.push({r:idx,l:"pages"})}
+ else if(v==="ranges"){var pr=parts($("rg").value);if(pr)jobs=pr.map(function(x){return{r:x.r,l:"pages-"+x.l}})}
+ else if(v==="each")jobs=all.map(function(i){return{r:[i],l:"page-"+(i+1)}});
+ else if(v==="n"){var n=Math.max(1,Math.floor(+$("nn").value)||1);for(var s0=0;s0<total;s0+=n){var r=all.slice(s0,s0+n);jobs.push({r:r,l:"pages-"+(s0+1)+"-"+(s0+r.length)})}}
+ else{var r2=all.filter(function(i){return v==="odd"?i%2===0:i%2===1});if(r2.length)jobs.push({r:r2,l:v+"-pages"})}
+ if(!jobs.length){err.hidden=false;err.textContent=L("Invalid pages. Use numbers between 1 and ","गलत पेज। 1 से इतने के बीच के नंबर डालें: ")+total;return}
  var btn=$("go"),old=btn.textContent;btn.disabled=true;btn.textContent=L("Working...","काम हो रहा है...");
  try{
-  var out=await PDFLib.PDFDocument.create();
-  var pages=await out.copyPages(src,idx);
-  pages.forEach(function(p){out.addPage(p)});
-  var bytes=await out.save();
-  saveBlob(new Blob([bytes],{type:"application/pdf"}),baseName(file)+"-pages.pdf");
-  ok.hidden=false;ok.textContent=L("Done ✓ ","हो गया ✓ ")+idx.length+L(" pages"," पेज");
+  var base=baseName(file);
+  if(jobs.length===1){saveBlob(new Blob([await mk(jobs[0].r)],{type:"application/pdf"}),base+"-"+jobs[0].l+".pdf")}
+  else{var fl=[];for(var j of jobs)fl.push({name:base+"-"+j.l+".pdf",data:await mk(j.r)});saveBlob(DTAzip.build(fl),base+"-split.zip")}
+  ok.hidden=false;ok.textContent=L("Done ✓ ","हो गया ✓ ")+jobs.length+L(" file(s)"," फाइल");
  }catch(e){
   err.hidden=false;err.textContent=L("Something went wrong. Try again.","कुछ गड़बड़ हुई। दोबारा कोशिश करें।");
  }
