@@ -344,7 +344,8 @@ main.tw>h1::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:
 .grid{perspective:1200px}
 .card,.ccard{--c:hsl(var(--h,260) 85% 62%);isolation:isolate;background:linear-gradient(160deg,color-mix(in srgb,var(--card) 92%,hsl(var(--h,260) 90% 60%)) 0%,var(--card) 55%);transform:perspective(800px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(var(--ty,0px));transition:transform .25s var(--ease),border-color .28s,box-shadow .28s;will-change:transform}
 .card::before{background:radial-gradient(240px 160px at var(--mx,50%) var(--my,0%),hsl(var(--h,260) 90% 60%/.24),transparent 70%);z-index:-1}
-.card::after,.ccard::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--ang,0deg),transparent 0 55%,var(--c) 78%,var(--a1) 90%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .35s;pointer-events:none;animation:cardspin 3.2s linear infinite;z-index:1}
+.card::after,.ccard::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:conic-gradient(from var(--ang,0deg),transparent 0 55%,var(--c) 78%,var(--a1) 90%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .35s;pointer-events:none;z-index:1}
+.card:hover::after,.card:focus-within::after,.ccard:hover::after,.ccard:focus-within::after{animation:cardspin 3.2s linear infinite}
 @property --ang{syntax:"<angle>";initial-value:0deg;inherits:false}
 @keyframes cardspin{to{--ang:360deg}}
 .card:hover,.card:focus-within,.ccard:hover{--ty:-5px;box-shadow:0 18px 40px -18px hsl(var(--h,260) 90% 55%/.55),0 0 0 1px hsl(var(--h,260) 80% 62%/.25)}
@@ -386,8 +387,8 @@ main.tw>h1::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:
 .drop::before{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgb(var(--a1r)/.12) 50%,transparent 70%);background-size:250% 100%;animation:dropsweep 4s linear infinite;pointer-events:none}
 @keyframes dropsweep{from{background-position:150% 0}to{background-position:-100% 0}}
 .btn.gold{position:relative;overflow:hidden}
-.btn.gold::after{content:"";position:absolute;top:0;left:-70%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);animation:btnshine 3.6s 1s ease-in-out infinite;pointer-events:none}
-@keyframes btnshine{60%,100%{left:140%}}
+.btn.gold::after{content:"";position:absolute;top:0;left:-70%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:translateX(0) skewX(-20deg);animation:btnshine 3.6s 1s ease-in-out infinite;pointer-events:none}
+@keyframes btnshine{60%,100%{transform:translateX(480%) skewX(-20deg)}}
 /* tool pages: floating ring + breadcrumbs */
 main.tw{position:relative}
 main.tw::before{content:"";position:absolute;right:0;top:6px;width:150px;height:150px;border-radius:50%;border:1.5px dashed rgb(var(--a2r)/.35);animation:scspin 50s linear infinite;pointer-events:none;z-index:-1}
@@ -398,7 +399,7 @@ main.tw::after{content:"";position:absolute;right:20px;top:56px;width:10px;heigh
 .nav a,.mnav a{position:relative}
 .logo svg{transition:transform .6s var(--ease)}.logo:hover svg{transform:rotate(360deg) scale(1.08)}
 .foot{position:relative}
-.foot::before{content:"";position:absolute;top:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--a1),var(--a2),transparent);background-size:200% 100%;animation:footflow 6s linear infinite}
+.foot::before{content:"";position:absolute;top:-1px;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--a1),var(--a2),transparent);background-size:200% 100%}
 @keyframes footflow{to{background-position:200% 0}}
 .foot a{transition:color .2s,transform .2s}.foot a:hover{transform:translateX(3px)}
 @media(max-width:520px){main.tw::before{width:100px;height:100px;right:0}main.tw::after{display:none}.card:hover{--ty:0px}}
@@ -562,7 +563,7 @@ h1,h2{letter-spacing:-.025em}
 .portal .fr{width:min(640px,150vw);height:min(640px,150vw);border:3px solid rgb(var(--a2r)/.95);box-shadow:0 0 22px rgb(var(--a2r)/.9),0 0 80px rgb(var(--a2r)/.5),inset 0 0 26px rgb(var(--a2r)/.7)}
 .portal .fr2{width:min(520px,124vw);height:min(520px,124vw);border:2px dashed rgb(var(--a1r)/.8);box-shadow:0 0 16px rgb(var(--a1r)/.55);animation:ringspin 40s linear infinite}
 @keyframes ringspin{to{rotate:360deg}}
-@keyframes ringpulse{50%{box-shadow:0 0 26px rgb(var(--a2r)/1),0 0 100px rgb(var(--a2r)/.75),inset 0 0 30px rgb(var(--a2r)/.9)}}
+@keyframes ringpulse{50%{opacity:.78}}
 .gt-wrap{position:absolute;inset:0;z-index:0;pointer-events:none;transform-style:preserve-3d}
 .gt{position:absolute;left:var(--x);top:var(--y);width:var(--s);height:var(--s);display:grid;place-items:center;border-radius:24%;color:#fff;
  background:linear-gradient(145deg,rgb(255 255 255/.26),rgb(255 255 255/.05) 55%,rgb(var(--a2r)/.2));border:1px solid rgb(255 255 255/.3);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
@@ -588,3 +589,7 @@ h1,h2{letter-spacing:-.025em}
 @media(max-width:700px){.gt{-webkit-backdrop-filter:none;backdrop-filter:none}}
 .gem{opacity:0;transition:opacity 1.2s ease}.gem.on{opacity:.55}@media(max-width:600px){.gem.on{opacity:.45}}[data-motion=off] .gem{transition:none}
 .gt{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+
+/* above-the-fold text never waits for JS: slide in with CSS only, always visible (better LCP) */
+.hero .reveal,.thero .reveal{opacity:1;transform:none;transition:none;animation:heroin .6s var(--ease) both}
+@keyframes heroin{from{transform:translateY(14px)}}
