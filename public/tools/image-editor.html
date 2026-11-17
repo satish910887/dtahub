@@ -7,19 +7,19 @@
 <link rel="stylesheet" href="/css/tool.css">
 
 <!--DTA:META--><title>Image Editor – Free Online Tool | DTAhub</title>
-<meta name="description" content="Image Editor lets you crop, rotate, flip and adjust brightness, contrast and saturation of a photo, with black and white, sepia and invert looks.">
+<meta name="description" content="Image Editor lets you crop with a draggable box and fixed shapes such as 1:1 or 16:9, rotate, flip and straighten a photo, adjust exposure, contrast, highlig…">
 <link rel="preload" href="/fonts/space-grotesk-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://dtahub.satish910887.workers.dev/tools/image-editor">
 <meta property="og:type" content="website"><meta property="og:site_name" content="DTAhub"><meta property="og:locale" content="en_IN">
-<meta property="og:title" content="Image Editor – Free Online Tool | DTAhub"><meta property="og:description" content="Image Editor lets you crop, rotate, flip and adjust brightness, contrast and saturation of a photo, with black and white, sepia and invert looks."><meta property="og:url" content="https://dtahub.satish910887.workers.dev/tools/image-editor">
+<meta property="og:title" content="Image Editor – Free Online Tool | DTAhub"><meta property="og:description" content="Image Editor lets you crop with a draggable box and fixed shapes such as 1:1 or 16:9, rotate, flip and straighten a photo, adjust exposure, contrast, highlig…"><meta property="og:url" content="https://dtahub.satish910887.workers.dev/tools/image-editor">
 <meta property="og:image" content="https://dtahub.satish910887.workers.dev/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Image Editor – Free Online Tool | DTAhub"><meta name="twitter:description" content="Image Editor lets you crop, rotate, flip and adjust brightness, contrast and saturation of a photo, with black and white, sepia and invert looks."><meta name="twitter:image" content="https://dtahub.satish910887.workers.dev/og.png">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Image Editor – Free Online Tool | DTAhub"><meta name="twitter:description" content="Image Editor lets you crop with a draggable box and fixed shapes such as 1:1 or 16:9, rotate, flip and straighten a photo, adjust exposure, contrast, highlig…"><meta name="twitter:image" content="https://dtahub.satish910887.workers.dev/og.png">
 <meta name="theme-color" content="#08080d">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
 <script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var ac=localStorage.getItem("accent");if(ac==="emerald"||ac==="rose")document.documentElement.setAttribute("data-accent",ac);if(localStorage.getItem("lang")==="hi")document.documentElement.lang="hi";if(localStorage.getItem("motion")==="off")document.documentElement.setAttribute("data-motion","off")}catch(e){}</script>
 <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Image Editor","url":"https://dtahub.satish910887.workers.dev/tools/image-editor","description":"Image Editor lets you crop, rotate, flip and adjust brightness, contrast and saturation of a photo, with black and white, sepia and invert looks.","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","browserRequirements":"Requires JavaScript","inLanguage":["en","hi"],"isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"INR"},"publisher":{"@type":"Organization","name":"DTAhub","url":"https://dtahub.satish910887.workers.dev/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Image Editor","url":"https://dtahub.satish910887.workers.dev/tools/image-editor","description":"Image Editor lets you crop with a draggable box and fixed shapes such as 1:1 or 16:9, rotate, flip and straighten a photo, adjust exposure, contrast, highlig…","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","browserRequirements":"Requires JavaScript","inLanguage":["en","hi"],"isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"INR"},"publisher":{"@type":"Organization","name":"DTAhub","url":"https://dtahub.satish910887.workers.dev/"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dtahub.satish910887.workers.dev/"},{"@type":"ListItem","position":2,"name":"Image Tools","item":"https://dtahub.satish910887.workers.dev/category/image/"},{"@type":"ListItem","position":3,"name":"Image Editor","item":"https://dtahub.satish910887.workers.dev/tools/image-editor"}]}</script><!--/DTA:META-->
 </head>
 <body data-page="tool" data-tool="image-editor">
@@ -64,39 +64,65 @@
 <div class="panel">
  <label class="drop"><input id="f" type="file" accept="image/*"><span id="dt" data-en="Tap to choose an image" data-hi="इमेज चुनने के लिए टैप करें">Tap to choose an image</span></label>
  <div id="ctl" hidden>
-  <div class="cmp" id="cmpw"><canvas id="cv" class="iecv" aria-label="Preview"></canvas><canvas id="cvo" class="iecv cvo" aria-hidden="true" hidden></canvas><i class="cdiv" id="cdiv" hidden></i></div>
+  <div class="ie-stage"><div class="ie-wrap" id="cmpw"><canvas id="cv" class="ie-cv" aria-label="Preview"></canvas><canvas id="cvo" class="ie-cv ie-ov" aria-hidden="true" hidden></canvas><i class="cdiv" id="cdiv" hidden></i><div class="ie-crop" id="cbx" hidden><b data-h="nw"></b><b data-h="ne"></b><b data-h="sw"></b><b data-h="se"></b></div></div></div>
   <input id="cmpr" type="range" min="0" max="100" value="50" hidden aria-label="Before and after slider">
   <p class="hint" id="info"></p>
-  <div class="seg"><button class="btn" id="cmpb" type="button" aria-pressed="false" data-en="Compare before / after" data-hi="पहले / बाद की तुलना">Compare before / after</button></div>
-  <div class="seg">
-   <button class="btn" id="rl" type="button" data-en="⟲ Rotate left" data-hi="⟲ बाएं घुमाएं">⟲ Rotate left</button><button class="btn" id="rr" type="button" data-en="⟳ Rotate right" data-hi="⟳ दाएं घुमाएं">⟳ Rotate right</button>
-   <button class="btn" id="fh" type="button" data-en="⇋ Flip horizontal" data-hi="⇋ आड़ा पलटें">⇋ Flip horizontal</button><button class="btn" id="fv" type="button" data-en="⇅ Flip vertical" data-hi="⇅ खड़ा पलटें">⇅ Flip vertical</button>
+  <div class="seg ie-top">
+   <button class="btn" id="undo" type="button" data-en="↶ Undo" data-hi="↶ पीछे">↶ Undo</button><button class="btn" id="redo" type="button" data-en="↷ Redo" data-hi="↷ आगे">↷ Redo</button>
+   <button class="btn" id="cmpb" type="button" aria-pressed="false" data-en="Compare" data-hi="तुलना">Compare</button><button class="btn" id="rs" type="button" data-en="Reset all" data-hi="सब रीसेट">Reset all</button>
   </div>
-  <h2 class="sub" data-en="Crop (trim % from each side)" data-hi="क्रॉप (हर तरफ से % काटें)">Crop</h2>
-  <div class="two"><div><label for="cl" data-en="Left" data-hi="बायां">Left</label><input id="cl" type="range" min="0" max="90" value="0"></div><div><label for="cr" data-en="Right" data-hi="दायां">Right</label><input id="cr" type="range" min="0" max="90" value="0"></div></div>
-  <div class="two"><div><label for="ct" data-en="Top" data-hi="ऊपर">Top</label><input id="ct" type="range" min="0" max="90" value="0"></div><div><label for="cb" data-en="Bottom" data-hi="नीचे">Bottom</label><input id="cb" type="range" min="0" max="90" value="0"></div></div>
-  <h2 class="sub" data-en="Adjust" data-hi="सुधार">Adjust</h2>
-  <label for="br" data-en="Brightness" data-hi="चमक">Brightness</label><input id="br" type="range" min="-100" max="100" value="0">
-  <label for="co" data-en="Contrast" data-hi="कॉन्ट्रास्ट">Contrast</label><input id="co" type="range" min="-100" max="100" value="0">
-  <label for="sa" data-en="Saturation" data-hi="रंग की गहराई">Saturation</label><input id="sa" type="range" min="-100" max="100" value="0">
-  <div class="seg">
-   <button class="btn" id="gr" type="button" aria-pressed="false" data-en="Black &amp;amp; white" data-hi="ब्लैक एंड व्हाइट">Black &amp;amp; white</button><button class="btn" id="se" type="button" aria-pressed="false" data-en="Sepia" data-hi="सेपिया">Sepia</button><button class="btn" id="iv" type="button" aria-pressed="false" data-en="Invert" data-hi="उल्टे रंग">Invert</button><button class="btn" id="rs" type="button" data-en="Reset edits" data-hi="बदलाव हटाएं">Reset edits</button>
+  <div class="ie-tabs" role="tablist">
+   <button class="chip on" role="tab" aria-selected="true" data-tab="pCrop" type="button" data-en="Crop &amp; rotate" data-hi="क्रॉप और रोटेट">Crop &amp; rotate</button>
+   <button class="chip" role="tab" aria-selected="false" data-tab="pAdj" type="button" data-en="Adjust" data-hi="सुधार">Adjust</button>
+   <button class="chip" role="tab" aria-selected="false" data-tab="pFlt" type="button" data-en="Filters" data-hi="फिल्टर">Filters</button>
+   <button class="chip" role="tab" aria-selected="false" data-tab="pFx" type="button" data-en="Effects" data-hi="इफेक्ट">Effects</button>
+   <button class="chip" role="tab" aria-selected="false" data-tab="pTxt" type="button" data-en="Text" data-hi="टेक्स्ट">Text</button>
   </div>
-  <div class="two"><div><label for="fm" data-en="Save as" data-hi="इस रूप में सेव करें">Save as</label><select id="fm"><option value="image/png">PNG</option><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select></div>
-  <div><label for="qq" data-en="Quality (JPG/WebP)" data-hi="क्वालिटी (JPG/WebP)">Quality (JPG/WebP)</label><input id="qq" type="range" min="40" max="100" value="92"></div></div>
+  <div class="ie-pane" id="pCrop">
+   <div class="seg">
+    <button class="btn" id="rl" type="button" data-en="⟲ Left" data-hi="⟲ बाएं">⟲ Left</button><button class="btn" id="rr" type="button" data-en="⟳ Right" data-hi="⟳ दाएं">⟳ Right</button>
+    <button class="btn" id="fh" type="button" data-en="⇋ Flip" data-hi="⇋ आड़ा">⇋ Flip</button><button class="btn" id="fv" type="button" data-en="⇅ Flip" data-hi="⇅ खड़ा">⇅ Flip</button>
+   </div>
+   <p class="hint" data-en="Crop shape. Drag the box or its corners on the photo." data-hi="क्रॉप का आकार। फोटो पर बॉक्स या उसके कोनों को खींचें।">Crop shape. Drag the box on the photo.</p>
+   <div class="seg" id="ars"></div>
+   <div id="sl-ang"></div>
+  </div>
+  <div class="ie-pane" id="pAdj" hidden><div class="seg"><button class="btn" id="auto" type="button" data-en="✨ Auto enhance" data-hi="✨ ऑटो सुधार">✨ Auto enhance</button></div><div id="sl-adj"></div></div>
+  <div class="ie-pane" id="pFlt" hidden><div class="seg" id="flts"></div><div class="seg"><button class="btn" id="gr" type="button" aria-pressed="false" data-en="Black &amp; white" data-hi="ब्लैक एंड व्हाइट">Black &amp; white</button><button class="btn" id="se" type="button" aria-pressed="false" data-en="Sepia" data-hi="सेपिया">Sepia</button><button class="btn" id="iv" type="button" aria-pressed="false" data-en="Invert" data-hi="उल्टे रंग">Invert</button></div></div>
+  <div class="ie-pane" id="pFx" hidden><div id="sl-fx"></div></div>
+  <div class="ie-pane" id="pTxt" hidden>
+   <label for="tx" data-en="Text or watermark" data-hi="टेक्स्ट या वॉटरमार्क">Text or watermark</label><input id="tx" type="text" maxlength="120" placeholder="© DTAhub">
+   <div class="two"><div><label for="tsz" data-en="Size" data-hi="साइज़">Size</label><input id="tsz" type="range" min="2" max="30" value="8"></div><div><label for="top" data-en="Opacity" data-hi="पारदर्शिता">Opacity</label><input id="top" type="range" min="10" max="100" value="90"></div></div>
+   <div class="two"><div><label for="tco" data-en="Colour" data-hi="रंग">Colour</label><input id="tco" type="color" value="#ffffff"></div><div><label for="tpos" data-en="Position" data-hi="जगह">Position</label><select id="tpos"><option value="tl">Top left</option><option value="tc">Top centre</option><option value="tr">Top right</option><option value="cc">Centre</option><option value="bl">Bottom left</option><option value="bc">Bottom centre</option><option value="br" selected>Bottom right</option></select></div></div>
+   <label class="chk"><input id="tol" type="checkbox" checked><span data-en="Dark outline (easier to read)" data-hi="गहरी बाहरी रेखा (पढ़ने में आसान)">Dark outline</span></label>
+  </div>
+  <h2 class="sub" data-en="Save" data-hi="सेव करें">Save</h2>
+  <div class="two"><div><label for="fm" data-en="Format" data-hi="फॉर्मेट">Format</label><select id="fm"><option value="image/png">PNG</option><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select></div>
+  <div><label for="qq" data-en="Quality (JPG/WebP)" data-hi="क्वालिटी (JPG/WebP)">Quality</label><input id="qq" type="range" min="40" max="100" value="92"></div></div>
+  <label for="mx" data-en="Shrink so the longest side is at most (px, 0 = keep size)" data-hi="सबसे लंबी साइड इतने px तक छोटी करें (0 = वही साइज़)">Max side (px)</label><input id="mx" type="number" inputmode="numeric" min="0" value="0">
   <div class="seg"><button class="btn gold" id="go" type="button" data-en="Download edited image" data-hi="एडिट की हुई इमेज डाउनलोड करें">Download edited image</button></div>
  </div>
  <div class="err" id="err" hidden></div><div class="ok" id="ok" hidden></div>
 </div>
-<style>.iecv{display:block;max-width:100%;max-height:60vh;margin:12px auto;border-radius:12px;border:1px solid var(--line);background:repeating-conic-gradient(rgba(128,128,128,.18) 0 25%,transparent 0 50%) 0 0/16px 16px}.sub{font-size:1rem;margin:16px 0 4px}.seg .btn[aria-pressed=true]{border-color:var(--gold);color:var(--gold)}</style>
+<style>
+.ie-stage{display:flex;justify-content:center;margin:12px 0}.ie-wrap{position:relative;display:inline-block;line-height:0;max-width:100%;overflow:hidden;border-radius:12px;border:1px solid var(--line);background:repeating-conic-gradient(rgba(128,128,128,.18) 0 25%,transparent 0 50%) 0 0/16px 16px;touch-action:none}
+.ie-cv{display:block;max-width:100%;max-height:58vh;width:auto;height:auto}.ie-ov{position:absolute;left:0;top:0;width:100%;height:100%}
+.ie-crop{position:absolute;border:2px solid var(--gold);box-shadow:0 0 0 9999px rgba(0,0,0,.52);cursor:move;touch-action:none}
+.ie-crop b{position:absolute;width:26px;height:26px;background:var(--gold);border-radius:50%;border:3px solid #17120a;touch-action:none}
+.ie-crop b[data-h=nw]{left:-3px;top:-3px;cursor:nwse-resize}.ie-crop b[data-h=ne]{right:-3px;top:-3px;cursor:nesw-resize}.ie-crop b[data-h=sw]{left:-3px;bottom:-3px;cursor:nesw-resize}.ie-crop b[data-h=se]{right:-3px;bottom:-3px;cursor:nwse-resize}
+.ie-tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px;margin-top:6px}.ie-tabs .chip{flex:none}
+.ie-pane{border-top:1px solid var(--line);padding-top:8px}.ie-pane label b{float:right;color:var(--gold);font-weight:600}
+.ie-top .btn,.ie-pane .seg .btn{flex:1 1 auto}.sub{font-size:1rem;margin:16px 0 4px}.seg .btn[aria-pressed=true],.seg .chip[aria-pressed=true]{border-color:var(--gold);color:var(--gold)}
+.ie-top .btn:disabled{opacity:.45}
+</style>
 <!--DTA:EXTRA--><aside class="privacy-note"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5.500c0 4.200 2.800 7.500 7 9.500 4.200-2 7-5.300 7-9.500V6z"/><path d="m9 12 2.200 2.200L15.500 10"/></svg><p data-en="Your files are processed on your device and never uploaded. Limits: 30 MB per image, 50 MB per PDF." data-hi="आपकी फाइलें आपके डिवाइस पर प्रोसेस होती हैं, अपलोड नहीं होतीं। सीमा: हर इमेज 30 MB, हर PDF 50 MB।">Your files are processed on your device and never uploaded. Limits: 30 MB per image, 50 MB per PDF.</p></aside>
 <section class="seo-about">
  <h2 data-en="About Image Editor" data-hi="इमेज एडिटर के बारे में">About Image Editor</h2>
- <p data-en="Image Editor lets you crop, rotate, flip and adjust brightness, contrast and saturation of a photo, with black and white, sepia and invert looks. Everything happens on your device, so your photo is never uploaded. Save the result as PNG, JPG or WebP." data-hi="इमेज एडिटर से आप फोटो क्रॉप, रोटेट, फ्लिप कर सकते हैं और चमक, कॉन्ट्रास्ट व रंग की गहराई बदल सकते हैं। ब्लैक एंड व्हाइट, सेपिया और उल्टे रंग भी मिलते हैं। सब कुछ आपके डिवाइस पर होता है, फोटो अपलोड नहीं होती। नतीजा PNG, JPG या WebP में सेव करें।">Image Editor lets you crop, rotate, flip and adjust brightness, contrast and saturation of a photo, with black and white, sepia and invert looks. Everything happens on your device, so your photo is never uploaded. Save the result as PNG, JPG or WebP.</p>
+ <p data-en="Image Editor lets you crop with a draggable box and fixed shapes such as 1:1 or 16:9, rotate, flip and straighten a photo, adjust exposure, contrast, highlights, shadows, warmth and colour, apply filters, blur, sharpen, pixelate, add a vignette or grain, and put text or a watermark on it. Undo and redo are built in. Everything runs on your device with our own image engine, so your photo is never uploaded. Save as PNG, JPG or WebP." data-hi="इमेज एडिटर में आप खींचने वाले बॉक्स से 1:1 या 16:9 जैसे आकारों में क्रॉप कर सकते हैं, फोटो को घुमा, पलट और सीधा कर सकते हैं, एक्सपोज़र, कॉन्ट्रास्ट, हाइलाइट, शैडो, गर्माहट और रंग बदल सकते हैं, फिल्टर, ब्लर, शार्प, पिक्सेल, विग्नेट और ग्रेन लगा सकते हैं, और फोटो पर टेक्स्ट या वॉटरमार्क डाल सकते हैं। पीछे-आगे (undo/redo) भी है। सब कुछ हमारे अपने इमेज इंजन से आपके डिवाइस पर चलता है, फोटो अपलोड नहीं होती। PNG, JPG या WebP में सेव करें।">Image Editor lets you crop with a draggable box and fixed shapes such as 1:1 or 16:9, rotate, flip and straighten a photo, adjust exposure, contrast, highlights, shadows, warmth and colour, apply filters, blur, sharpen, pixelate, add a vignette or grain, and put text or a watermark on it. Undo and redo are built in. Everything runs on your device with our own image engine, so your photo is never uploaded. Save as PNG, JPG or WebP.</p>
  <h2 data-en="How to use" data-hi="कैसे इस्तेमाल करें">How to use</h2>
  <ol><li data-en="Tap the box (or drag a file onto it) and choose your file." data-hi="बॉक्स पर टैप करें (या फाइल खींचकर डालें) और अपनी फाइल चुनें।">Tap the box (or drag a file onto it) and choose your file.</li><li data-en="Adjust the options if you need to." data-hi="ज़रूरत हो तो विकल्प बदलें।">Adjust the options if you need to.</li><li data-en="Download the result. Your file never leaves your device." data-hi="नतीजा डाउनलोड करें। आपकी फाइल डिवाइस से बाहर नहीं जाती।">Download the result. Your file never leaves your device.</li></ol>
  <h2 data-en="Good to know" data-hi="काम की बात">Good to know</h2>
- <p data-en="Crop first, then adjust colours. Use JPG for photos and PNG when you need sharp edges or transparency." data-hi="पहले क्रॉप करें, फिर रंग सुधारें। फोटो के लिए JPG और तेज किनारों या पारदर्शिता के लिए PNG चुनें।">Crop first, then adjust colours. Use JPG for photos and PNG when you need sharp edges or transparency.</p>
+ <p data-en="Double-tap a slider to set it back to zero, and use Auto enhance as a quick start." data-hi="किसी स्लाइडर को दो बार टैप करके वापस शून्य करें, और शुरुआत के लिए ऑटो सुधार इस्तेमाल करें।">Double-tap a slider to set it back to zero, and use Auto enhance as a quick start.</p>
  <h2 data-en="Related tools" data-hi="मिलते-जुलते टूल्स">Related tools</h2>
  <div class="grid sm"><article class="card reveal" style="--h:165" data-id="image-resize" data-cat="image" data-q="resize image इमेज रीसाइज़ presets, cm/inch, batch resize प्रीसेट, cm/inch, बैच रीसाइज़ image-resize image tools"><div class="card-top"><span class="ico"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="m9 15 6-6M11.5 9H15v3.5"/></svg></span><h3><a class="stretch" href="/tools/image-resize"><span data-en="Resize Image" data-hi="इमेज रीसाइज़">Resize Image</span></a></h3></div><p data-en="Presets, cm/inch, batch resize" data-hi="प्रीसेट, cm/inch, बैच रीसाइज़">Presets, cm/inch, batch resize</p><div class="meta"><span class="tag" data-en="Image" data-hi="इमेज">Image</span><span class="tag free" data-en="Free" data-hi="मुफ्त">Free</span><span class="card-open"><span data-en="Open" data-hi="खोलें">Open</span><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></div><button class="fav" type="button" aria-pressed="false" data-fav="image-resize" aria-label="Favourite"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.9l6.1-.8z"/></svg></button></article><article class="card reveal" style="--h:165" data-id="image-compress" data-cat="image" data-q="compress image इमेज छोटी करें batch compress to a target size टारगेट साइज़ में बैच कंप्रेस image-compress image tools"><div class="card-top"><span class="ico"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h5V4M20 9h-5V4M4 15h5v5M20 15h-5v5"/></svg></span><h3><a class="stretch" href="/tools/image-compress"><span data-en="Compress Image" data-hi="इमेज छोटी करें">Compress Image</span></a></h3></div><p data-en="Batch compress to a target size" data-hi="टारगेट साइज़ में बैच कंप्रेस">Batch compress to a target size</p><div class="meta"><span class="tag" data-en="Image" data-hi="इमेज">Image</span><span class="tag free" data-en="Free" data-hi="मुफ्त">Free</span><span class="card-open"><span data-en="Open" data-hi="खोलें">Open</span><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></div><button class="fav" type="button" aria-pressed="false" data-fav="image-compress" aria-label="Favourite"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.9l6.1-.8z"/></svg></button></article><article class="card reveal" style="--h:165" data-id="image-convert" data-cat="image" data-q="image converter इमेज कन्वर्टर batch convert with avif, zip बैच कन्वर्ट, avif, zip image-convert image tools"><div class="card-top"><span class="ico"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg></span><h3><a class="stretch" href="/tools/image-convert"><span data-en="Image Converter" data-hi="इमेज कन्वर्टर">Image Converter</span></a></h3></div><p data-en="Batch convert with AVIF, ZIP" data-hi="बैच कन्वर्ट, AVIF, ZIP">Batch convert with AVIF, ZIP</p><div class="meta"><span class="tag" data-en="Image" data-hi="इमेज">Image</span><span class="tag free" data-en="Free" data-hi="मुफ्त">Free</span><span class="card-open"><span data-en="Open" data-hi="खोलें">Open</span><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></div><button class="fav" type="button" aria-pressed="false" data-fav="image-convert" aria-label="Favourite"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.9l6.1-.8z"/></svg></button></article></div>
 </section><!--/DTA:EXTRA-->
@@ -110,63 +136,172 @@
 <script defer src="/js/tools-data.js"></script>
 <script defer src="/js/tool.js"></script>
 <script defer src="/js/img.js"></script>
+<script defer src="/js/imgfx.js"></script>
 <script type="module">
-
-var im=null,file=null,rot=0,fx=1,fy=1,flag={gr:0,se:0,iv:0},prev=null;
-function ids(a){return a.map(function(i){return $(i)})}
-function read(){return{l:+$("cl").value,r:+$("cr").value,t:+$("ct").value,b:+$("cb").value,br:+$("br").value,co:+$("co").value,sa:+$("sa").value}}
-function build(maxSide,raw){
- var o=read(),W=im.naturalWidth,H=im.naturalHeight;
- var sx=Math.round(W*o.l/100),sy=Math.round(H*o.t/100),sw=Math.max(1,Math.round(W*(100-o.l-o.r)/100)),sh=Math.max(1,Math.round(H*(100-o.t-o.b)/100));
- var k=maxSide?Math.min(1,maxSide/Math.max(sw,sh)):1,dw=Math.max(1,Math.round(sw*k)),dh=Math.max(1,Math.round(sh*k));
- var sw2=(rot%180)?dh:dw,sh2=(rot%180)?dw:dh;
- var c=document.createElement("canvas");c.width=sw2;c.height=sh2;var x=c.getContext("2d");
- x.translate(sw2/2,sh2/2);x.rotate(rot*Math.PI/180);x.scale(fx,fy);
- x.drawImage(im,sx,sy,sw,sh,-dw/2,-dh/2,dw,dh);
- var d=x.getImageData(0,0,sw2,sh2),p=d.data;
- var bri=o.br*2.55,cf=(259*(o.co*2.55+255))/(255*(259-o.co*2.55)),sat=1+o.sa/100;
- for(var i=0;i<(raw?0:p.length);i+=4){
-  var r=p[i],g=p[i+1],b=p[i+2];
-  if(flag.iv){r=255-r;g=255-g;b=255-b}
-  r+=bri;g+=bri;b+=bri;
-  r=cf*(r-128)+128;g=cf*(g-128)+128;b=cf*(b-128)+128;
-  var y=.299*r+.587*g+.114*b;
-  r=y+(r-y)*sat;g=y+(g-y)*sat;b=y+(b-y)*sat;
-  if(flag.gr){r=g=b=y}
-  if(flag.se){var R=.393*r+.769*g+.189*b,G=.349*r+.686*g+.168*b,B=.272*r+.534*g+.131*b;r=R;g=G;b=B}
-  p[i]=r<0?0:r>255?255:r;p[i+1]=g<0?0:g>255?255:g;p[i+2]=b<0?0:b>255?255:b;
- }
- x.setTransform(1,0,0,1,0,0);x.putImageData(d,0,0);return c;
+var PI=Math.PI,im=null,file=null,S=null,hist=[],hp=-1,base=null,bk="",cmp=false;
+function fresh(){return{rot:0,fx:1,fy:1,ang:0,crop:{x:0,y:0,w:1,h:1},ratio:0,gr:0,se:0,iv:0,flt:"none",
+ v:{ex:0,br:0,co:0,hl:0,sh:0,sa:0,vi:0,tp:0,ti:0,bl:0,sp:0,pz:0,vg:0,gn:0,lo:0,hi:255},
+ t:{t:"",sz:8,op:90,co:"#ffffff",pos:"br",ol:1}}}
+var SL={ang:["ang","Straighten","सीधा करें",-45,45,.5],
+ adj:[["ex","Exposure","एक्सपोज़र"],["br","Brightness","चमक"],["co","Contrast","कॉन्ट्रास्ट"],["hl","Highlights","हाइलाइट"],["sh","Shadows","शैडो"],["sa","Saturation","रंग की गहराई"],["vi","Vibrance","वाइब्रेंस"],["tp","Warmth","गर्माहट"],["ti","Tint","टिंट"]],
+ fx:[["bl","Blur","ब्लर",0,100],["sp","Sharpen","शार्प",0,100],["pz","Pixelate","पिक्सेल",0,100],["vg","Vignette","वignette",0,100],["gn","Grain","ग्रेन",0,100]]};
+SL.fx[3][2]="विग्नेट";
+var ARS=[["Free","फ्री",0],["Square 1:1","चौकोर 1:1",1],["4:3","4:3",4/3],["3:4","3:4",3/4],["16:9","16:9",16/9],["9:16","9:16",9/16],["3:2","3:2",1.5]];
+var FLT=[["none","Original","असली"],["vivid","Vivid","विविड"],["warm","Warm","गर्म"],["cool","Cool","ठंडा"],["vintage","Vintage","विंटेज"],["fade","Fade","फेड"],["dramatic","Dramatic","ड्रामैटिक"],["noir","Noir","नॉयर"]];
+function mkSlider(box,id,en,hi,mn,mx,st){
+ var d=document.createElement("div");
+ d.innerHTML='<label for="s_'+id+'"><span data-en="'+en+'" data-hi="'+hi+'">'+en+'</span><b id="n_'+id+'">0</b></label><input id="s_'+id+'" type="range" min="'+mn+'" max="'+mx+'" step="'+(st||1)+'" value="0">';
+ box.appendChild(d);
+ var r=d.querySelector("input");
+ r.addEventListener("input",function(){set(id,+r.value);S.flt="none";schedule()});
+ r.addEventListener("change",commit);
+ r.addEventListener("dblclick",function(){r.value=id==="ang"?0:0;set(id,0);schedule();commit()});
 }
-var tm=0;function draw(){cancelAnimationFrame(tm);tm=requestAnimationFrame(function(){if(!im)return;var c=build(900),v=$("cv");v.width=c.width;v.height=c.height;v.getContext("2d").drawImage(c,0,0);if(cmp){var o=build(900,true),w=$("cvo");w.width=o.width;w.height=o.height;w.getContext("2d").drawImage(o,0,0);clip()}})}
-var cmp=false;
+function set(id,v){if(id==="ang")S.ang=v;else S.v[id]=v;$("n_"+id).textContent=v}
+function get(id){return id==="ang"?S.ang:S.v[id]}
+SL.adj.forEach(function(a){mkSlider($("sl-adj"),a[0],a[1],a[2],-100,100)});
+SL.fx.forEach(function(a){mkSlider($("sl-fx"),a[0],a[1],a[2],0,100)});
+mkSlider($("sl-ang"),"ang","Straighten","सीधा करें",-45,45,.5);
+ARS.forEach(function(a,i){var b=document.createElement("button");b.type="button";b.className="chip";b.setAttribute("aria-pressed",i?"false":"true");b.dataset.r=a[2];b.dataset.en=a[0];b.dataset.hi=a[1];b.textContent=a[0];
+ b.onclick=function(){S.ratio=a[2];if(a[2])fitRatio();syncUI();schedule();commit()};$("ars").appendChild(b)});
+FLT.forEach(function(a){var b=document.createElement("button");b.type="button";b.className="chip";b.dataset.f=a[0];b.dataset.en=a[1];b.dataset.hi=a[2];b.textContent=a[1];b.setAttribute("aria-pressed","false");
+ b.onclick=function(){applyPreset(a[0]);syncUI();schedule();commit()};$("flts").appendChild(b)});
+if(window.DTAapply)DTAapply();
+function applyPreset(k){
+ var P=DTAfx.PRESETS[k]||{},keep={ex:1};
+ ["br","co","hl","sh","sa","vi","tp","ti","bl","sp","pz","vg","gn"].forEach(function(i){S.v[i]=P[i]||0});
+ S.gr=P._gr||0;S.se=P._se||0;S.iv=0;S.flt=k;S.v.lo=0;S.v.hi=255;
+}
+function snap(){return JSON.stringify(S)}
+function commit(){var j=snap();if(hist[hp]===j)return;hist=hist.slice(0,hp+1);hist.push(j);if(hist.length>60)hist.shift();hp=hist.length-1;btns()}
+function btns(){$("undo").disabled=hp<=0;$("redo").disabled=hp>=hist.length-1}
+function go(i){hp=i;S=JSON.parse(hist[hp]);syncUI();schedule();btns()}
+$("undo").onclick=function(){if(hp>0)go(hp-1)};$("redo").onclick=function(){if(hp<hist.length-1)go(hp+1)};
+$("rs").onclick=function(){S=fresh();syncUI();schedule();commit()};
+function syncUI(){
+ SL.adj.forEach(function(a){$("s_"+a[0]).value=S.v[a[0]];$("n_"+a[0]).textContent=S.v[a[0]]});
+ SL.fx.forEach(function(a){$("s_"+a[0]).value=S.v[a[0]];$("n_"+a[0]).textContent=S.v[a[0]]});
+ $("s_ang").value=S.ang;$("n_ang").textContent=S.ang;
+ ["gr","se","iv"].forEach(function(k){$(k).setAttribute("aria-pressed",S[k]?"true":"false")});
+ [].forEach.call($("flts").children,function(b){b.setAttribute("aria-pressed",b.dataset.f===S.flt?"true":"false")});
+ [].forEach.call($("ars").children,function(b){b.setAttribute("aria-pressed",+b.dataset.r===S.ratio?"true":"false")});
+ $("tx").value=S.t.t;$("tsz").value=S.t.sz;$("top").value=S.t.op;$("tco").value=S.t.co;$("tpos").value=S.t.pos;$("tol").checked=!!S.t.ol;
+ placeCrop();
+}
+/* ---------- geometry ---------- */
+function transformed(max){
+ var W=im.naturalWidth,H=im.naturalHeight,k=max?Math.min(1,max/Math.max(W,H)):1,w=Math.max(1,Math.round(W*k)),h=Math.max(1,Math.round(H*k));
+ var q=S.rot%180!==0,cw=q?h:w,ch=q?w:h,c=document.createElement("canvas");c.width=cw;c.height=ch;
+ var x=c.getContext("2d"),a=S.ang*PI/180,sc=1;
+ if(a){var aa=Math.abs(a);sc=Math.cos(aa)+Math.sin(aa)*Math.max(cw/ch,ch/cw)}
+ x.imageSmoothingQuality="high";x.translate(cw/2,ch/2);x.rotate(a);x.scale(sc,sc);x.rotate(S.rot*PI/180);x.scale(S.fx,S.fy);
+ x.drawImage(im,-w/2,-h/2,w,h);return c;
+}
+function fitRatio(){
+ var r=S.ratio,c=S.crop,W=base.width,H=base.height,cx=c.x+c.w/2,cy=c.y+c.h/2,w=c.w,h=w*W/(r*H);
+ if(h>1){h=1;w=h*H*r/W}if(w>1){w=1;h=w*W/(r*H)}
+ c.w=w;c.h=h;c.x=Math.min(1-w,Math.max(0,cx-w/2));c.y=Math.min(1-h,Math.max(0,cy-h/2));
+}
+function params(){return{v:S.v,gr:S.gr,se:S.se,iv:S.iv}}
+function drawText(x,W,H,rx,ry,rw,rh){
+ var t=S.t;if(!t.t.trim())return;
+ var px=Math.max(8,Math.round(rh*t.sz/100)),m=px*.6;
+ x.save();x.font="700 "+px+"px 'Space Grotesk','Noto Sans Devanagari',system-ui,sans-serif";x.textBaseline="middle";x.globalAlpha=t.op/100;
+ var tw=x.measureText(t.t).width,pc=t.pos,tx,ty;
+ tx=pc[1]==="l"?rx+m:pc[1]==="r"?rx+rw-m-tw:rx+(rw-tw)/2;
+ ty=pc[0]==="t"?ry+m+px/2:pc[0]==="b"?ry+rh-m-px/2:ry+rh/2;
+ if(t.ol){x.lineWidth=Math.max(2,px/6);x.strokeStyle="rgba(0,0,0,.75)";x.lineJoin="round";x.strokeText(t.t,tx,ty)}
+ x.fillStyle=t.co;x.fillText(t.t,tx,ty);x.restore();
+}
+/* ---------- preview ---------- */
+var raf=0;
+function schedule(){cancelAnimationFrame(raf);raf=requestAnimationFrame(render)}
+function render(){
+ if(!im)return;
+ var key=S.rot+"|"+S.fx+"|"+S.fy+"|"+S.ang;
+ if(key!==bk){base=transformed(900);bk=key;if(S.ratio)fitRatio();placeCrop()}
+ var cv=$("cv"),x=cv.getContext("2d");cv.width=base.width;cv.height=base.height;
+ x.drawImage(base,0,0);var id=x.getImageData(0,0,cv.width,cv.height);DTAfx.process(id,params());x.putImageData(id,0,0);
+ var c=S.crop;drawText(x,cv.width,cv.height,c.x*cv.width,c.y*cv.height,c.w*cv.width,c.h*cv.height);
+ if(cmp){var o=$("cvo");o.width=base.width;o.height=base.height;o.getContext("2d").drawImage(base,0,0);clip()}
+}
 function clip(){var v=+$("cmpr").value;$("cvo").style.clipPath="inset(0 "+(100-v)+"% 0 0)";$("cdiv").style.left=v+"%"}
-$("cmpb").onclick=function(){cmp=!cmp;this.setAttribute("aria-pressed",cmp?"true":"false");$("cvo").hidden=!cmp;$("cdiv").hidden=!cmp;$("cmpr").hidden=!cmp;draw()};
+$("cmpb").onclick=function(){cmp=!cmp;this.setAttribute("aria-pressed",cmp?"true":"false");$("cvo").hidden=!cmp;$("cdiv").hidden=!cmp;$("cmpr").hidden=!cmp;schedule()};
 $("cmpr").addEventListener("input",clip);
+/* ---------- crop box ---------- */
+function placeCrop(){
+ var b=$("cbx");if(!im||!base){return}
+ var c=S.crop;b.hidden=false;b.style.left=c.x*100+"%";b.style.top=c.y*100+"%";b.style.width=c.w*100+"%";b.style.height=c.h*100+"%";
+}
+(function(){
+ var drag=null,wrap=$("cmpw");
+ function frac(e){var r=wrap.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height}}
+ function down(e){
+  if(!im)return;var h=e.target.dataset&&e.target.dataset.h,p=frac(e),c=S.crop;
+  if(h){var ax=h[1]==="w"?c.x+c.w:c.x,ay=h[0]==="n"?c.y+c.h:c.y;drag={m:"r",ax:ax,ay:ay}}
+  else if(e.target.id==="cbx"){drag={m:"m",ox:p.x-c.x,oy:p.y-c.y}}
+  else return;
+  wrap.setPointerCapture&&wrap.setPointerCapture(e.pointerId);e.preventDefault();
+ }
+ function move(e){
+  if(!drag)return;var p=frac(e),c=S.crop;
+  if(drag.m==="m"){c.x=Math.min(1-c.w,Math.max(0,p.x-drag.ox));c.y=Math.min(1-c.h,Math.max(0,p.y-drag.oy))}
+  else{
+   var px=Math.min(1,Math.max(0,p.x)),py=Math.min(1,Math.max(0,p.y)),sx=px>=drag.ax?1:-1,sy=py>=drag.ay?1:-1,
+    mw=sx>0?1-drag.ax:drag.ax,mh=sy>0?1-drag.ay:drag.ay,w=Math.abs(px-drag.ax),h=Math.abs(py-drag.ay),W=base.width,H=base.height;
+   if(S.ratio){w=Math.min(w,mw,mh*S.ratio*H/W);h=w*W/(S.ratio*H)}else{w=Math.min(w,mw);h=Math.min(h,mh)}
+   w=Math.max(.05,w);h=Math.max(.05,h);
+   c.w=w;c.h=h;c.x=sx>0?drag.ax:drag.ax-w;c.y=sy>0?drag.ay:drag.ay-h;
+  }
+  placeCrop();schedule();
+ }
+ function up(){if(drag){drag=null;commit()}}
+ wrap.addEventListener("pointerdown",down);wrap.addEventListener("pointermove",move);wrap.addEventListener("pointerup",up);wrap.addEventListener("pointercancel",up);
+})();
+/* ---------- controls ---------- */
+document.querySelectorAll(".ie-tabs .chip").forEach(function(b){b.onclick=function(){
+ document.querySelectorAll(".ie-tabs .chip").forEach(function(x){var on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-selected",on?"true":"false");$(x.dataset.tab).hidden=!on})}});
+function geo(f){return function(){f();bk="";schedule();commit()}}
+$("rl").onclick=geo(function(){S.rot=(S.rot+270)%360;S.crop={x:0,y:0,w:1,h:1}});
+$("rr").onclick=geo(function(){S.rot=(S.rot+90)%360;S.crop={x:0,y:0,w:1,h:1}});
+$("fh").onclick=geo(function(){S.fx=-S.fx});$("fv").onclick=geo(function(){S.fy=-S.fy});
+["gr","se","iv"].forEach(function(k){$(k).onclick=function(){S[k]=S[k]?0:1;S.flt="custom";syncUI();schedule();commit()}});
+$("s_ang").addEventListener("input",function(){bk=""});
+$("auto").onclick=function(){
+ var c=document.createElement("canvas");c.width=base.width;c.height=base.height;var x=c.getContext("2d");x.drawImage(base,0,0);
+ var r=DTAfx.autoLevels(x.getImageData(0,0,c.width,c.height));S.v.lo=r.lo;S.v.hi=r.hi;S.v.sa=Math.max(S.v.sa,8);S.v.vi=Math.max(S.v.vi,12);S.flt="none";syncUI();schedule();commit();
+};
+$("tx").addEventListener("input",function(){S.t.t=$("tx").value;schedule()});$("tx").addEventListener("change",commit);
+[["tsz","sz"],["top","op"]].forEach(function(a){$(a[0]).addEventListener("input",function(){S.t[a[1]]=+$(a[0]).value;schedule()});$(a[0]).addEventListener("change",commit)});
+$("tco").addEventListener("input",function(){S.t.co=$("tco").value;schedule()});$("tco").addEventListener("change",commit);
+$("tpos").onchange=function(){S.t.pos=$("tpos").value;schedule();commit()};
+$("tol").onchange=function(){S.t.ol=$("tol").checked?1:0;schedule();commit()};
 pickImage($("f"),function(i,f){
  $("err").hidden=true;$("ok").hidden=true;
  if(!i){$("ctl").hidden=true;$("err").hidden=false;$("err").textContent=L("This file could not be read as an image.","यह फाइल इमेज की तरह नहीं खुली।");return}
- im=i;file=f;$("ctl").hidden=false;$("dt").textContent=f.name;reset();
+ im=i;file=f;S=fresh();bk="";hist=[];hp=-1;$("ctl").hidden=false;$("dt").textContent=f.name;
  $("info").textContent=i.naturalWidth+" × "+i.naturalHeight+" px • "+sizeOf(f.size);
+ render();syncUI();commit();
 });
-function reset(){rot=0;fx=fy=1;flag={gr:0,se:0,iv:0};["cl","cr","ct","cb","br","co","sa"].forEach(function(i){$(i).value=0});["gr","se","iv"].forEach(function(i){$(i).setAttribute("aria-pressed","false")});draw()}
-$("rs").onclick=reset;
-$("rl").onclick=function(){rot=(rot+270)%360;draw()};$("rr").onclick=function(){rot=(rot+90)%360;draw()};
-$("fh").onclick=function(){fx=-fx;draw()};$("fv").onclick=function(){fy=-fy;draw()};
-["gr","se","iv"].forEach(function(k){$(k).onclick=function(){flag[k]=flag[k]?0:1;this.setAttribute("aria-pressed",flag[k]?"true":"false");draw()}});
-["cl","cr","ct","cb","br","co","sa"].forEach(function(i){$(i).addEventListener("input",draw)});
-["cl","cr","ct","cb"].forEach(function(i){$(i).addEventListener("input",function(){var h=+$("cl").value+ +$("cr").value,v=+$("ct").value+ +$("cb").value;if(h>95||v>95){this.value=Math.max(0,this.value-5)}})});
 $("go").onclick=async function(){
- if(!im)return;var e=$("err");e.hidden=true;
+ if(!im)return;var e=$("err");e.hidden=true;$("ok").hidden=true;
  try{
-  var c=build(0),t=$("fm").value;
-  var b=await new Promise(function(r){c.toBlob(r,t,+$("qq").value/100)});
+  var t=transformed(0),c=S.crop,W=t.width,H=t.height;
+  var sx=Math.round(c.x*W),sy=Math.round(c.y*H),sw=Math.max(1,Math.min(W-sx,Math.round(c.w*W))),sh=Math.max(1,Math.min(H-sy,Math.round(c.h*H)));
+  var mx=+$("mx").value||0,k=mx>0?Math.min(1,mx/Math.max(sw,sh)):1,dw=Math.max(1,Math.round(sw*k)),dh=Math.max(1,Math.round(sh*k));
+  var o=document.createElement("canvas");o.width=dw;o.height=dh;var x=o.getContext("2d");x.imageSmoothingQuality="high";
+  var fm=$("fm").value;if(fm==="image/jpeg"){x.fillStyle="#fff";x.fillRect(0,0,dw,dh)}
+  x.drawImage(t,sx,sy,sw,sh,0,0,dw,dh);
+  var id=x.getImageData(0,0,dw,dh);DTAfx.process(id,params());x.putImageData(id,0,0);
+  drawText(x,dw,dh,0,0,dw,dh);
+  var b=await new Promise(function(r){o.toBlob(r,fm,+$("qq").value/100)});
   if(!b)throw 0;
-  saveBlob(b,baseName(file)+"-edited."+extOf(t));
-  $("ok").hidden=false;$("ok").textContent=L("Done ✓ ","हो गया ✓ ")+c.width+" × "+c.height+" • "+sizeOf(b.size);
+  saveBlob(b,baseName(file)+"-edited."+extOf(fm));
+  $("ok").hidden=false;$("ok").textContent=L("Done ✓ ","हो गया ✓ ")+dw+" × "+dh+" • "+sizeOf(b.size);
  }catch(x){e.hidden=false;e.textContent=L("Could not save. The image may be too large for this device.","सेव नहीं हो पाई। इमेज इस डिवाइस के लिए बहुत बड़ी हो सकती है।")}
 };
-
+document.addEventListener("langchange",function(){schedule()});
 </script>
+
 </body>
 </html>
