@@ -73,9 +73,18 @@
   <div class="stat"><small data-en="Total months" data-hi="कुल महीने">Total months</small><b id="o-m"></b></div>
   <div class="stat"><small data-en="Total weeks" data-hi="कुल हफ्ते">Total weeks</small><b id="o-w"></b></div>
   <div class="stat"><small data-en="Total days" data-hi="कुल दिन">Total days</small><b id="o-d"></b></div>
+  <div class="stat"><small data-en="Total hours" data-hi="कुल घंटे">Total hours</small><b id="o-h"></b></div>
   <div class="stat"><small data-en="Next birthday in" data-hi="अगला जन्मदिन">Next birthday</small><b id="o-nb"></b></div>
+  <div class="stat"><small data-en="Born on a" data-hi="जन्म किस दिन हुआ">Born on a</small><b id="o-wd"></b></div>
+  <div class="stat"><small data-en="Next birthday falls on" data-hi="अगला जन्मदिन किस दिन">Next birthday on</small><b id="o-nw"></b></div>
+  <div class="stat"><small data-en="Zodiac (Sun sign)" data-hi="राशि (सूर्य राशि)">Zodiac</small><b id="o-z"></b></div>
  </div>
+ <p class="hint" id="o-f" hidden data-en="Born on 29 February: in non-leap years the birthday is counted on 1 March." data-hi="29 फरवरी को जन्म: गैर-लीप साल में जन्मदिन 1 मार्च गिना जाता है।">Leap day.</p>
 </div>
+<div class="panel"><details id="cmp"><summary data-en="Compare with another person" data-hi="किसी और से तुलना करें">Compare with another person</summary>
+ <label for="dob2" data-en="Other person's date of birth" data-hi="दूसरे व्यक्ति की जन्म तिथि">Other person's date of birth</label><input id="dob2" type="date">
+ <p class="line" id="o-c"></p>
+</details></div>
 <!--DTA:EXTRA--><aside class="privacy-note"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5.500c0 4.200 2.800 7.500 7 9.500 4.200-2 7-5.300 7-9.500V6z"/><path d="m9 12 2.200 2.200L15.500 10"/></svg><p data-en="Calculations run in your browser. Nothing you enter is stored or sent." data-hi="हिसाब आपके ब्राउज़र में होता है। आप जो डालते हैं वो सेव या भेजा नहीं जाता।">Calculations run in your browser. Nothing you enter is stored or sent.</p></aside>
 <section class="seo-about">
  <h2 data-en="About Age Calculator" data-hi="उम्र कैलकुलेटर के बारे में">About Age Calculator</h2>
@@ -99,25 +108,42 @@
 <script type="module">
 function ymd(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
 $("to").value=ymd(new Date());
-function calc(){
- var a=$("dob").value,b=$("to").value,err=$("err");
- err.hidden=true;
- if(!a||!b){$("res").hidden=true;return}
- var d1=new Date(a+"T00:00:00"),d2=new Date(b+"T00:00:00");
- if(d2<d1){$("res").hidden=true;err.hidden=false;err.textContent=L("Date of birth must be before the other date.","जन्म तिथि दूसरी तारीख से पहले होनी चाहिए।");return}
+var DAYS=[["Sunday","रविवार"],["Monday","सोमवार"],["Tuesday","मंगलवार"],["Wednesday","बुधवार"],["Thursday","गुरुवार"],["Friday","शुक्रवार"],["Saturday","शनिवार"]];
+var ZOD=[[1,20,"Capricorn","मकर"],[2,19,"Aquarius","कुंभ"],[3,20,"Pisces","मीन"],[4,20,"Aries","मेष"],[5,21,"Taurus","वृषभ"],[6,21,"Gemini","मिथुन"],[7,22,"Cancer","कर्क"],[8,23,"Leo","सिंह"],[9,23,"Virgo","कन्या"],[10,23,"Libra","तुला"],[11,22,"Scorpio","वृश्चिक"],[12,22,"Sagittarius","धनु"],[13,0,"Capricorn","मकर"]];
+function zod(m,d){for(var i=0;i<ZOD.length;i++){var z=ZOD[i];if(m<z[0]||(m===z[0]&&d<=z[1]))return L(z[2],z[3])}return L("Capricorn","मकर")}
+function wd(d){return L(DAYS[d.getDay()][0],DAYS[d.getDay()][1])}
+function diff(d1,d2){ // d1<=d2
  var y=d2.getFullYear()-d1.getFullYear(),m=d2.getMonth()-d1.getMonth(),d=d2.getDate()-d1.getDate();
  if(d<0){m--;d+=new Date(d2.getFullYear(),d2.getMonth(),0).getDate()}
  if(m<0){y--;m+=12}
+ return[y,m,d];
+}
+function fmtA(a){return a[0]+L(" yrs ", " साल ")+a[1]+L(" mo ", " माह ")+a[2]+L(" days"," दिन")}
+function calc(){
+ var a=$("dob").value,b=$("to").value,err=$("err");
+ err.hidden=true;
+ if(!a||!b){$("res").hidden=true;$("o-c").textContent="";return}
+ var d1=new Date(a+"T00:00:00"),d2=new Date(b+"T00:00:00");
+ if(d2<d1){$("res").hidden=true;err.hidden=false;err.textContent=L("Date of birth must be before the other date.","जन्म तिथि दूसरी तारीख से पहले होनी चाहिए।");return}
+ var A=diff(d1,d2),y=A[0],m=A[1],d=A[2];
  var days=Math.round((d2-d1)/864e5);
- var nb=new Date(d2.getFullYear(),d1.getMonth(),d1.getDate());
- if(nb<d2)nb.setFullYear(d2.getFullYear()+1);
+ var bm=d1.getMonth(),bd=d1.getDate(),leap=bm===1&&bd===29;
+ function bday(yr){if(leap&&!(yr%4===0&&(yr%100!==0||yr%400===0)))return new Date(yr,2,1);return new Date(yr,bm,bd)}
+ var nb=bday(d2.getFullYear());if(nb<d2)nb=bday(d2.getFullYear()+1);
  var left=Math.round((nb-d2)/864e5);
  $("res").hidden=false;
- $("o-age").textContent=y+L(" yrs ", " साल ")+m+L(" mo ", " माह ")+d+L(" days"," दिन");
+ $("o-age").textContent=fmtA(A);
  $("o-m").textContent=fmt(y*12+m);
  $("o-w").textContent=fmt(Math.floor(days/7));
  $("o-d").textContent=fmt(days);
+ $("o-h").textContent=fmt(days*24);
  $("o-nb").textContent=left===0?L("Today! 🎉","आज! 🎉"):left+L(" days"," दिन");
+ $("o-wd").textContent=wd(d1);$("o-nw").textContent=wd(nb);$("o-z").textContent=zod(bm+1,bd);
+ $("o-f").hidden=!leap;
+ var o=$("dob2").value;
+ if(o){var e1=new Date(o+"T00:00:00"),lo=d1<=e1?d1:e1,hi=d1<=e1?e1:d1,D=diff(lo,hi),dd=Math.round((hi-lo)/864e5);
+  $("o-c").textContent=(d1<=e1?L("You are older by ","आप बड़े हैं: "):L("The other person is older by ","दूसरा व्यक्ति बड़ा है: "))+fmtA(D)+" ("+fmt(dd)+L(" days)"," दिन)")}
+ else $("o-c").textContent="";
 }
 document.querySelectorAll("input").forEach(function(i){i.addEventListener("input",calc)});
 document.addEventListener("langchange",calc);

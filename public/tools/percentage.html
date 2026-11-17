@@ -64,17 +64,17 @@
 <div class="panel">
  <label data-en="1. What is X% of Y?" data-hi="1. Y का X% कितना होता है?">1</label>
  <div class="two"><input id="a1" type="number" inputmode="decimal" placeholder="X %"><input id="b1" type="number" inputmode="decimal" placeholder="Y"></div>
- <p class="line" id="r1"></p>
+ <p class="line" id="r1"></p><p class="hint" id="w1"></p>
 </div>
 <div class="panel">
  <label data-en="2. X is what percent of Y?" data-hi="2. X, Y का कितने प्रतिशत है?">2</label>
  <div class="two"><input id="a2" type="number" inputmode="decimal" placeholder="X"><input id="b2" type="number" inputmode="decimal" placeholder="Y"></div>
- <p class="line" id="r2"></p>
+ <p class="line" id="r2"></p><p class="hint" id="w2"></p>
 </div>
 <div class="panel">
  <label data-en="3. Percentage change from X to Y" data-hi="3. X से Y तक प्रतिशत बदलाव">3</label>
  <div class="two"><input id="a3" type="number" inputmode="decimal" placeholder="X"><input id="b3" type="number" inputmode="decimal" placeholder="Y"></div>
- <p class="line" id="r3"></p>
+ <p class="line" id="r3"></p><p class="hint" id="w3"></p>
 </div>
 <!--DTA:EXTRA--><aside class="privacy-note"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5.500c0 4.200 2.800 7.500 7 9.500 4.200-2 7-5.300 7-9.500V6z"/><path d="m9 12 2.200 2.200L15.500 10"/></svg><p data-en="Calculations run in your browser. Nothing you enter is stored or sent." data-hi="हिसाब आपके ब्राउज़र में होता है। आप जो डालते हैं वो सेव या भेजा नहीं जाता।">Calculations run in your browser. Nothing you enter is stored or sent.</p></aside>
 <section class="seo-about">
@@ -96,20 +96,54 @@
 </div><div class="foot-bot"><span>© 2026 DTAhub</span><span><span data-en="Made with care in India." data-hi="भारत में प्यार से बनाया गया।">Made with care in India.</span></span></div></footer><!--/DTA:FOOT-->
 <script defer src="/js/tools-data.js"></script>
 <script defer src="/js/tool.js"></script>
+<div class="panel">
+ <label data-en="4. Add or subtract X% from Y" data-hi="4. Y में X% जोड़ें या घटाएं">4</label>
+ <div class="two"><input id="a4" type="number" inputmode="decimal" placeholder="X %" aria-label="X %"><input id="b4" type="number" inputmode="decimal" placeholder="Y" aria-label="Y"></div>
+ <p class="line" id="r4"></p><p class="hint" id="w4"></p>
+</div>
+<div class="panel">
+ <label data-en="5. Y is X% of what number?" data-hi="5. Y किस संख्या का X% है?">5</label>
+ <div class="two"><input id="a5" type="number" inputmode="decimal" placeholder="X %" aria-label="X %"><input id="b5" type="number" inputmode="decimal" placeholder="Y" aria-label="Y"></div>
+ <p class="line" id="r5"></p><p class="hint" id="w5"></p>
+</div>
+<div class="panel">
+ <label data-en="6. Percentage difference between X and Y" data-hi="6. X और Y में प्रतिशत अंतर">6</label>
+ <div class="two"><input id="a6" type="number" inputmode="decimal" placeholder="X" aria-label="X"><input id="b6" type="number" inputmode="decimal" placeholder="Y" aria-label="Y"></div>
+ <p class="line" id="r6"></p><p class="hint" id="w6"></p>
+</div>
+<div class="panel" id="hp" hidden><h2 style="font-size:1.05rem;margin:0 0 6px" data-en="Recent calculations" data-hi="हाल की गणनाएं">Recent calculations</h2><div id="hl"></div><button class="btn" type="button" id="hc" data-en="Clear history" data-hi="हिस्ट्री साफ करें">Clear history</button></div>
+<style>#hl div{padding:6px 2px;border-bottom:1px solid var(--line);font-size:.9rem}</style>
 <script type="module">
 function v(id){var s=$(id).value;return s===""?NaN:+s}
+var hist=[];try{hist=JSON.parse(localStorage.getItem("dta_pct")||"[]")}catch(e){}
+function out(i,r,w){$("r"+i).textContent=r;$("w"+(i<=6?i:i)).textContent=w||"";}
 function calc(){
  var a=v("a1"),b=v("b1");
- $("r1").textContent=(isNaN(a)||isNaN(b))?"":fmt(a*b/100);
+ if(isNaN(a)||isNaN(b))out(1,"","");else out(1,fmt(a*b/100),a+"% × "+fmt(b)+" ÷ 100");
  a=v("a2");b=v("b2");
- $("r2").textContent=(isNaN(a)||isNaN(b)||b===0)?"":fmt(a/b*100)+" %";
+ if(isNaN(a)||isNaN(b)||b===0)out(2,"","");else out(2,fmt(a/b*100)+" %",fmt(a)+" ÷ "+fmt(b)+" × 100");
  a=v("a3");b=v("b3");
- if(isNaN(a)||isNaN(b)||a===0){$("r3").textContent=""}
- else{var c=(b-a)/Math.abs(a)*100;$("r3").textContent=(c>=0?L("Increase of ","बढ़ोतरी "):L("Decrease of ","कमी "))+fmt(Math.abs(c))+" %"}
+ if(isNaN(a)||isNaN(b)||a===0)out(3,"","");
+ else{var c=(b-a)/Math.abs(a)*100;out(3,(c>=0?L("Increase of ","बढ़ोतरी "):L("Decrease of ","कमी "))+fmt(Math.abs(c))+" %","("+fmt(b)+" − "+fmt(a)+") ÷ "+fmt(Math.abs(a))+" × 100")}
+ a=v("a4");b=v("b4");
+ if(isNaN(a)||isNaN(b))out(4,"","");
+ else out(4,L("Add: ","जोड़ने पर: ")+fmt(b*(1+a/100))+"  |  "+L("Subtract: ","घटाने पर: ")+fmt(b*(1-a/100)),fmt(b)+" × (1 ± "+a+"/100)");
+ a=v("a5");b=v("b5");
+ if(isNaN(a)||isNaN(b)||a===0)out(5,"","");else out(5,fmt(b/a*100),fmt(b)+" ÷ "+a+" × 100");
+ a=v("a6");b=v("b6");
+ if(isNaN(a)||isNaN(b)||(a+b)===0)out(6,"","");else out(6,fmt(Math.abs(a-b)/((Math.abs(a)+Math.abs(b))/2)*100)+" %","|"+fmt(a)+" − "+fmt(b)+"| ÷ average("+fmt(a)+", "+fmt(b)+") × 100");
 }
-document.querySelectorAll("input").forEach(function(i){i.addEventListener("input",calc)});
+function save(i){
+ var r=$("r"+i).textContent;if(!r)return;
+ var q=$("a"+i).value+" ; "+$("b"+i).value,e=i+". "+q+" → "+r;
+ if(hist[0]===e)return;hist.unshift(e);hist=hist.slice(0,8);
+ try{localStorage.setItem("dta_pct",JSON.stringify(hist))}catch(x){}showH();
+}
+function showH(){$("hp").hidden=!hist.length;$("hl").innerHTML="";hist.forEach(function(h){var d=document.createElement("div");d.textContent=h;$("hl").appendChild(d)})}
+document.querySelectorAll("input").forEach(function(i){i.addEventListener("input",calc);i.addEventListener("change",function(){save(+i.id.slice(-1))})});
+$("hc").onclick=function(){hist=[];try{localStorage.removeItem("dta_pct")}catch(e){}showH()};
 document.addEventListener("langchange",calc);
-calc();
+calc();showH();
 </script>
 </body>
 </html>
