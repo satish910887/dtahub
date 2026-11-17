@@ -21,7 +21,7 @@
 .chart circle{transition:stroke-dasharray .6s}
 .legend span{display:flex;gap:8px;align-items:center;font-size:.9rem;margin:6px 0}
 .dot{width:12px;height:12px;border-radius:4px;display:inline-block}
-.err{color:#ff7a8a;font-size:.9rem;margin-top:10px}
+.err{color:var(--err);font-size:.9rem;margin-top:10px}
 .line{font-size:1.1rem;margin:12px 0 0;color:var(--gold);font-weight:700}
 @media(max-width:360px){.two{grid-template-columns:1fr}}
 .panel textarea{width:100%;min-height:160px;padding:13px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-size:1rem;font-family:inherit;outline:none;resize:vertical}
@@ -31,7 +31,7 @@
 .chk{display:flex;align-items:center;gap:10px;margin:10px 0;color:var(--text);font-size:.95rem}
 .chk input{width:20px;height:20px;accent-color:var(--a2)}
 .panel input[type=range]{padding:0;accent-color:var(--a2)}
-.ok{color:#5fd39a;font-size:.9rem;margin-top:10px}
+.ok{color:var(--ok);font-size:.9rem;margin-top:10px}
 .hint{color:var(--muted);font-size:.78rem;margin-top:4px}
 .qrbox{display:flex;justify-content:center;margin-top:14px}
 .qrbox canvas{max-width:100%;height:auto;border-radius:12px;background:#fff}
