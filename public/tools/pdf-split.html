@@ -69,6 +69,8 @@
   <div id="rgw"><label for="rg" data-en="Pages (example: 1-3, 5, 8-10)" data-hi="कौन से पेज (जैसे: 1-3, 5, 8-10)">Pages</label>
   <input id="rg" type="text" inputmode="text" placeholder="1-3, 5"><p class="hint" id="rh" data-en="In ranges mode, each comma-separated part becomes its own PDF." data-hi="रेंज मोड में हर कॉमा-वाला हिस्सा अलग PDF बनेगा।" hidden>In ranges mode, each comma-separated part becomes its own PDF.</p></div>
   <div id="nw" hidden><label for="nn" data-en="Pages per file" data-hi="हर फाइल में पेज">Pages per file</label><input id="nn" type="number" inputmode="numeric" min="1" value="1"></div>
+  <p class="hint" id="thh" hidden data-en="Tap pages below to select them." data-hi="चुनने के लिए नीचे के पेज पर टैप करें।">Tap pages below to select them.</p>
+  <div id="th" class="thg"></div>
   <div class="seg"><button class="btn gold" id="go" data-en="Extract and Download" data-hi="निकालें और डाउनलोड करें">Extract and Download</button></div>
  </div>
  <div class="err" id="err" hidden></div>
@@ -97,6 +99,7 @@
 <script defer src="/js/tool.js"></script>
 <script defer src="/js/img.js"></script>
 <script defer src="/js/zip.js"></script>
+<style>.thg{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:8px;margin:10px 0;max-height:360px;overflow:auto}.thg button{position:relative;padding:4px;border:2px solid var(--line);border-radius:10px;background:var(--card);cursor:pointer;color:var(--text);font-size:.75rem}.thg button[aria-pressed=true]{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset}.thg canvas{width:100%;height:auto;display:block;border-radius:6px;background:#fff}.thg span{display:block;margin-top:2px}</style>
 <script type="module">
 var src=null,file=null,total=0;
 $("f").addEventListener("change",async function(){
@@ -108,6 +111,7 @@ $("f").addEventListener("change",async function(){
   $("ctl").hidden=false;$("dt").textContent=f.name;
   $("info").textContent=L("Total pages: ","कुल पेज: ")+total+" • "+sizeOf(f.size);
   $("rg").value="1-"+total;
+  thumbs(f);
  }catch(e){
   src=null;$("ctl").hidden=true;$("err").hidden=false;
   $("err").textContent=L("Could not open this PDF. It may be damaged or password protected.","यह PDF नहीं खुली। फाइल खराब या पासवर्ड वाली हो सकती है।");
@@ -124,13 +128,37 @@ function parse(s){
  }
  return idx.length?idx:null;
 }
+
+var pj=null,thTok=0;
+function sel(){var r=[];try{(parse($("rg").value)||[]).forEach(function(i){r[i]=1})}catch(e){}return r}
+function paint(){var m=sel(),on=$("md").value==="pick"||$("md").value==="ranges";[].forEach.call($("th").children,function(b,i){b.setAttribute("aria-pressed",on&&m[i]?"true":"false")})}
+function toRanges(m){var out=[],i=0;while(i<total){if(m[i]){var j=i;while(m[j+1])j++;out.push(i===j?""+(i+1):(i+1)+"-"+(j+1));i=j+1}else i++}return out.join(", ")}
+async function thumbs(f){
+ var tok=++thTok;$("th").innerHTML="";$("thh").hidden=true;
+ try{
+  if(!pj){pj=await import("/js/vendor/pdfjs/pdf.min.mjs");pj.GlobalWorkerOptions.workerSrc="/js/vendor/pdfjs/pdf.worker.min.mjs"}
+  var doc=await pj.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise,n=Math.min(doc.numPages,120);
+  $("thh").hidden=false;
+  for(var i=1;i<=n;i++){
+   if(tok!==thTok)return;
+   var b=document.createElement("button");b.type="button";b.setAttribute("aria-pressed","false");b.setAttribute("aria-label",L("Page ","पेज ")+i);
+   var c=document.createElement("canvas"),sp=document.createElement("span");sp.textContent=i;b.append(c,sp);
+   b.onclick=(function(k){return function(){var m=sel();if($("md").value!=="ranges"&&$("md").value!=="pick"){$("md").value="pick";$("md").onchange();m=[]}m[k-1]=m[k-1]?0:1;$("rg").value=toRanges(m);paint()}})(i);
+   $("th").appendChild(b);
+   var pg=await doc.getPage(i),v0=pg.getViewport({scale:1}),vp=pg.getViewport({scale:140/v0.width});c.width=vp.width;c.height=vp.height;
+   await pg.render({canvasContext:c.getContext("2d"),viewport:vp}).promise;paint();
+  }
+  if(doc.numPages>n){var m2=document.createElement("p");m2.className="hint";m2.textContent=L("Showing first 120 pages. Type ranges for the rest.","पहले 120 पेज दिखाए गए। बाकी के लिए रेंज लिखें।");$("th").appendChild(m2)}
+ }catch(e){$("thh").hidden=true}
+}
+$("rg").addEventListener("input",paint);
 function parts(str){
  var out=[],ps=str.replace(/\s/g,"").split(",");
  for(var i=0;i<ps.length;i++){var q=ps[i];if(!q)continue;var m=q.match(/^(\d+)(?:-(\d+))?$/);if(!m)return null;
   var a=+m[1],b=m[2]?+m[2]:a;if(a<1||b<a||b>total)return null;var r=[];for(var k=a;k<=b;k++)r.push(k-1);out.push({r:r,l:a===b?""+a:a+"-"+b})}
  return out.length?out:null;
 }
-$("md").onchange=function(){var v=$("md").value;$("rgw").hidden=!(v==="pick"||v==="ranges");$("nw").hidden=v!=="n";$("rh").hidden=v!=="ranges";$("ok").hidden=true};
+$("md").onchange=function(){var v=$("md").value;paint();$("rgw").hidden=!(v==="pick"||v==="ranges");$("nw").hidden=v!=="n";$("rh").hidden=v!=="ranges";$("ok").hidden=true};
 async function mk(idx){var o=await PDFLib.PDFDocument.create();(await o.copyPages(src,idx)).forEach(function(p){o.addPage(p)});return o.save()}
 $("go").onclick=async function(){
  var err=$("err"),ok=$("ok");err.hidden=true;ok.hidden=true;
