@@ -68,9 +68,18 @@
  <div class="two"><div><label for="rate" data-en="Interest rate (% a year)" data-hi="ब्याज दर (% सालाना)">Interest rate (% a year)</label><input id="rate" type="number" inputmode="decimal" value="7" min="0" step="0.05"></div>
  <div><label for="mo" data-en="Tenure (months)" data-hi="अवधि (महीने)">Tenure (months)</label><input id="mo" type="number" inputmode="numeric" value="60" min="1" max="600"></div></div>
  <div id="cmw"><label for="cp" data-en="Interest compounding" data-hi="ब्याज जुड़ने का तरीका">Interest compounding</label><select id="cp"><option value="4" selected>Quarterly (common in India)</option><option value="12">Monthly</option><option value="2">Half-yearly</option><option value="1">Yearly</option><option value="0">Simple interest</option></select></div>
+ <label class="chk"><input id="sr" type="checkbox"><span data-en="Senior citizen (adds 0.50% to the rate)" data-hi="वरिष्ठ नागरिक (दर में 0.50% जोड़ें)">Senior citizen (+0.50%)</span></label>
+ <details id="adv" style="margin-top:8px"><summary data-en="Advanced: TDS and inflation" data-hi="एडवांस्ड: TDS और महंगाई">Advanced: TDS and inflation</summary>
+  <label class="chk"><input id="td" type="checkbox"><span data-en="Deduct TDS on interest" data-hi="ब्याज पर TDS काटें">Deduct TDS on interest</span></label>
+  <div class="two"><div><label for="tr2" data-en="TDS rate (%)" data-hi="TDS दर (%)">TDS rate</label><input id="tr2" type="number" inputmode="decimal" value="10" min="0" step="0.5"></div><div><label for="tl" data-en="Yearly interest limit (₹)" data-hi="सालाना ब्याज सीमा (₹)">Yearly limit</label><input id="tl" type="number" inputmode="numeric" value="40000" min="0"></div></div>
+  <label for="inf" data-en="Inflation (% a year)" data-hi="महंगाई (% सालाना)">Inflation</label><input id="inf" type="number" inputmode="decimal" value="0" min="0" step="0.1">
+ </details>
 </div>
 <div class="panel" id="res" hidden>
  <div class="stats"><div class="stat"><small data-en="You deposit" data-hi="आपकी जमा">Deposited</small><b id="o-inv"></b></div><div class="stat"><small data-en="Interest earned" data-hi="कमाया ब्याज">Interest</small><b id="o-gain"></b></div><div class="stat big"><small data-en="Maturity value" data-hi="मैच्योरिटी राशि">Maturity</small><b id="o-tot"></b></div></div>
+ <div class="stats" id="xo" hidden><div class="stat" id="xt" hidden><small data-en="TDS (estimate)" data-hi="TDS (अनुमान)">TDS (estimate)</small><b id="o-tds"></b></div><div class="stat" id="xn" hidden><small data-en="Maturity after TDS" data-hi="TDS के बाद मैच्योरिटी">After TDS</small><b id="o-net"></b></div><div class="stat" id="xr" hidden><small data-en="In today's money" data-hi="आज के पैसे में">Inflation-adjusted</small><b id="o-real"></b></div></div>
+ <svg id="sc" viewBox="0 0 320 150" role="img" aria-label="Growth chart" style="width:100%;margin-top:12px;color:var(--muted)"></svg>
+ <div class="seg" style="justify-content:center"><button class="btn" type="button" id="cpy" data-en="Copy summary" data-hi="सार कॉपी करें">Copy summary</button><button class="btn" type="button" id="lnk" data-en="Copy share link" data-hi="शेयर लिंक कॉपी करें">Copy share link</button><button class="btn" type="button" id="csv" data-en="Download CSV" data-hi="CSV डाउनलोड">Download CSV</button></div>
  <div class="fdbar" aria-hidden="true"><span id="b1"></span><span id="b2"></span></div>
  <details style="margin-top:12px"><summary data-en="Year by year" data-hi="साल दर साल">Year by year</summary><div id="yy" class="utbl"></div></details>
  <p class="hint" data-en="An estimate before tax and TDS. Real bank rules and rates differ, so check with your bank." data-hi="यह टैक्स और TDS से पहले का अनुमान है। बैंक के असली नियम और दरें अलग हो सकती हैं, इसलिए बैंक से पूछें।">Estimate.</p>
@@ -96,31 +105,59 @@
 </div><div class="foot-bot"><span>© 2026 DTAhub</span><span><span data-en="Made with care in India." data-hi="भारत में प्यार से बनाया गया।">Made with care in India.</span></span></div></footer><!--/DTA:FOOT-->
 <script defer src="/js/tools-data.js"></script>
 <script defer src="/js/tool.js"></script>
+<script defer src="/js/img.js"></script>
 
 <script type="module">
-
-var T="fd";
+var T="fd",IDS=["amt","rate","mo","cp","tr2","tl","inf"],last="",rowsData=[];
 document.querySelectorAll("[data-t]").forEach(function(b){b.onclick=function(){T=b.dataset.t;document.querySelectorAll("[data-t]").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});if(T==="rd"&&+$("amt").value>=50000)$("amt").value=5000;if(T==="fd"&&+$("amt").value<=20000)$("amt").value=100000;calc()}});
 function lang(){$("ah").textContent=T==="fd"?L("One-time lump sum deposit.","एक बार में जमा की गई राशि।"):L("Amount deposited every month.","हर महीने जमा की जाने वाली राशि।")}
-function bal(P,r,mo,n){ // value after mo months
+function bal(P,r,mo,n){
  if(T==="fd"){return n===0?P*(1+r*mo/12):P*Math.pow(1+r/n,n*mo/12)}
  var tot=0;
  for(var k=1;k<=mo;k++){var t=(mo-k+1)/12;tot+=n===0?P*(1+r*t):P*Math.pow(1+r/n,n*t)}
  return tot;
 }
+function chart(pts,inv){
+ var s=$("sc"),ns="http://www.w3.org/2000/svg",W=320,H=150,l=6,b=18,t=8,n=pts.length-1,max=pts[n][1];
+ while(s.firstChild)s.removeChild(s.firstChild);
+ function el(tg,a,tx){var e=document.createElementNS(ns,tg);for(var k in a)e.setAttribute(k,a[k]);if(tx!=null)e.textContent=tx;s.appendChild(e);return e}
+ var X=function(i){return l+(i/n)*(W-2*l)},Y=function(v){return t+(1-v/max)*(H-t-b)};
+ el("line",{x1:l,y1:H-b,x2:W-l,y2:H-b,stroke:"currentColor","stroke-opacity":".25"});
+ var d1="",d2="";pts.forEach(function(p,i){d1+=(i?"L":"M")+X(i).toFixed(1)+","+Y(p[1]).toFixed(1);d2+=(i?"L":"M")+X(i).toFixed(1)+","+Y(p[0]).toFixed(1)});
+ el("path",{d:d1,fill:"none",stroke:"#f5d27a","stroke-width":"2.4","stroke-linejoin":"round"});
+ el("path",{d:d2,fill:"none",stroke:"#8b5cf6","stroke-width":"2.4","stroke-linejoin":"round"});
+ el("text",{x:l,y:H-4,fill:"currentColor","font-size":"10"},"0");
+ el("text",{x:W-l,y:H-4,fill:"currentColor","font-size":"10","text-anchor":"end"},(pts.length-1)+L(" yr"," वर्ष"));
+}
 function calc(){
  lang();
- var P=+$("amt").value,R=+$("rate").value/100,M=Math.floor(+$("mo").value),N=+$("cp").value;
- if(!(P>0)||!(R>=0)||!(M>=1)||M>600){$("res").hidden=true;return}
+ var P=+$("amt").value,base=+$("rate").value,sr=$("sr").checked,R=(base+(sr?.5:0))/100,M=Math.floor(+$("mo").value),N=+$("cp").value;
+ if(!(P>0)||!(base>=0)||!(M>=1)||M>600){$("res").hidden=true;return}
  var inv=T==="fd"?P:P*M,tot=bal(P,R,M,N),g=tot-inv,r=function(n){return"₹ "+fmt(Math.round(n))};
  $("res").hidden=false;$("o-inv").textContent=r(inv);$("o-gain").textContent=r(g);$("o-tot").textContent=r(tot);
  $("b1").style.width=(inv/tot*100)+"%";$("b2").style.width=(g/tot*100)+"%";
- var rows=[];for(var y=1;y<=Math.ceil(M/12);y++){var m=Math.min(M,y*12),b=bal(P,R,m,N),i2=T==="fd"?P:P*m;rows.push('<div><span>'+L("Year ","साल ")+y+'</span><span>'+r(i2)+' → <b>'+r(b)+'</b></span></div>')}
- $("yy").innerHTML=rows.join("");
+ var Y=Math.ceil(M/12),rows=[],pts=[[T==="fd"?P:0,T==="fd"?P:0]],prevB=T==="fd"?P:0,tds=0,td=$("td").checked,tr=(+$("tr2").value||0)/100,tl=+$("tl").value||0;
+ rowsData=[["Year","Deposited","Value","Interest in year","TDS"]];
+ for(var y=1;y<=Y;y++){var m=Math.min(M,y*12),b=bal(P,R,m,N),i2=T==="fd"?P:P*m,iy=b-prevB-(T==="fd"?0:P*(m-(y-1)*12)),ty=(td&&iy>tl)?iy*tr:0;
+  tds+=ty;prevB=b;pts.push([i2,b]);rowsData.push([y,i2.toFixed(2),b.toFixed(2),iy.toFixed(2),ty.toFixed(2)]);
+  rows.push('<div><span>'+L("Year ","साल ")+y+'</span><span>'+r(i2)+' → <b>'+r(b)+'</b></span></div>')}
+ $("yy").innerHTML=rows.join("");chart(pts);
+ var F=+$("inf").value||0;
+ $("xt").hidden=$("xn").hidden=!td;$("xr").hidden=!(F>0);$("xo").hidden=!(td||F>0);
+ if(td){$("o-tds").textContent=r(tds);$("o-net").textContent=r(tot-tds)}
+ if(F>0)$("o-real").textContent=r((tot-(td?tds:0))/Math.pow(1+F/100,M/12));
+ last=(T==="fd"?"FD":"RD")+" ₹"+fmt(P)+", "+(base+(sr?.5:0))+"%, "+M+L(" months → maturity "," माह → मैच्योरिटी ")+r(tot)+(td?" ("+L("after TDS ","TDS के बाद ")+r(tot-tds)+")":"");
+ try{history.replaceState(null,"","#"+IDS.map(function(i){return i+"="+encodeURIComponent($(i).value)}).join("&")+"&t="+T+"&sr="+(sr?1:0)+"&td="+(td?1:0))}catch(e){}
 }
-document.querySelectorAll("input,select").forEach(function(e){e.addEventListener("input",calc)});
+(function(){try{var h=location.hash.slice(1);if(!h)return;var o={};h.split("&").forEach(function(p){var a=p.split("=");o[a[0]]=decodeURIComponent(a[1]||"")});
+ IDS.forEach(function(i){if(o[i]!==undefined&&o[i]!==""&&isFinite(+o[i]))$(i).value=o[i]});
+ if(o.sr==="1")$("sr").checked=true;if(o.td==="1"){$("td").checked=true;$("adv").open=true}
+ if(o.t==="rd")document.getElementById("tr").click()}catch(e){}})();
+$("cpy").onclick=function(){if(last)copyText(last)};
+$("lnk").onclick=function(){copyText(location.href)};
+$("csv").onclick=function(){var t=rowsData.map(function(r){return r.join(",")}).join("\n");saveBlob(new Blob([t],{type:"text/csv"}),(T==="fd"?"fd":"rd")+"-schedule.csv")};
+document.querySelectorAll("input,select").forEach(function(e){e.addEventListener("input",calc);e.addEventListener("change",calc)});
 document.addEventListener("langchange",calc);calc();
-
 </script>
 </body>
 </html>
