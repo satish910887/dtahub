@@ -567,3 +567,12 @@ h1,h2{letter-spacing:-.025em}
 /* above-the-fold text never waits for JS: slide in with CSS only, always visible (better LCP) */
 .hero .reveal,.thero .reveal{opacity:1;transform:none;transition:none;animation:heroin .6s var(--ease) both}
 @keyframes heroin{from{transform:translateY(14px)}}
+
+/* touch screens: no sticky "hover" after a tap (it left cards animating and lagging) */
+@media(hover:none){
+ .card:hover,.ccard:hover{transform:none}
+ .card:hover .ico,.card:focus-within .ico{transform:none}
+ .card:hover .ico svg path,.card:hover .ico svg rect,.card:hover .ico svg circle{animation:none}
+ .card:hover::after,.card:focus-within::after,.ccard:hover::after,.ccard:focus-within::after{animation:none}
+ .card:hover::before{opacity:0}
+}
