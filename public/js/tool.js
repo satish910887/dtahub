@@ -81,7 +81,7 @@
   DTAstagger();
   (function () {
     var host = [document.getElementById("tools")], ag = document.getElementById("allGrid"); if (ag) host.push(ag.closest("section"));
-    var secs = host.filter(Boolean); if (!secs.length) return;
+    var secs = host.filter(Boolean); if (!secs.length) return; return; /* background aurora/constellation removed for a lighter site */
     var root = document.documentElement, mq = window.matchMedia ? matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
     function motionOn() { return root.getAttribute("data-motion") !== "off" && !mq.matches; }
     secs.forEach(function (sec) {

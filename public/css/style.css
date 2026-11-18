@@ -633,3 +633,10 @@ h1,h2{letter-spacing:-.025em}
 .ticks li::before{content:"";position:absolute;left:0;top:2px;width:18px;height:18px;border-radius:50%;background:var(--violet) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.500' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 12.500 4 4 8-9'/%3E%3C/svg%3E") center/12px no-repeat}
 .shield{position:absolute;right:14px;top:52px;width:84px;height:auto;opacity:.95}
 @media(hover:none){.card-open{background:var(--bg2)}}
+
+/* background animation removed: static soft glow only */
+.bg-glow::before,.bg-glow::after{animation:none!important;will-change:auto;filter:none}
+.fx-bg{display:none!important}
+main.tw::before,main.tw::after{display:none}
+.tmed,.tmed::before,.tmed .ic,.empty-sm .st,.privacy-note .ic,.grad{animation:none!important}
+.tmed i{display:none}
