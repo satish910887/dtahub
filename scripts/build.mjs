@@ -90,7 +90,7 @@ ${m.noindex ? '<meta name="robots" content="noindex">' : `<meta name="robots" co
 <meta property="og:title" content="${e(m.title)}"><meta property="og:description" content="${e(m.desc)}"><meta property="og:url" content="${url}">
 <meta property="og:image" content="${SITE}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(m.title)}"><meta name="twitter:description" content="${e(m.desc)}"><meta name="twitter:image" content="${SITE}/og.png">
-<meta name="theme-color" content="#08080d">
+<meta name="theme-color" content="#f4f7fe">
 <meta name="google-site-verification" content="pVzOBFgeCkMA5nz0v4wBgB06biWAj7AIt9ABl4Ha6D4">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
 <script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var ac=localStorage.getItem("accent");if(ac==="emerald"||ac==="rose")document.documentElement.setAttribute("data-accent",ac);if(localStorage.getItem("lang")==="hi")document.documentElement.lang="hi";if(localStorage.getItem("motion")==="off")document.documentElement.setAttribute("data-motion","off")}catch(e){}</script>
@@ -175,7 +175,7 @@ function catPage(c) {
   const dir = path.join(PUB, "category", c.id); fs.mkdirSync(dir, { recursive: true });
   const file = path.join(dir, "index.html");
   const html = `<!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/tool.css"></head>
 <body><div class="bg-glow"></div>
 <main id="main" class="wrap">

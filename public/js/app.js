@@ -17,20 +17,20 @@
   }
   function visuals() {
     document.querySelectorAll("[data-count]").forEach(function (b) { DTAcount(b, +b.getAttribute("data-count")); });
-    var pos = [["3%", "14%"], ["90%", "8%"], ["0%", "52%"], ["93%", "56%"], ["9%", "86%"], ["84%", "88%"]];
-    var ids = ["resume-maker", "qr-code", "emi", "image-compress", "pdf-merge", "typing-helper"];
-    $$("orbs").innerHTML = ids.map(function (id, i) {
-      var t = D.tool(id), c = D.cat(t.cat);
-      return '<span class="orb" style="--h:' + c.hue + ';left:' + pos[i][0] + ';top:' + pos[i][1] + ';animation-delay:-' + (i * 1.3) + 's">' + D.icon(id, 24) + "</span>";
-    }).join("");
+    var pids = ["pdf-merge", "image-compress", "qr-code", "resume-maker"];
+    $$("pop").innerHTML = pids.map(function (id) { var t = D.tool(id); return t ? '<a class="pchip" href="' + D.toolUrl(t) + '"><span data-en="' + D.esc(t.en) + '" data-hi="' + D.esc(t.hi) + '">' + D.esc(t.en) + "</span></a>" : ""; }).join("");
     var pill = function (t, hid) { var c = D.cat(t.cat); return '<a class="pill" style="--h:' + c.hue + '" href="' + D.toolUrl(t) + '"' + (hid ? ' tabindex="-1" aria-hidden="true"' : "") + ">" + D.icon(t.id, 18) + '<span data-en="' + D.esc(t.en) + '" data-hi="' + D.esc(t.hi) + '">' + D.esc(t.en) + "</span></a>"; };
     $$("marq").innerHTML = D.TOOLS.map(function (t) { return pill(t, false); }).join("") + D.TOOLS.map(function (t) { return pill(t, true); }).join("");
   }
   function renderCats() { $$("catGrid").innerHTML = D.CATS.map(D.catCardHTML).join(""); }
-  function renderTop() { $$("topGrid").innerHTML = cards(D.TOOLS.filter(function (t) { return t.featured; })); }
+  function renderTop() { $$("topGrid").innerHTML = cards(D.TOOLS.filter(function (t) { return t.featured; }).slice(0, 6)); }
+  var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   function renderNew() {
     var l = D.TOOLS.map(function (t, i) { return { t: t, i: i }; }).sort(function (a, b) { return Date.parse(b.t.added) - Date.parse(a.t.added) || b.i - a.i; }).slice(0, 6).map(function (x) { return x.t; });
-    $$("newGrid").innerHTML = cards(l);
+    $$("newList").innerHTML = l.map(function (t) {
+      var c = D.cat(t.cat), d = new Date(t.added), e = D.esc;
+      return '<li style="--h:' + (c.hue || 45) + '"><a href="' + D.toolUrl(t) + '"><span class="ico">' + D.icon(t.id, 20) + '</span><span class="rn"><b data-en="' + e(t.en) + '" data-hi="' + e(t.hi) + '">' + e(t.en) + '</b><small data-en="' + e(t.den) + '" data-hi="' + e(t.dhi) + '">' + e(t.den) + '</small></span><time datetime="' + t.added + '">' + d.getUTCDate() + " " + MON[d.getUTCMonth()] + " " + d.getUTCFullYear() + "</time></a></li>";
+    }).join("");
   }
   function renderMine() {
     var fv = DTAfav.list().map(D.tool).filter(Boolean), rc = DTArecent().map(D.tool).filter(Boolean).slice(0, 6);
@@ -80,6 +80,7 @@
     }).join("") : '<a href="/contact#request">' + D.icon("plus", 20) + "<span>" + D.esc(L("No tool found. Request it?", "टूल नहीं मिला। मांगें?")) + "</span></a>";
     sug.hidden = false; si.setAttribute("aria-expanded", "true");
   }
+  $$("sbtn").addEventListener("click", function () { sug.hidden = true; document.getElementById("tools").scrollIntoView(); });
   si.addEventListener("input", function () { q = si.value; suggest(); renderGrid(); });
   si.addEventListener("keydown", function (e) {
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {

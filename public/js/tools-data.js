@@ -357,7 +357,7 @@
   };
   api.catCardHTML = function (c) {
     var n = TOOLS.filter(function (t) { return t.cat === c.id; }).length, e = CARD_ESC;
-    return '<a class="ccard reveal" style="--h:' + (c.hue || 45) + '" href="' + api.catUrl(c) + '"><span class="ico">' + api.icon(c.icon, 22) + '</span><span><b data-en="' + e(c.en) + '" data-hi="' + e(c.hi) + '">' + e(c.en) + '</b><small data-en="' + e(c.den) + '" data-hi="' + e(c.dhi) + '">' + e(c.den) + " </small><small> · " + n + "</small></span></a>";
+    return '<a class="ccard reveal" style="--h:' + (c.hue || 45) + '" href="' + api.catUrl(c) + '"><span class="ico">' + api.icon(c.icon, 22) + '</span><span><b data-en="' + e(c.en) + '" data-hi="' + e(c.hi) + '">' + e(c.en) + '</b><small data-en="' + e(c.den) + '" data-hi="' + e(c.dhi) + '">' + e(c.den) + " </small><small><span data-en=\"" + n + " tools\" data-hi=\"" + n + " टूल्स\">" + n + " tools</span></small></span></a>";
   };
 
   if (typeof module !== "undefined" && module.exports) module.exports = api;

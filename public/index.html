@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -13,7 +13,7 @@
 <meta property="og:title" content="DTAhub – Your Everyday Digital Toolkit | Free Online Tools"><meta property="og:description" content="DTAhub is your everyday digital toolkit: free PDF, image, text, developer tools and calculators that run privately in your browser. No sign-up."><meta property="og:url" content="https://dtahub.satish910887.workers.dev/">
 <meta property="og:image" content="https://dtahub.satish910887.workers.dev/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="DTAhub – Your Everyday Digital Toolkit | Free Online Tools"><meta name="twitter:description" content="DTAhub is your everyday digital toolkit: free PDF, image, text, developer tools and calculators that run privately in your browser. No sign-up."><meta name="twitter:image" content="https://dtahub.satish910887.workers.dev/og.png">
-<meta name="theme-color" content="#08080d">
+<meta name="theme-color" content="#f4f7fe">
 <meta name="google-site-verification" content="pVzOBFgeCkMA5nz0v4wBgB06biWAj7AIt9ABl4Ha6D4">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
 <script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var ac=localStorage.getItem("accent");if(ac==="emerald"||ac==="rose")document.documentElement.setAttribute("data-accent",ac);if(localStorage.getItem("lang")==="hi")document.documentElement.lang="hi";if(localStorage.getItem("motion")==="off")document.documentElement.setAttribute("data-motion","off")}catch(e){}</script>
@@ -53,18 +53,39 @@
 </nav><!--/DTA:NAV-->
 <div class="bg-glow"></div>
 <main id="main">
-<div class="hero-wrap"><div class="orbs" id="orbs" aria-hidden="true"></div><svg class="scene" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false"><defs><linearGradient id="scg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f2c969"/><stop offset="1" stop-color="#8b6cf6"/></linearGradient></defs><g class="sc-rings" fill="none" stroke="url(#scg)" stroke-width="1.2"><circle cx="400" cy="200" r="90"/><circle cx="400" cy="200" r="150" stroke-dasharray="4 10"/><circle cx="400" cy="200" r="210" stroke-dasharray="1 14"/></g><g class="sc-o1"><circle cx="490" cy="200" r="5" fill="#f2c969"/></g><g class="sc-o2"><circle cx="400" cy="50" r="4" fill="#8b6cf6"/></g><g class="sc-o3"><circle cx="190" cy="200" r="3.500" fill="#f2c969"/></g><path class="sc-wave" d="M0 300 C120 240 200 360 320 300 S520 240 640 300 S760 340 800 310" fill="none" stroke="url(#scg)" stroke-width="2" stroke-linecap="round" pathLength="1"/><path class="sc-wave w2" d="M0 330 C140 280 220 380 340 330 S540 280 660 330 S770 360 800 340" fill="none" stroke="url(#scg)" stroke-width="1.2" stroke-linecap="round" pathLength="1"/></svg>
-<section class="hero">
+<div class="hero-wrap"><section class="hero hero2">
+  <div class="h-txt">
   <p class="badge reveal"><i></i><span data-en="100% free • No login • Works offline" data-hi="100% मुफ्त • बिना लॉगिन • ऑफलाइन भी">100% free • No login • Works offline</span></p>
-  <h1 class="reveal"><span class="grad" data-en="Everything You Need." data-hi="आपकी ज़रूरत का सब कुछ।">Everything You Need.</span><br><span data-en="One Powerful Toolkit." data-hi="एक दमदार टूलकिट।">One Powerful Toolkit.</span></h1>
+  <h1 class="reveal"><span data-en="Your All-in-One" data-hi="आपका ऑल-इन-वन">Your All-in-One</span> <span class="grad" data-en="Online Tools" data-hi="ऑनलाइन टूल्स">Online Tools</span> <span data-en="Hub" data-hi="हब">Hub</span></h1>
   <p class="sub reveal" data-en="PDF, image, text, developer tools and calculators. Fast, private and built for your phone." data-hi="PDF, इमेज, टेक्स्ट, डेवलपर टूल्स और कैलकुलेटर। तेज़, प्राइवेट और फोन के लिए बने।">PDF, image, text, developer tools and calculators. Fast, private and built for your phone.</p>
   <div class="search reveal" role="search">
     <svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="6.500"/><path d="m20 20-4-4"/></svg>
     <input id="search" type="search" autocomplete="off" spellcheck="false" role="combobox" aria-expanded="false" aria-controls="sug" aria-label="Search tools" data-ph-en="Search tools: pdf, emi, qr code…" data-ph-hi="टूल खोजें: pdf, emi, qr code…" placeholder="Search tools: pdf, emi, qr code…">
-    <kbd>/</kbd>
+    <button id="sbtn" class="sbtn" type="button" data-en="Search" data-hi="खोजें">Search</button>
     <div id="sug" class="sug" role="listbox" hidden></div>
   </div>
+  <div class="pop reveal"><b data-en="Popular:" data-hi="लोकप्रिय:">Popular:</b><span id="pop"></span></div>
   <div id="stats" class="hero-stats"></div>
+  </div>
+  <div class="h-art" aria-hidden="true">
+<svg viewBox="0 0 520 400" focusable="false">
+<defs><linearGradient id="hs1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient><linearGradient id="hs2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dbe7ff"/><stop offset="1" stop-color="#eef3ff"/></linearGradient></defs>
+<ellipse cx="260" cy="350" rx="210" ry="26" fill="#2563eb" opacity=".14"/>
+<path d="M92 300 118 84a14 14 0 0 1 14-12h256a14 14 0 0 1 14 12l26 216z" fill="#1b2a52"/>
+<path d="M108 288 130 92h260l22 196z" fill="url(#hs2)"/>
+<rect x="140" y="104" width="240" height="22" rx="6" fill="url(#hs1)"/><circle cx="154" cy="115" r="4" fill="#fff" opacity=".9"/><rect x="166" y="111" width="70" height="8" rx="4" fill="#fff" opacity=".55"/>
+<rect x="148" y="142" width="104" height="62" rx="9" fill="#fff"/><rect x="262" y="142" width="104" height="62" rx="9" fill="#fff"/><rect x="148" y="214" width="104" height="58" rx="9" fill="#fff"/><rect x="262" y="214" width="104" height="58" rx="9" fill="#fff"/>
+<rect x="160" y="154" width="22" height="22" rx="6" fill="#3b82f6"/><rect x="190" y="156" width="46" height="7" rx="3.500" fill="#93b4f5"/><rect x="190" y="170" width="30" height="7" rx="3.500" fill="#cddcfa"/>
+<rect x="274" y="154" width="22" height="22" rx="6" fill="#10b981"/><rect x="304" y="156" width="46" height="7" rx="3.500" fill="#93b4f5"/><rect x="304" y="170" width="30" height="7" rx="3.500" fill="#cddcfa"/>
+<rect x="160" y="226" width="22" height="22" rx="6" fill="#f59e0b"/><rect x="190" y="228" width="46" height="7" rx="3.500" fill="#93b4f5"/><rect x="190" y="242" width="30" height="7" rx="3.500" fill="#cddcfa"/>
+<rect x="274" y="226" width="22" height="22" rx="6" fill="#8b5cf6"/><rect x="304" y="228" width="46" height="7" rx="3.500" fill="#93b4f5"/><rect x="304" y="242" width="30" height="7" rx="3.500" fill="#cddcfa"/>
+<path d="M60 300h400a10 10 0 0 1-10 26H70a10 10 0 0 1-10-26z" fill="#c7d6f5"/><path d="M60 300h400l-6 6H66z" fill="#a9bde8"/><rect x="224" y="306" width="72" height="8" rx="4" fill="#9db3e3"/>
+<g class="fl f1"><rect x="26" y="96" width="62" height="62" rx="18" fill="#fff" stroke="#dbe5f8"/><path d="M45 114h24l10 10v22H45z" fill="#ef4444"/><path d="M69 114v10h10z" fill="#fca5a5"/><rect x="51" y="134" width="22" height="4" rx="2" fill="#fff"/></g>
+<g class="fl f2"><rect x="432" y="58" width="62" height="62" rx="18" fill="#fff" stroke="#dbe5f8"/><rect x="446" y="74" width="34" height="28" rx="5" fill="#10b981"/><circle cx="456" cy="83" r="4" fill="#d1fae5"/><path d="m448 100 10-10 7 7 6-6 9 9z" fill="#065f46"/></g>
+<g class="fl f3"><rect x="446" y="214" width="62" height="62" rx="18" fill="#fff" stroke="#dbe5f8"/><g fill="#1b2a52"><rect x="460" y="228" width="12" height="12"/><rect x="480" y="228" width="12" height="12"/><rect x="460" y="248" width="12" height="12"/><rect x="480" y="250" width="5" height="5"/><rect x="487" y="257" width="5" height="5"/></g></g>
+<g class="fl f4"><rect x="14" y="228" width="62" height="62" rx="18" fill="#fff" stroke="#dbe5f8"/><rect x="29" y="241" width="32" height="38" rx="6" fill="#8b5cf6"/><rect x="34" y="246" width="22" height="9" rx="2" fill="#ede9fe"/><g fill="#ede9fe"><circle cx="37" cy="264" r="2.500"/><circle cx="45" cy="264" r="2.500"/><circle cx="53" cy="264" r="2.500"/><circle cx="37" cy="272" r="2.500"/><circle cx="45" cy="272" r="2.500"/><circle cx="53" cy="272" r="2.500"/></g></g>
+</svg>
+  </div>
 </section></div>
 <div class="marq" role="region" aria-label="Tools"><div class="marq-track" id="marq"></div></div>
 
@@ -78,23 +99,14 @@
     <div id="recGrid" class="grid sm"></div>
   </section>
 
-  <section class="sec" id="how">
-    <div class="sec-h"><div><h2 data-en="How it works" data-hi="कैसे काम करता है">How it works</h2><p data-en="Three steps. Nothing to install or sign up for." data-hi="तीन कदम। न इंस्टॉल, न साइन-अप।">Three steps.</p></div></div>
-    <div class="how">
-      <div class="reveal"><b class="n">1</b><h3 data-en="Pick a tool" data-hi="टूल चुनें">Pick a tool</h3><p data-en="Search or browse by category." data-hi="खोजें या श्रेणी से चुनें।">Search or browse.</p></div>
-      <div class="reveal"><b class="n">2</b><h3 data-en="Add your file or text" data-hi="फाइल या टेक्स्ट डालें">Add your file or text</h3><p data-en="It opens on your device. Nothing is uploaded." data-hi="यह आपके डिवाइस पर खुलता है। कुछ अपलोड नहीं होता।">It stays on your device.</p></div>
-      <div class="reveal"><b class="n">3</b><h3 data-en="Download or copy" data-hi="डाउनलोड या कॉपी करें">Download or copy</h3><p data-en="Get your result in one tap." data-hi="एक टैप में नतीजा पाएं।">One tap.</p></div>
-    </div>
-  </section>
-
   <section id="categories" class="sec">
     <div class="sec-h"><div><h2 data-en="Browse by category" data-hi="श्रेणी के अनुसार देखें">Browse by category</h2></div></div>
-    <div id="catGrid" class="cgrid"></div>
+    <div id="catGrid" class="cgrid c7"></div>
   </section>
 
   <section class="sec">
     <div class="sec-h"><div><h2 data-en="Top picks" data-hi="खास टूल्स">Top picks</h2><p data-en="Handpicked tools most people start with." data-hi="चुने हुए टूल्स जिनसे ज़्यादातर लोग शुरुआत करते हैं।">Handpicked tools most people start with.</p></div></div>
-    <div id="topGrid" class="grid"></div>
+    <div id="topGrid" class="grid g3"></div>
   </section>
 
   <section id="tools" class="sec">
@@ -121,18 +133,23 @@
     </div>
   </section>
 
-  <section class="sec">
-    <div class="sec-h"><div><h2 data-en="Recently added" data-hi="हाल में जुड़े">Recently added</h2></div></div>
-    <div id="newGrid" class="grid"></div>
-  </section>
-
-  <section class="sec">
-    <div class="sec-h"><div><h2 data-en="Why choose DTAhub" data-hi="DTAhub क्यों चुनें">Why choose DTAhub</h2></div></div>
-    <div class="why">
-      <div class="reveal"><span class="ico" id="w1"></span><h3 data-en="Private by design" data-hi="प्राइवेसी पहले">Private by design</h3><p data-en="Your files are processed inside your browser and never uploaded." data-hi="आपकी फाइलें आपके ब्राउज़र में ही प्रोसेस होती हैं, अपलोड नहीं होतीं।">Your files are processed inside your browser and never uploaded.</p></div>
-      <div class="reveal"><span class="ico" id="w2"></span><h3 data-en="Fast and light" data-hi="तेज़ और हल्का">Fast and light</h3><p data-en="No heavy frameworks. Pages open quickly even on slow networks and older phones." data-hi="कोई भारी फ्रेमवर्क नहीं। धीमे नेटवर्क और पुराने फोन पर भी पेज जल्दी खुलते हैं।">No heavy frameworks. Pages open quickly even on slow networks and older phones.</p></div>
-      <div class="reveal"><span class="ico" id="w3"></span><h3 data-en="Built for your phone" data-hi="फोन के लिए बना">Built for your phone</h3><p data-en="Big touch targets, Hindi and English, and install it like an app." data-hi="बड़े टच बटन, हिंदी और अंग्रेज़ी, और ऐप की तरह इंस्टॉल करें।">Big touch targets, Hindi and English, and install it like an app.</p></div>
-      <div class="reveal"><span class="ico" id="w4"></span><h3 data-en="Free, no sign-up" data-hi="मुफ्त, बिना साइन-अप">Free, no sign-up</h3><p data-en="No account, no watermark. Just open a tool and use it." data-hi="न अकाउंट, न वॉटरमार्क। बस टूल खोलें और इस्तेमाल करें।">No account, no watermark. Just open a tool and use it.</p></div>
+  <section class="sec" id="why">
+    <div class="duo">
+      <div class="panel">
+        <div class="sec-h"><div><h2 data-en="Recently added" data-hi="हाल में जुड़े">Recently added</h2></div><a href="#tools" data-en="View all" data-hi="सभी देखें">View all</a></div>
+        <ul id="newList" class="rlist"></ul>
+      </div>
+      <div class="panel why2">
+        <h2 data-en="Why choose DTAhub?" data-hi="DTAhub क्यों चुनें?">Why choose DTAhub?</h2>
+        <ul class="ticks">
+          <li><span data-en="Private: files never leave your device" data-hi="प्राइवेट: फाइलें आपके डिवाइस से बाहर नहीं जातीं">Private: files never leave your device</span></li>
+          <li><span data-en="Fast and light, even on slow networks" data-hi="धीमे नेटवर्क पर भी तेज़ और हल्का">Fast and light, even on slow networks</span></li>
+          <li><span data-en="Built for your phone, Hindi and English" data-hi="फोन के लिए बना, हिंदी और अंग्रेज़ी">Built for your phone, Hindi and English</span></li>
+          <li><span data-en="Free forever: no sign-up, no watermark" data-hi="हमेशा मुफ्त: न साइन-अप, न वॉटरमार्क">Free forever: no sign-up, no watermark</span></li>
+        </ul>
+        <svg class="shield" viewBox="0 0 120 130" aria-hidden="true" focusable="false"><path d="M60 8 14 26v36c0 30 20 50 46 60 26-10 46-30 46-60V26z" fill="#2563eb"/><path d="M60 8v114c26-10 46-30 46-60V26z" fill="#1d4ed8"/><path d="m39 64 15 15 28-30" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <a class="btn gold" href="#tools" data-en="Start Using Now" data-hi="अभी इस्तेमाल करें">Start Using Now</a>
+      </div>
     </div>
   </section>
 
