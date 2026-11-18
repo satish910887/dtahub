@@ -1,6 +1,6 @@
 /* DTAhub homepage: renders everything from the central registry (tools-data.js). */
 (function () {
-  var D = window.DTA, cat = "all", q = "", sort = "featured";
+  var D = window.DTA, first = true, cat = "all", q = "", sort = "featured";
   var DAY = 864e5;
   function $$(id) { return document.getElementById(id); }
   function isNew(t) { return t.added > D.LAUNCH && Date.now() - Date.parse(t.added) < 45 * DAY; }
@@ -65,7 +65,7 @@
     var l = list(); $$("grid").innerHTML = cards(l); $$("empty").hidden = l.length > 0; $$("grid").hidden = !l.length;
     $$("count").textContent = l.length + " / " + D.TOOLS.length;
     if (window.DTAstagger) DTAstagger();
-    var g = $$("grid"); g.classList.remove("sweep"); void g.offsetWidth; g.classList.add("sweep");
+    var g = $$("grid"); if (first) first = false; else { g.classList.remove("sweep"); void g.offsetWidth; g.classList.add("sweep"); }
     done();
   }
 

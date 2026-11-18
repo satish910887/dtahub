@@ -640,3 +640,6 @@ h1,h2{letter-spacing:-.025em}
 main.tw::before,main.tw::after{display:none}
 .tmed,.tmed::before,.tmed .ic,.empty-sm .st,.privacy-note .ic,.grad{animation:none!important}
 .tmed i{display:none}
+/* perf: skip rendering of below-the-fold sections until they near the viewport */
+#tools,#why,#faq{content-visibility:auto;contain-intrinsic-size:auto 700px}
+.sec-h a{display:inline-flex;align-items:center;min-height:32px;padding:0 6px}
