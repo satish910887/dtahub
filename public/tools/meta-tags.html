@@ -6,20 +6,20 @@
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/tool.css">
 <!--DTA:META--><title>Meta Tag Generator – Free Online Tool | DTAhub</title>
-<meta name="description" content="Meta Tag Generator builds the title, description, canonical, Open Graph and Twitter Card tags for a web page. Free, private, no sign-up.">
+<meta name="description" content="Meta Tag Generator builds title, description, canonical, robots, Open Graph, X (Twitter) and optional JSON-LD tags. Free, private, no sign-up.">
 <link rel="preload" href="/fonts/space-grotesk-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="robots" content="index, follow, max-image-preview:large">
 <link rel="canonical" href="https://dtahub.satish910887.workers.dev/tools/meta-tags">
 <meta property="og:type" content="website"><meta property="og:site_name" content="DTAhub"><meta property="og:locale" content="en_IN">
-<meta property="og:title" content="Meta Tag Generator – Free Online Tool | DTAhub"><meta property="og:description" content="Meta Tag Generator builds the title, description, canonical, Open Graph and Twitter Card tags for a web page. Free, private, no sign-up."><meta property="og:url" content="https://dtahub.satish910887.workers.dev/tools/meta-tags">
+<meta property="og:title" content="Meta Tag Generator – Free Online Tool | DTAhub"><meta property="og:description" content="Meta Tag Generator builds title, description, canonical, robots, Open Graph, X (Twitter) and optional JSON-LD tags. Free, private, no sign-up."><meta property="og:url" content="https://dtahub.satish910887.workers.dev/tools/meta-tags">
 <meta property="og:image" content="https://dtahub.satish910887.workers.dev/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Meta Tag Generator – Free Online Tool | DTAhub"><meta name="twitter:description" content="Meta Tag Generator builds the title, description, canonical, Open Graph and Twitter Card tags for a web page. Free, private, no sign-up."><meta name="twitter:image" content="https://dtahub.satish910887.workers.dev/og.png">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Meta Tag Generator – Free Online Tool | DTAhub"><meta name="twitter:description" content="Meta Tag Generator builds title, description, canonical, robots, Open Graph, X (Twitter) and optional JSON-LD tags. Free, private, no sign-up."><meta name="twitter:image" content="https://dtahub.satish910887.workers.dev/og.png">
 <meta name="theme-color" content="#f4f7fe">
 <meta name="google-site-verification" content="pVzOBFgeCkMA5nz0v4wBgB06biWAj7AIt9ABl4Ha6D4">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
 <script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var ac=localStorage.getItem("accent");if(ac==="emerald"||ac==="rose")document.documentElement.setAttribute("data-accent",ac);if(localStorage.getItem("lang")==="hi")document.documentElement.lang="hi";if(localStorage.getItem("motion")==="off")document.documentElement.setAttribute("data-motion","off")}catch(e){}</script>
 <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Meta Tag Generator","url":"https://dtahub.satish910887.workers.dev/tools/meta-tags","description":"Meta Tag Generator builds the title, description, canonical, Open Graph and Twitter Card tags for a web page. Free, private, no sign-up.","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","browserRequirements":"Requires JavaScript","inLanguage":["en","hi"],"isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"INR"},"publisher":{"@type":"Organization","name":"DTAhub","url":"https://dtahub.satish910887.workers.dev/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Meta Tag Generator","url":"https://dtahub.satish910887.workers.dev/tools/meta-tags","description":"Meta Tag Generator builds title, description, canonical, robots, Open Graph, X (Twitter) and optional JSON-LD tags. Free, private, no sign-up.","applicationCategory":"UtilitiesApplication","operatingSystem":"Any (web browser)","browserRequirements":"Requires JavaScript","inLanguage":["en","hi"],"isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"INR"},"publisher":{"@type":"Organization","name":"DTAhub","url":"https://dtahub.satish910887.workers.dev/"}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://dtahub.satish910887.workers.dev/"},{"@type":"ListItem","position":2,"name":"SEO & Utility","item":"https://dtahub.satish910887.workers.dev/category/seo/"},{"@type":"ListItem","position":3,"name":"Meta Tag Generator","item":"https://dtahub.satish910887.workers.dev/tools/meta-tags"}]}</script><!--/DTA:META-->
 </head>
 <body data-page="tool" data-tool="meta-tags">
@@ -62,34 +62,52 @@
  <button class="btn" type="button" data-reset><span data-en="Reset" data-hi="रीसेट">Reset</span></button>
 </div><!--/DTA:ACTIONS-->
 <div class="panel">
- <label data-en="Page title" data-hi="पेज का टाइटल">Title</label>
+ <label for="ti" data-en="Page title" data-hi="पेज का टाइटल">Title</label>
  <input id="ti" type="text" maxlength="120">
- <div class="hint" id="ht"></div>
- <label data-en="Description" data-hi="विवरण">Description</label>
+ <div class="bar"><i id="bt"></i></div><div class="hint" id="ht"></div>
+ <label for="de" data-en="Description" data-hi="विवरण">Description</label>
  <textarea id="de" style="min-height:90px" maxlength="320"></textarea>
- <div class="hint" id="hd"></div>
- <label data-en="Keywords (comma separated)" data-hi="कीवर्ड (कॉमा से अलग)">Keywords</label>
- <input id="kw" type="text">
- <label data-en="Author" data-hi="लेखक">Author</label>
- <input id="au" type="text">
- <label data-en="Page URL" data-hi="पेज का लिंक">URL</label>
- <input id="ur" type="url" placeholder="https://">
- <label data-en="Image URL (for sharing)" data-hi="इमेज का लिंक (शेयरिंग के लिए)">Image</label>
- <input id="im" type="url" placeholder="https://">
+ <div class="bar"><i id="bd"></i></div><div class="hint" id="hd"></div>
+ <div class="two"><div><label for="ur" data-en="Page URL (canonical)" data-hi="पेज का लिंक (canonical)">URL</label><input id="ur" type="url" placeholder="https://"></div>
+ <div><label for="im" data-en="Share image URL (1200×630)" data-hi="शेयर इमेज का लिंक (1200×630)">Image</label><input id="im" type="url" placeholder="https://"></div></div>
+ <div class="two"><div><label for="sn" data-en="Site name" data-hi="साइट का नाम">Site name</label><input id="sn" type="text" maxlength="60"></div>
+ <div><label for="au" data-en="Author" data-hi="लेखक">Author</label><input id="au" type="text"></div></div>
+ <details class="more"><summary data-en="More options" data-hi="और विकल्प">More options</summary>
+  <label for="kw" data-en="Keywords (comma separated, optional)" data-hi="कीवर्ड (कॉमा से अलग, वैकल्पिक)">Keywords</label><input id="kw" type="text">
+  <div class="two"><div><label for="ty" data-en="Content type" data-hi="कंटेंट का प्रकार">Type</label><select id="ty"><option value="website">Website / page</option><option value="article">Article / blog post</option></select></div>
+  <div><label for="lc" data-en="Language" data-hi="भाषा">Language</label><select id="lc"><option value="en_IN">English (India)</option><option value="hi_IN">Hindi (India)</option><option value="en_US">English (US)</option><option value="en_GB">English (UK)</option></select></div></div>
+  <div class="two"><div><label for="rb" data-en="Search engines" data-hi="सर्च इंजन">Search engines</label><select id="rb"><option value="index, follow">Index and follow (default)</option><option value="noindex, follow">Do not index</option><option value="noindex, nofollow">Do not index or follow</option></select></div>
+  <div><label for="tw" data-en="X (Twitter) handle" data-hi="X (Twitter) हैंडल">X handle</label><input id="tw" type="text" placeholder="@yourname"></div></div>
+  <div class="two"><div><label for="tc" data-en="Browser theme colour" data-hi="ब्राउज़र थीम रंग">Theme colour</label><input id="tc" type="color" value="#2563eb"></div>
+  <div><label class="chk" style="margin-top:28px"><input id="jl" type="checkbox"><span data-en="Add JSON-LD structured data" data-hi="JSON-LD स्ट्रक्चर्ड डेटा जोड़ें">Add JSON-LD</span></label></div></div>
+ </details>
 </div>
 <div class="panel">
- <label data-en="Your tags" data-hi="आपके टैग">Output</label>
- <textarea id="out" readonly spellcheck="false" style="min-height:240px;font-family:ui-monospace,Menlo,monospace;font-size:.85rem"></textarea>
- <div class="seg"><button class="btn gold" id="cp" data-en="Copy" data-hi="कॉपी करें">Copy</button></div>
+ <h2 class="shd" data-en="SEO checks" data-hi="SEO जांच">SEO checks</h2>
+ <ul id="chk" class="mchk"></ul>
+ <h2 class="shd" data-en="Google result preview" data-hi="Google रिज़ल्ट का नमूना">Google result preview</h2>
+ <div class="serp" aria-label="Preview"><div class="su" id="pu"></div><div class="st" id="pt"></div><div class="sd" id="pd"></div></div>
+ <h2 class="shd" data-en="Social share preview" data-hi="सोशल शेयर का नमूना">Social share preview</h2>
+ <div class="soc"><div class="si" data-en="Image 1200 × 630 px" data-hi="इमेज 1200 × 630 px">Image 1200 × 630 px</div><div class="sx"><small id="sd2"></small><b id="st2"></b><span id="sp2"></span></div></div>
 </div>
+<div class="panel">
+ <label for="out" data-en="Your tags" data-hi="आपके टैग">Output</label>
+ <textarea id="out" readonly spellcheck="false" style="min-height:260px;font-family:ui-monospace,Menlo,monospace;font-size:.85rem"></textarea>
+ <div class="seg"><button class="btn gold" id="cp" type="button" data-en="Copy" data-hi="कॉपी करें">Copy</button><button class="btn" id="dl" type="button" data-en="Download .html" data-hi=".html डाउनलोड करें">Download .html</button></div>
+</div>
+<style>.shd{font-size:1.02rem;margin:16px 0 8px;text-align:left}.shd:first-child{margin-top:0}.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:4px}.bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .2s}.bar i.w{background:#d97706}.bar i.e{background:var(--err)}
+.more{margin:12px 0 0;border:1px solid var(--line);border-radius:12px;padding:10px 12px}.more summary{cursor:pointer;font-weight:600}
+.mchk{list-style:none;margin:0 0 6px;padding:0;display:grid;gap:6px}.mchk li{display:flex;gap:8px;font-size:.92rem}.mchk li::before{content:"✓";flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:.75rem;font-weight:700;background:var(--ok);color:#fff}.mchk li.w::before{content:"!";background:#b45309}.mchk li.e::before{content:"✕";background:var(--err)}
+.serp{background:#fff;color:#202124;border-radius:12px;padding:14px 16px;font-family:Arial,Roboto,sans-serif;border:1px solid #dadce0;max-width:600px}.serp .su{font-size:.78rem;color:#4d5156;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.serp .st{font-size:1.15rem;color:#1a0dab;margin:2px 0 3px;line-height:1.3;word-break:break-word}.serp .sd{font-size:.88rem;color:#4d5156;line-height:1.5;word-break:break-word}
+.soc{border:1px solid var(--line);border-radius:12px;overflow:hidden;max-width:520px;background:var(--card)}.soc .si{aspect-ratio:1200/630;display:grid;place-items:center;background:var(--bg2);color:var(--muted);font-size:.85rem}.soc .sx{padding:10px 14px;display:flex;flex-direction:column;gap:3px}.soc small{color:var(--muted);text-transform:uppercase;font-size:.7rem;letter-spacing:.04em}.soc b{line-height:1.3;word-break:break-word}.soc span{color:var(--muted);font-size:.88rem;word-break:break-word}</style>
 <!--DTA:EXTRA--><aside class="privacy-note"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5.500c0 4.200 2.800 7.500 7 9.500 4.200-2 7-5.300 7-9.500V6z"/><path d="m9 12 2.200 2.200L15.500 10"/></svg><p data-en="Your text stays in your browser. Nothing is stored or sent anywhere." data-hi="आपका टेक्स्ट आपके ब्राउज़र में ही रहता है। कुछ भी सेव या कहीं भेजा नहीं जाता।">Your text stays in your browser. Nothing is stored or sent anywhere.</p></aside>
 <section class="seo-about">
  <h2 data-en="About Meta Tag Generator" data-hi="मेटा टैग जनरेटर के बारे में">About Meta Tag Generator</h2>
- <p data-en="Meta Tag Generator builds the title, description, canonical, Open Graph and Twitter Card tags for a web page. Character counters show when a title or description is getting too long for search results." data-hi="Meta Tag Generator वेब पेज के लिए title, description, canonical, Open Graph और Twitter Card टैग बनाता है। कैरेक्टर काउंटर बताते हैं कि title या description सर्च रिज़ल्ट के लिए कब ज़्यादा लंबा हो रहा है।">Meta Tag Generator builds the title, description, canonical, Open Graph and Twitter Card tags for a web page. Character counters show when a title or description is getting too long for search results.</p>
+ <p data-en="Meta Tag Generator builds title, description, canonical, robots, Open Graph, X (Twitter) and optional JSON-LD tags. It checks your title and description length, shows how the page may look in Google and when shared, and lets you copy the tags or download a ready HTML snippet. Everything runs in your browser." data-hi="Meta Tag Generator टाइटल, विवरण, canonical, robots, Open Graph, X (Twitter) और वैकल्पिक JSON-LD टैग बनाता है। यह टाइटल और विवरण की लंबाई जांचता है, दिखाता है कि पेज Google में और शेयर करने पर कैसा दिख सकता है, और आप टैग कॉपी या तैयार HTML स्निपेट डाउनलोड कर सकते हैं। सब कुछ आपके ब्राउज़र में चलता है।">Meta Tag Generator builds title, description, canonical, robots, Open Graph, X (Twitter) and optional JSON-LD tags. It checks your title and description length, shows how the page may look in Google and when shared, and lets you copy the tags or download a ready HTML snippet. Everything runs in your browser.</p>
  <h2 data-en="How to use" data-hi="कैसे इस्तेमाल करें">How to use</h2>
  <ol><li data-en="Type or paste your text into the box." data-hi="बॉक्स में टेक्स्ट लिखें या पेस्ट करें।">Type or paste your text into the box.</li><li data-en="Tap the action button for the result." data-hi="नतीजे के लिए एक्शन बटन दबाएं।">Tap the action button for the result.</li><li data-en="Copy the result with one tap." data-hi="एक टैप में नतीजा कॉपी करें।">Copy the result with one tap.</li></ol>
  <h2 data-en="Good to know" data-hi="काम की बात">Good to know</h2>
- <p data-en="Keep titles under about 60 characters and descriptions under about 160." data-hi="Title करीब 60 और description करीब 160 अक्षरों से कम रखें।">Keep titles under about 60 characters and descriptions under about 160.</p>
+ <p data-en="Keep titles to about 60 characters and descriptions to about 160 so they are not cut off." data-hi="टाइटल लगभग 60 और विवरण लगभग 160 अक्षर रखें ताकि वे कटें नहीं।">Keep titles to about 60 characters and descriptions to about 160 so they are not cut off.</p>
  <h2 data-en="Related tools" data-hi="मिलते-जुलते टूल्स">Related tools</h2>
  <div class="grid sm"><article class="card reveal" style="--h:45" data-id="word-counter" data-cat="text" data-q="word counter शब्द गिनें counts, keywords and limits गिनती, कीवर्ड और सीमाएं word-counter text tools"><div class="card-top"><span class="ico"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h16"/></svg></span><h3><a class="stretch" href="/tools/word-counter"><span data-en="Word Counter" data-hi="शब्द गिनें">Word Counter</span></a></h3></div><p data-en="Counts, keywords and limits" data-hi="गिनती, कीवर्ड और सीमाएं">Counts, keywords and limits</p><div class="meta"><span class="tag" data-en="Text" data-hi="टेक्स्ट">Text</span><span class="tag free" data-en="Free" data-hi="मुफ्त">Free</span><span class="card-open"><span data-en="Open" data-hi="खोलें">Open</span><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></div><button class="fav" type="button" aria-pressed="false" data-fav="word-counter" aria-label="Favourite"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.9l6.1-.8z"/></svg></button></article><article class="card reveal" style="--h:200" data-id="qr-code" data-cat="dev" data-q="qr code generator qr कोड बनाएं qr for wifi, upi, vcard with logo wifi, upi, vcard qr, लोगो के साथ qr-code developer tools"><div class="card-top"><span class="ico"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2h-2zM18 18h2M14 20h2M20 14v2"/></svg></span><h3><a class="stretch" href="/tools/qr-code"><span data-en="QR Code Generator" data-hi="QR कोड बनाएं">QR Code Generator</span></a></h3></div><p data-en="QR for WiFi, UPI, vCard with logo" data-hi="WiFi, UPI, vCard QR, लोगो के साथ">QR for WiFi, UPI, vCard with logo</p><div class="meta"><span class="tag" data-en="Developer" data-hi="डेवलपर">Developer</span><span class="tag free" data-en="Free" data-hi="मुफ्त">Free</span><span class="card-open"><span data-en="Open" data-hi="खोलें">Open</span><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></div><button class="fav" type="button" aria-pressed="false" data-fav="qr-code" aria-label="Favourite"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.9l6.1-.8z"/></svg></button></article><article class="card reveal" style="--h:110" data-id="password" data-cat="seo" data-q="password generator पासवर्ड जनरेटर passwords and passphrases पासवर्ड और पासफ्रेज़ password seo &amp; utility"><div class="card-top"><span class="ico"><svg class="ic" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M16 7l3 3"/></svg></span><h3><a class="stretch" href="/tools/password"><span data-en="Password Generator" data-hi="पासवर्ड जनरेटर">Password Generator</span></a></h3></div><p data-en="Passwords and passphrases" data-hi="पासवर्ड और पासफ्रेज़">Passwords and passphrases</p><div class="meta"><span class="tag" data-en="SEO &amp; Utility" data-hi="SEO और यूटिलिटी">SEO &amp; Utility</span><span class="tag free" data-en="Free" data-hi="मुफ्त">Free</span><span class="card-open"><span data-en="Open" data-hi="खोलें">Open</span><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></div><button class="fav" type="button" aria-pressed="false" data-fav="password" aria-label="Favourite"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.9l6.1-.8z"/></svg></button></article></div>
 </section><!--/DTA:EXTRA-->
@@ -101,35 +119,57 @@
  <div><div class="fh"><span data-en="All tools" data-hi="सभी टूल्स">All tools</span></div><ul class="two"><li><a href="/tools/resume-maker"><span data-en="Resume Maker" data-hi="रिज़्यूमे मेकर">Resume Maker</span></a></li><li><a href="/tools/cover-letter"><span data-en="Cover Letter Maker" data-hi="कवर लेटर मेकर">Cover Letter Maker</span></a></li><li><a href="/tools/invoice-maker"><span data-en="Invoice Maker" data-hi="इनवॉइस मेकर">Invoice Maker</span></a></li><li><a href="/tools/unit-converter"><span data-en="Unit Converter" data-hi="यूनिट कन्वर्टर">Unit Converter</span></a></li><li><a href="/tools/sip"><span data-en="SIP Calculator" data-hi="SIP कैलकुलेटर">SIP Calculator</span></a></li><li><a href="/tools/image-editor"><span data-en="Image Editor" data-hi="इमेज एडिटर">Image Editor</span></a></li><li><a href="/tools/pdf-organize"><span data-en="Organize PDF Pages" data-hi="PDF के पेज व्यवस्थित करें">Organize PDF Pages</span></a></li><li><a href="/tools/text-diff"><span data-en="Text Diff Checker" data-hi="टेक्स्ट अंतर जांचें">Text Diff Checker</span></a></li><li><a href="/tools/regex-tester"><span data-en="Regex Tester" data-hi="रेगेक्स टेस्टर">Regex Tester</span></a></li><li><a href="/tools/hash-generator"><span data-en="Hash and UUID Generator" data-hi="हैश और UUID जनरेटर">Hash and UUID Generator</span></a></li><li><a href="/tools/fd-calculator"><span data-en="FD and RD Calculator" data-hi="FD और RD कैलकुलेटर">FD and RD Calculator</span></a></li><li><a href="/tools/doc-scanner"><span data-en="Document Scanner" data-hi="डॉक्यूमेंट स्कैनर">Document Scanner</span></a></li><li><a href="/tools/pdf-fill"><span data-en="Sign and Fill PDF" data-hi="PDF भरें और साइन करें">Sign and Fill PDF</span></a></li><li><a href="/tools/lorem-ipsum"><span data-en="Lorem Ipsum Generator" data-hi="लोरेम इप्सम जनरेटर">Lorem Ipsum Generator</span></a></li><li><a href="/tools/color-palette"><span data-en="Colour Palette Generator" data-hi="कलर पैलेट जनरेटर">Colour Palette Generator</span></a></li><li><a href="/tools/pdf-merge"><span data-en="Merge PDF" data-hi="PDF जोड़ें">Merge PDF</span></a></li><li><a href="/tools/pdf-split"><span data-en="Split PDF" data-hi="PDF अलग करें">Split PDF</span></a></li><li><a href="/tools/image-to-pdf"><span data-en="Image to PDF" data-hi="इमेज से PDF">Image to PDF</span></a></li><li><a href="/tools/image-compress"><span data-en="Compress Image" data-hi="इमेज छोटी करें">Compress Image</span></a></li><li><a href="/tools/image-resize"><span data-en="Resize Image" data-hi="इमेज रीसाइज़">Resize Image</span></a></li><li><a href="/tools/image-convert"><span data-en="Image Converter" data-hi="इमेज कन्वर्टर">Image Converter</span></a></li><li><a href="/tools/word-counter"><span data-en="Word Counter" data-hi="शब्द गिनें">Word Counter</span></a></li><li><a href="/tools/case-converter"><span data-en="Case Converter" data-hi="केस बदलें">Case Converter</span></a></li><li><a href="/tools/typing-helper"><span data-en="Hindi Typing Helper" data-hi="हिंदी टाइपिंग">Hindi Typing Helper</span></a></li><li><a href="/tools/json-formatter"><span data-en="JSON Formatter" data-hi="JSON फॉर्मेटर">JSON Formatter</span></a></li><li><a href="/tools/base64"><span data-en="Base64 Tool" data-hi="Base64 टूल">Base64 Tool</span></a></li><li><a href="/tools/qr-code"><span data-en="QR Code Generator" data-hi="QR कोड बनाएं">QR Code Generator</span></a></li><li><a href="/tools/emi"><span data-en="EMI Calculator" data-hi="EMI कैलकुलेटर">EMI Calculator</span></a></li><li><a href="/tools/age"><span data-en="Age Calculator" data-hi="उम्र कैलकुलेटर">Age Calculator</span></a></li><li><a href="/tools/gst"><span data-en="GST Calculator" data-hi="GST कैलकुलेटर">GST Calculator</span></a></li><li><a href="/tools/percentage"><span data-en="Percentage Calculator" data-hi="प्रतिशत कैलकुलेटर">Percentage Calculator</span></a></li><li><a href="/tools/meta-tags"><span data-en="Meta Tag Generator" data-hi="मेटा टैग जनरेटर">Meta Tag Generator</span></a></li><li><a href="/tools/password"><span data-en="Password Generator" data-hi="पासवर्ड जनरेटर">Password Generator</span></a></li></ul></div>
 </div><div class="foot-bot"><span>© 2026 DTAhub</span><span><span data-en="Made with care in India." data-hi="भारत में प्यार से बनाया गया।">Made with care in India.</span></span></div></footer><!--/DTA:FOOT-->
 <script defer src="/js/tools-data.js"></script>
-<script defer src="/js/tool.js"></script>
+<script defer src="/js/tool.js"></script><script defer src="/js/img.js"></script>
 <script type="module">
 function esc(s){return s.replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function jq(s){return JSON.stringify(s)}
+function bar(el,n,lo,hi,max){el.style.width=Math.min(100,n/max*100)+"%";el.className=n===0?"":(n<lo||n>hi?(n>hi+20||n<lo-20?"e":"w"):"")}
+function trunc(s,n){return s.length>n?s.slice(0,n-1).trimEnd()+"…":s}
 function gen(){
- var ti=$("ti").value.trim(),de=$("de").value.trim(),kw=$("kw").value.trim(),au=$("au").value.trim(),ur=$("ur").value.trim(),im=$("im").value.trim();
- $("ht").textContent=ti.length+" / 60 "+L("(best under 60)","(60 से कम बेहतर)");
- $("hd").textContent=de.length+" / 160 "+L("(best under 160)","(160 से कम बेहतर)");
+ var v=function(i){return $(i).value.trim()},ti=v("ti"),de=v("de"),kw=v("kw"),au=v("au"),ur=v("ur"),im=v("im"),sn=v("sn"),tw=v("tw"),lc=v("lc"),ty=v("ty"),rb=v("rb"),tc=$("tc").value;
+ $("ht").textContent=ti.length+" / 60 "+L("(best 30 to 60)","(बेहतर 30 से 60)");bar($("bt"),ti.length,30,60,80);
+ $("hd").textContent=de.length+" / 160 "+L("(best 70 to 160)","(बेहतर 70 से 160)");bar($("bd"),de.length,70,160,200);
  var o=['<meta charset="UTF-8">','<meta name="viewport" content="width=device-width, initial-scale=1">'];
  if(ti)o.push("<title>"+esc(ti)+"</title>");
  if(de)o.push('<meta name="description" content="'+esc(de)+'">');
  if(kw)o.push('<meta name="keywords" content="'+esc(kw)+'">');
  if(au)o.push('<meta name="author" content="'+esc(au)+'">');
- o.push('<meta name="robots" content="index, follow">');
+ o.push('<meta name="robots" content="'+rb+'">');
+ o.push('<meta name="theme-color" content="'+tc+'">');
  if(ur)o.push('<link rel="canonical" href="'+esc(ur)+'">');
- o.push("");
- o.push('<meta property="og:type" content="website">');
+ o.push("");o.push('<meta property="og:type" content="'+ty+'">');
+ if(sn)o.push('<meta property="og:site_name" content="'+esc(sn)+'">');
+ o.push('<meta property="og:locale" content="'+lc+'">');
  if(ti)o.push('<meta property="og:title" content="'+esc(ti)+'">');
  if(de)o.push('<meta property="og:description" content="'+esc(de)+'">');
  if(ur)o.push('<meta property="og:url" content="'+esc(ur)+'">');
  if(im)o.push('<meta property="og:image" content="'+esc(im)+'">');
- o.push("");
- o.push('<meta name="twitter:card" content="'+(im?"summary_large_image":"summary")+'">');
+ o.push("");o.push('<meta name="twitter:card" content="'+(im?"summary_large_image":"summary")+'">');
+ if(tw)o.push('<meta name="twitter:site" content="'+esc(tw[0]==="@"?tw:"@"+tw)+'">');
  if(ti)o.push('<meta name="twitter:title" content="'+esc(ti)+'">');
  if(de)o.push('<meta name="twitter:description" content="'+esc(de)+'">');
  if(im)o.push('<meta name="twitter:image" content="'+esc(im)+'">');
+ if($("jl").checked){
+  var j={"@context":"https://schema.org","@type":ty==="article"?"Article":"WebPage"};
+  if(ti)j[ty==="article"?"headline":"name"]=ti;if(de)j.description=de;if(ur)j.url=ur;if(im)j.image=im;
+  if(au)j.author={"@type":"Person",name:au};if(sn)j.publisher={"@type":"Organization",name:sn};
+  o.push("");o.push('<script type="application/ld+json">');o.push(JSON.stringify(j,null,2).replace(/</g,"\\u003c"));o.push("<\/script>");
+ }
  $("out").value=o.join("\n");
+ var c=[],add=function(k,txt){c.push([k,txt])};
+ if(!ti)add("e",L("Add a title.","टाइटल जोड़ें।"));else if(ti.length<30)add("w",L("Title is short. Aim for 30 to 60 characters.","टाइटल छोटा है। 30 से 60 अक्षर रखें।"));else if(ti.length>60)add("w",L("Title may be cut off in search results (over 60).","सर्च रिज़ल्ट में टाइटल कट सकता है (60 से ज़्यादा)।"));else add("",L("Title length is good.","टाइटल की लंबाई सही है।"));
+ if(!de)add("e",L("Add a description.","विवरण जोड़ें।"));else if(de.length<70)add("w",L("Description is short. Aim for 70 to 160 characters.","विवरण छोटा है। 70 से 160 अक्षर रखें।"));else if(de.length>160)add("w",L("Description may be cut off (over 160).","विवरण कट सकता है (160 से ज़्यादा)।"));else add("",L("Description length is good.","विवरण की लंबाई सही है।"));
+ if(!ur)add("w",L("Add the page URL so a canonical link is created.","पेज का लिंक जोड़ें ताकि canonical लिंक बने।"));else if(!/^https:\/\//.test(ur))add("w",L("Use an https:// URL.","https:// वाला लिंक इस्तेमाल करें।"));else add("",L("URL looks good.","लिंक सही है।"));
+ if(!im)add("w",L("Add a share image so links look good on WhatsApp and social apps.","शेयर इमेज जोड़ें ताकि WhatsApp और सोशल ऐप में लिंक अच्छा दिखे।"));else if(!/^https:\/\//.test(im))add("w",L("Image URL should start with https://.","इमेज का लिंक https:// से शुरू होना चाहिए।"));else add("",L("Share image set.","शेयर इमेज सेट है।"));
+ if(rb.indexOf("noindex")===0)add("w",L("This page is set not to appear in search.","यह पेज सर्च में न दिखने के लिए सेट है।"));
+ var ul=$("chk");ul.textContent="";c.forEach(function(x){var li=document.createElement("li");li.className=x[0];li.textContent=x[1];ul.appendChild(li)});
+ var host="";try{host=ur?new URL(ur).hostname+decodeURIComponent(new URL(ur).pathname).replace(/\/$/,"").replace(/\//g," › "):""}catch(e){host=ur}
+ $("pu").textContent=host||"example.com";$("pt").textContent=trunc(ti||L("Your page title appears here","आपके पेज का टाइटल यहां दिखेगा"),60);$("pd").textContent=trunc(de||L("Your description appears here. Write a clear summary of the page.","आपका विवरण यहां दिखेगा। पेज का साफ सार लिखें।"),160);
+ $("sd2").textContent=(sn||host.split(" ")[0]||"example.com");$("st2").textContent=ti||L("Your page title","आपके पेज का टाइटल");$("sp2").textContent=trunc(de,110);
 }
-document.querySelectorAll("input,textarea").forEach(function(i){i.addEventListener("input",gen)});
+document.querySelectorAll("input,textarea,select").forEach(function(i){i.addEventListener("input",gen)});
 $("cp").onclick=function(){copyText($("out").value,$("cp"))};
+$("dl").onclick=function(){saveBlob(new Blob(['<!doctype html>\n<html lang="'+($("lc").value.slice(0,2))+'">\n<head>\n'+$("out").value+'\n</head>\n<body></body>\n</html>\n'],{type:"text/html"}),"meta-tags.html")};
 document.addEventListener("langchange",gen);
 gen();
 </script>
