@@ -74,7 +74,7 @@
  <div class="two"><div><label for="kind" data-en="Type" data-hi="प्रकार">Type</label><select id="kind"><option value="uuid">UUID v4</option><option value="hex">Random hex (32 chars)</option><option value="b64">Random token (URL-safe)</option></select></div>
  <div><label for="n" data-en="How many" data-hi="कितने">How many</label><input id="n" type="number" inputmode="numeric" value="5" min="1" max="50"></div></div>
  <div class="seg"><button class="btn gold" id="gen" type="button" data-en="Generate" data-hi="बनाएं">Generate</button><button class="btn" id="cpall" type="button" data-en="Copy all" data-hi="सब कॉपी करें">Copy all</button></div>
- <textarea id="gout" readonly spellcheck="false" style="min-height:120px;font-family:ui-monospace,Menlo,Consolas,monospace"></textarea>
+ <textarea id="gout" aria-label="Hash results" readonly spellcheck="false" style="min-height:120px;font-family:ui-monospace,Menlo,Consolas,monospace"></textarea>
  <p class="hint" data-en="Made with your browser's secure random generator. MD5 is not offered because it is broken for security use." data-hi="आपके ब्राउज़र के सुरक्षित रैंडम जनरेटर से बना। MD5 नहीं दिया गया क्योंकि सुरक्षा के लिए वह कमज़ोर है।">Secure random.</p>
 </div>
 <style>.hx{margin:8px 0;border:1px solid var(--line);border-radius:12px;padding:10px 12px}.hx small{display:block;color:var(--muted,#9a9aaa);font-weight:600;margin-bottom:2px}.hx code{display:block;word-break:break-all;font:.85rem/1.5 ui-monospace,Menlo,Consolas,monospace}.hx .btn{margin-top:6px;min-height:40px}.sub{font-size:1rem;margin:16px 0 4px}.seg .btn[aria-pressed=true]{border-color:var(--gold);color:var(--gold)}</style>
