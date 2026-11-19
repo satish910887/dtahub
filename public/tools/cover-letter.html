@@ -81,10 +81,13 @@
   <div><label data-en="Closing line (optional)" data-hi="अंतिम पंक्ति (वैकल्पिक)">Closing line (optional)</label><input data-p="close" maxlength="120"></div>
   <div class="g2"><div><label data-en="Letter language" data-hi="पत्र की भाषा">Letter language</label><select data-p="lang"><option value="en">English</option><option value="hi">हिन्दी</option></select></div>
   <div><label data-en="Tone" data-hi="अंदाज़">Tone</label><select data-p="tone"><option value="std" data-en="Standard" data-hi="स्टैंडर्ड">Standard</option><option value="short" data-en="Short" data-hi="छोटा">Short</option><option value="warm" data-en="Warm" data-hi="गर्मजोशी वाला">Warm</option></select></div></div>
+  <div class="g2"><div><label data-en="Accent colour" data-hi="एक्सेंट रंग">Accent colour</label><input data-p="ac" type="color" style="height:46px;padding:4px"></div>
+  <div><label data-en="Font" data-hi="फॉन्ट">Font</label><select data-p="font"><option value="sans" data-en="Clean sans-serif" data-hi="सादा सैन्स-सेरिफ">Clean sans-serif</option><option value="serif" data-en="Classic serif" data-hi="क्लासिक सेरिफ">Classic serif</option></select></div></div>
   <div class="seg"><button class="btn gold" type="button" id="gen" data-en="Write the letter from my answers" data-hi="मेरे जवाबों से पत्र लिखें">Write the letter</button></div>
   <p class="hint" data-en="This uses a fixed template, not AI. Always read and personalise the letter before sending." data-hi="यह तय टेम्पलेट से बनता है, AI से नहीं। भेजने से पहले पत्र पढ़कर अपने हिसाब से बदलें।">Template</p>
  </div>
  <div class="panel"><h2 class="ph" data-en="Letter text (you can edit)" data-hi="पत्र का टेक्स्ट (आप बदल सकते हैं)">Letter text</h2>
+  <p class="hint" id="wc"></p><div class="seg" style="margin-top:0"><button class="btn" type="button" id="cpl" data-en="Copy letter text" data-hi="पत्र का टेक्स्ट कॉपी करें">Copy letter text</button></div>
   <textarea data-p="body" id="bd" aria-label="Letter text" rows="14" maxlength="4000"></textarea>
   <div class="seg"><button class="btn" type="button" id="clr" data-en="Clear everything" data-hi="सब साफ करें">Clear everything</button></div>
   <p class="hint" id="sv"></p>
@@ -119,8 +122,8 @@
 <script type="module">
 
 var KEY="dta_cover_v1",d,E=Doc.esc;
-function blank(){return{v:1,name:"",title:"",email:"",phone:"",city:"",role:"",company:"",to:"",ccity:"",why:"",strengths:"",win:"",close:"",lang:"en",tone:"std",body:"",edited:false}}
-function norm(r){var b=blank();if(!r||typeof r!=="object")return b;Object.keys(b).forEach(function(k){if(k==="edited")b.edited=!!r.edited;else if(k==="v")return;else b[k]=Doc.str(r[k],k==="body"?4000:600)});if(b.lang!=="hi")b.lang="en";if(["std","short","warm"].indexOf(b.tone)<0)b.tone="std";return b}
+function blank(){return{v:1,name:"",title:"",email:"",phone:"",city:"",role:"",company:"",to:"",ccity:"",why:"",strengths:"",win:"",close:"",lang:"en",tone:"std",ac:"#2563eb",font:"sans",body:"",edited:false}}
+function norm(r){var b=blank();if(!r||typeof r!=="object")return b;Object.keys(b).forEach(function(k){if(k==="edited")b.edited=!!r.edited;else if(k==="v")return;else b[k]=Doc.str(r[k],k==="body"?4000:600)});if(b.lang!=="hi")b.lang="en";if(!/^#[0-9a-fA-F]{6}$/.test(b.ac))b.ac="#2563eb";if(b.font!=="serif")b.font="sans";if(["std","short","warm"].indexOf(b.tone)<0)b.tone="std";return b}
 function load(){try{var s=localStorage.getItem(KEY);if(s)return norm(JSON.parse(s))}catch(e){}return null}
 var tm,warned;
 function flush(){try{localStorage.setItem(KEY,JSON.stringify(d))}catch(e){}}
@@ -160,8 +163,9 @@ function render(){
  h+='<div class="cl-date">'+E(ds)+'</div>'+(to?'<div class="cl-to">'+E(to)+'</div>':"");
  if(x.role.trim())h+='<div class="cl-subj">'+E((hi?"विषय: ":"Subject: ")+(hi?x.role.trim()+" पद के लिए आवेदन":"Application for "+x.role.trim()))+'</div>';
  h+='<div class="cl-b">'+paras(x.body)+'</div>';
- var p=$("dpPaper");p.style.setProperty("--ac","#8b6cf6");p.lang=hi?"hi":"en";p.innerHTML=h;var n=Doc.fit();$("pg").textContent=n+L(n===1?" page":" pages"," पेज");
+ var p=$("dpPaper");p.style.setProperty("--ac",x.ac);p.style.fontFamily=x.font==="serif"?'Georgia,"Noto Serif","Noto Serif Devanagari","Times New Roman",serif':"";p.lang=hi?"hi":"en";p.innerHTML=h;var n=Doc.fit();$("pg").textContent=n+L(n===1?" page":" pages"," पेज");var w=x.body.trim()?x.body.trim().split(/\s+/).length:0;$("wc").textContent=w+L(" words. Aim for 200 to 350 words so it fits one page."," शब्द। 200 से 350 शब्द रखें ताकि एक पेज में आए।");
 }
+$("cpl").onclick=function(){copyText(d.body,this)};
 function fill(){document.querySelectorAll("[data-p]").forEach(function(e){e.value=d[e.dataset.p]})}
 function regen(){d.body=build();d.edited=false;$("bd").value=d.body}
 document.querySelector(".dk-edit").addEventListener("input",function(e){var x=e.target,k=x.dataset.p;if(!k)return;d[k]=x.value;if(k==="body")d.edited=true;render();save()});

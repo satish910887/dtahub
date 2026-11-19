@@ -66,6 +66,9 @@
  <label for="tx" data-en="Text to hash" data-hi="हैश करने का टेक्स्ट">Text to hash</label><textarea id="tx" spellcheck="false" style="min-height:100px"></textarea>
  <label for="fl" data-en="…or choose a file (stays on your device)" data-hi="…या फाइल चुनें (डिवाइस पर ही रहती है)">…or choose a file (stays on your device)</label><input id="fl" type="file">
  <label for="key" data-en="HMAC secret key (optional)" data-hi="HMAC गुप्त की (वैकल्पिक)">HMAC secret key (optional)</label><input id="key" type="text" spellcheck="false" autocomplete="off">
+ <div class="two"><div><label for="of" data-en="Output format" data-hi="आउटपुट फॉर्मेट">Output format</label><select id="of"><option value="hex">Hex (lowercase)</option><option value="HEX">Hex (UPPERCASE)</option><option value="b64">Base64</option></select></div>
+ <div><label for="exp" data-en="Verify: paste the expected hash" data-hi="जांचें: अपेक्षित हैश पेस्ट करें">Verify: paste the expected hash</label><input id="exp" type="text" spellcheck="false" autocomplete="off" placeholder="e3b0c442…"></div></div>
+ <p class="line" id="vr" role="status"></p><p class="hint" id="fi"></p>
  <div id="hs"></div>
  <div class="err" id="err" hidden></div>
 </div>
@@ -77,7 +80,7 @@
  <textarea id="gout" aria-label="Hash results" readonly spellcheck="false" style="min-height:120px;font-family:ui-monospace,Menlo,Consolas,monospace"></textarea>
  <p class="hint" data-en="Made with your browser's secure random generator. MD5 is not offered because it is broken for security use." data-hi="आपके ब्राउज़र के सुरक्षित रैंडम जनरेटर से बना। MD5 नहीं दिया गया क्योंकि सुरक्षा के लिए वह कमज़ोर है।">Secure random.</p>
 </div>
-<style>.hx{margin:8px 0;border:1px solid var(--line);border-radius:12px;padding:10px 12px}.hx small{display:block;color:var(--muted,#9a9aaa);font-weight:600;margin-bottom:2px}.hx code{display:block;word-break:break-all;font:.85rem/1.5 ui-monospace,Menlo,Consolas,monospace}.hx .btn{margin-top:6px;min-height:40px}.sub{font-size:1rem;margin:16px 0 4px}.seg .btn[aria-pressed=true]{border-color:var(--gold);color:var(--gold)}</style>
+<style>.line.ok{color:var(--ok);font-weight:600}.line.err{color:var(--err);font-weight:600}.hx{margin:8px 0;border:1px solid var(--line);border-radius:12px;padding:10px 12px}.hx small{display:block;color:var(--muted,#9a9aaa);font-weight:600;margin-bottom:2px}.hx code{display:block;word-break:break-all;font:.85rem/1.5 ui-monospace,Menlo,Consolas,monospace}.hx .btn{margin-top:6px;min-height:40px}.sub{font-size:1rem;margin:16px 0 4px}.seg .btn[aria-pressed=true]{border-color:var(--gold);color:var(--gold)}</style>
 <!--DTA:EXTRA--><aside class="privacy-note"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5.500c0 4.200 2.800 7.500 7 9.500 4.200-2 7-5.300 7-9.500V6z"/><path d="m9 12 2.200 2.200L15.500 10"/></svg><p data-en="Everything runs in your browser. Nothing you enter is stored or sent." data-hi="सब कुछ आपके ब्राउज़र में चलता है। आप जो डालते हैं वो सेव या भेजा नहीं जाता।">Everything runs in your browser. Nothing you enter is stored or sent.</p></aside>
 <section class="seo-about">
  <h2 data-en="About Hash and UUID Generator" data-hi="हैश और UUID जनरेटर के बारे में">About Hash and UUID Generator</h2>
@@ -97,41 +100,55 @@
  <div><div class="fh"><span data-en="All tools" data-hi="सभी टूल्स">All tools</span></div><ul class="two"><li><a href="/tools/resume-maker"><span data-en="Resume Maker" data-hi="रिज़्यूमे मेकर">Resume Maker</span></a></li><li><a href="/tools/cover-letter"><span data-en="Cover Letter Maker" data-hi="कवर लेटर मेकर">Cover Letter Maker</span></a></li><li><a href="/tools/invoice-maker"><span data-en="Invoice Maker" data-hi="इनवॉइस मेकर">Invoice Maker</span></a></li><li><a href="/tools/unit-converter"><span data-en="Unit Converter" data-hi="यूनिट कन्वर्टर">Unit Converter</span></a></li><li><a href="/tools/sip"><span data-en="SIP Calculator" data-hi="SIP कैलकुलेटर">SIP Calculator</span></a></li><li><a href="/tools/image-editor"><span data-en="Image Editor" data-hi="इमेज एडिटर">Image Editor</span></a></li><li><a href="/tools/pdf-organize"><span data-en="Organize PDF Pages" data-hi="PDF के पेज व्यवस्थित करें">Organize PDF Pages</span></a></li><li><a href="/tools/text-diff"><span data-en="Text Diff Checker" data-hi="टेक्स्ट अंतर जांचें">Text Diff Checker</span></a></li><li><a href="/tools/regex-tester"><span data-en="Regex Tester" data-hi="रेगेक्स टेस्टर">Regex Tester</span></a></li><li><a href="/tools/hash-generator"><span data-en="Hash and UUID Generator" data-hi="हैश और UUID जनरेटर">Hash and UUID Generator</span></a></li><li><a href="/tools/fd-calculator"><span data-en="FD and RD Calculator" data-hi="FD और RD कैलकुलेटर">FD and RD Calculator</span></a></li><li><a href="/tools/doc-scanner"><span data-en="Document Scanner" data-hi="डॉक्यूमेंट स्कैनर">Document Scanner</span></a></li><li><a href="/tools/pdf-fill"><span data-en="Sign and Fill PDF" data-hi="PDF भरें और साइन करें">Sign and Fill PDF</span></a></li><li><a href="/tools/lorem-ipsum"><span data-en="Lorem Ipsum Generator" data-hi="लोरेम इप्सम जनरेटर">Lorem Ipsum Generator</span></a></li><li><a href="/tools/color-palette"><span data-en="Colour Palette Generator" data-hi="कलर पैलेट जनरेटर">Colour Palette Generator</span></a></li><li><a href="/tools/pdf-merge"><span data-en="Merge PDF" data-hi="PDF जोड़ें">Merge PDF</span></a></li><li><a href="/tools/pdf-split"><span data-en="Split PDF" data-hi="PDF अलग करें">Split PDF</span></a></li><li><a href="/tools/image-to-pdf"><span data-en="Image to PDF" data-hi="इमेज से PDF">Image to PDF</span></a></li><li><a href="/tools/image-compress"><span data-en="Compress Image" data-hi="इमेज छोटी करें">Compress Image</span></a></li><li><a href="/tools/image-resize"><span data-en="Resize Image" data-hi="इमेज रीसाइज़">Resize Image</span></a></li><li><a href="/tools/image-convert"><span data-en="Image Converter" data-hi="इमेज कन्वर्टर">Image Converter</span></a></li><li><a href="/tools/word-counter"><span data-en="Word Counter" data-hi="शब्द गिनें">Word Counter</span></a></li><li><a href="/tools/case-converter"><span data-en="Case Converter" data-hi="केस बदलें">Case Converter</span></a></li><li><a href="/tools/typing-helper"><span data-en="Hindi Typing Helper" data-hi="हिंदी टाइपिंग">Hindi Typing Helper</span></a></li><li><a href="/tools/json-formatter"><span data-en="JSON Formatter" data-hi="JSON फॉर्मेटर">JSON Formatter</span></a></li><li><a href="/tools/base64"><span data-en="Base64 Tool" data-hi="Base64 टूल">Base64 Tool</span></a></li><li><a href="/tools/qr-code"><span data-en="QR Code Generator" data-hi="QR कोड बनाएं">QR Code Generator</span></a></li><li><a href="/tools/emi"><span data-en="EMI Calculator" data-hi="EMI कैलकुलेटर">EMI Calculator</span></a></li><li><a href="/tools/age"><span data-en="Age Calculator" data-hi="उम्र कैलकुलेटर">Age Calculator</span></a></li><li><a href="/tools/gst"><span data-en="GST Calculator" data-hi="GST कैलकुलेटर">GST Calculator</span></a></li><li><a href="/tools/percentage"><span data-en="Percentage Calculator" data-hi="प्रतिशत कैलकुलेटर">Percentage Calculator</span></a></li><li><a href="/tools/meta-tags"><span data-en="Meta Tag Generator" data-hi="मेटा टैग जनरेटर">Meta Tag Generator</span></a></li><li><a href="/tools/password"><span data-en="Password Generator" data-hi="पासवर्ड जनरेटर">Password Generator</span></a></li></ul></div>
 </div><div class="foot-bot"><span>© 2026 DTAhub</span><span><span data-en="Made with care in India." data-hi="भारत में प्यार से बनाया गया।">Made with care in India.</span></span></div></footer><!--/DTA:FOOT-->
 <script defer src="/js/tools-data.js"></script>
-<script defer src="/js/tool.js"></script>
+<script defer src="/js/tool.js"></script><script defer src="/js/img.js"></script>
 
 <script type="module">
-
-var ALG=["SHA-1","SHA-256","SHA-384","SHA-512"],data=null,fname="";
-function hex(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return("0"+x.toString(16)).slice(2-2).slice(-2)}).join("")}
+var ALG=["SHA-1","SHA-256","SHA-384","SHA-512"],data=null,fname="",last=[];
+function hex(b){return Array.prototype.map.call(new Uint8Array(b),function(x){return("0"+x.toString(16)).slice(-2)}).join("")}
+function b64s(b){var a=new Uint8Array(b),s="";for(var i=0;i<a.length;i++)s+=String.fromCharCode(a[i]);return btoa(s)}
+var CT=null;function crc32(u8){if(!CT){CT=new Uint32Array(256);for(var n=0;n<256;n++){var c=n;for(var k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;CT[n]=c>>>0}}var c2=0xFFFFFFFF;for(var i=0;i<u8.length;i++)c2=CT[(c2^u8[i])&255]^(c2>>>8);return((c2^0xFFFFFFFF)>>>0)}
+function fmt(r){var f=$("of").value;return f==="b64"?r.b64:f==="HEX"?r.hex.toUpperCase():r.hex}
+function render(){
+ var host=$("hs");host.textContent="";var key=$("key").value,ex=$("exp").value.trim().replace(/[\s:]/g,""),hit=null;
+ last.forEach(function(r){
+  var d=document.createElement("div");d.className="hx";
+  var s=document.createElement("small");s.textContent=(key&&r.n!=="CRC32"?"HMAC-":"")+r.n;
+  var c=document.createElement("code");c.textContent=fmt(r);
+  var m=ex&&(ex.toLowerCase()===r.hex.toLowerCase()||ex===r.b64);if(m){hit=r.n;d.style.borderColor="var(--ok)"}
+  var b=document.createElement("button");b.type="button";b.className="btn";b.textContent=L("Copy","कॉपी");
+  b.onclick=function(){copyText(fmt(r),b)};
+  d.appendChild(s);d.appendChild(c);d.appendChild(b);host.appendChild(d);
+ });
+ var v=$("vr");v.className="line";
+ if(!ex||!last.length)v.textContent="";
+ else if(hit){v.textContent="✓ "+L("Match: ","मेल खाता है: ")+hit;v.className="line ok"}
+ else{v.textContent="✗ "+L("No match with any hash below.","नीचे दिए किसी भी हैश से मेल नहीं खाता।");v.className="line err"}
+}
 async function calc(){
  var e=$("err");e.hidden=true;
- var buf=data||new TextEncoder().encode($("tx").value),host=$("hs");host.textContent="";
- if(!data&&!$("tx").value)return;
+ var buf=data||new TextEncoder().encode($("tx").value);last=[];
+ if(!data&&!$("tx").value){render();$("fi").textContent="";return}
  try{
-  var key=$("key").value,res=[];
+  var key=$("key").value,u8=new Uint8Array(buf);
+  $("fi").textContent=(fname?fname+" • ":"")+sizeOf(u8.length);
   for(var i=0;i<ALG.length;i++){
    var h;
    if(key){var k=await crypto.subtle.importKey("raw",new TextEncoder().encode(key),{name:"HMAC",hash:ALG[i]},false,["sign"]);h=await crypto.subtle.sign("HMAC",k,buf)}
    else h=await crypto.subtle.digest(ALG[i],buf);
-   res.push([ALG[i],hex(h)]);
+   last.push({n:ALG[i],hex:hex(h),b64:b64s(h)});
   }
-  res.forEach(function(r){
-   var d=document.createElement("div");d.className="hx";
-   var s=document.createElement("small");s.textContent=(key?"HMAC-":"")+r[0];
-   var c=document.createElement("code");c.textContent=r[1];
-   var b=document.createElement("button");b.type="button";b.className="btn";b.textContent=L("Copy","कॉपी");
-   b.onclick=function(){copyText(r[1],b)};
-   d.appendChild(s);d.appendChild(c);d.appendChild(b);host.appendChild(d);
-  });
+  if(!key){var cv=crc32(u8),ch=("00000000"+cv.toString(16)).slice(-8),cb=new Uint8Array([cv>>>24,(cv>>>16)&255,(cv>>>8)&255,cv&255]);last.push({n:"CRC32",hex:ch,b64:b64s(cb)})}
+  render();
  }catch(x){e.hidden=false;e.textContent=L("Hashing is not supported in this browser.","इस ब्राउज़र में हैशिंग सपोर्ट नहीं है।")}
 }
 $("tx").addEventListener("input",function(){data=null;fname="";$("fl").value="";calc()});
-$("key").addEventListener("input",calc);
+$("key").addEventListener("input",calc);$("of").onchange=render;$("exp").addEventListener("input",render);
 $("fl").addEventListener("change",async function(){
  var f=this.files[0];if(!f)return;
  if(f.size>200*1048576){$("err").hidden=false;$("err").textContent=L("File is too large (max 200 MB).","फाइल बहुत बड़ी है (अधिकतम 200 MB)।");return}
  data=await f.arrayBuffer();fname=f.name;calc();
 });
+document.addEventListener("langchange",render);
 function rnd(n){var a=new Uint8Array(n);crypto.getRandomValues(a);return a}
 function uuid(){var a=rnd(16);a[6]=(a[6]&15)|64;a[8]=(a[8]&63)|128;var h=hex(a);return h.slice(0,8)+"-"+h.slice(8,12)+"-"+h.slice(12,16)+"-"+h.slice(16,20)+"-"+h.slice(20)}
 function b64(){var s=btoa(String.fromCharCode.apply(null,rnd(24)));return s.replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"")}

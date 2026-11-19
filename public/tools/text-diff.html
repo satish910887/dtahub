@@ -67,17 +67,17 @@
  <div><label for="b" data-en="Changed text" data-hi="नया टेक्स्ट">Changed text</label><textarea id="b" spellcheck="false"></textarea></div></div>
  <div class="seg">
   <button class="btn" id="m-line" type="button" aria-pressed="true" data-m="line" data-en="Compare by line" data-hi="लाइन से तुलना">Compare by line</button><button class="btn" id="m-word" type="button" aria-pressed="false" data-m="word" data-en="Compare by word" data-hi="शब्द से तुलना">Compare by word</button>
-  <button class="btn" id="sb" type="button" aria-pressed="false" data-en="Side by side" data-hi="आमने-सामने">Side by side</button> <button class="btn" id="ic" type="button" aria-pressed="false" data-en="Ignore case" data-hi="केस नज़रअंदाज़">Ignore case</button><button class="btn" id="iw" type="button" aria-pressed="false" data-en="Ignore spaces" data-hi="स्पेस नज़रअंदाज़">Ignore spaces</button>
+  <button class="btn" id="sb" type="button" aria-pressed="false" data-en="Side by side" data-hi="आमने-सामने">Side by side</button> <button class="btn" id="ic" type="button" aria-pressed="false" data-en="Ignore case" data-hi="केस नज़रअंदाज़">Ignore case</button><button class="btn" id="iw" type="button" aria-pressed="false" data-en="Ignore spaces" data-hi="स्पेस नज़रअंदाज़">Ignore spaces</button><button class="btn" id="ib" type="button" aria-pressed="false" data-en="Ignore blank lines" data-hi="खाली लाइनें नज़रअंदाज़">Ignore blank lines</button><button class="btn" id="co" type="button" aria-pressed="false" data-en="Changes only" data-hi="सिर्फ बदलाव">Changes only</button>
   <button class="btn gold" id="go" type="button" data-en="Compare" data-hi="तुलना करें">Compare</button><button class="btn" id="sw" type="button" data-en="Swap" data-hi="अदला-बदली">Swap</button>
  </div>
  <div class="err" id="err" hidden></div>
 </div>
 <div class="panel" id="res" hidden>
- <div class="stats"><div class="stat"><small data-en="Added" data-hi="जुड़ा">Added</small><b id="sa"></b></div><div class="stat"><small data-en="Removed" data-hi="हटा">Removed</small><b id="sr"></b></div><div class="stat"><small data-en="Unchanged" data-hi="वैसा ही">Same</small><b id="ss"></b></div></div>
+ <div class="stats"><div class="stat"><small data-en="Added" data-hi="जुड़ा">Added</small><b id="sa"></b></div><div class="stat"><small data-en="Removed" data-hi="हटा">Removed</small><b id="sr"></b></div><div class="stat"><small data-en="Unchanged" data-hi="वैसा ही">Same</small><b id="ss"></b></div><div class="stat"><small data-en="Similar" data-hi="समान">Similar</small><b id="sp"></b></div></div>
  <div id="out" class="dfo" tabindex="0"></div>
- <div class="seg"><button class="btn" id="cp" type="button" data-en="Copy changes (+/- format)" data-hi="बदलाव कॉपी करें (+/-)">Copy changes (+/- format)</button></div>
+ <div class="seg"><button class="btn" id="cp" type="button" data-en="Copy changes (+/- format)" data-hi="बदलाव कॉपी करें (+/-)">Copy changes (+/- format)</button><button class="btn" id="dl" type="button" data-en="Download .diff" data-hi=".diff डाउनलोड करें">Download .diff</button></div>
 </div>
-<style>.dfo{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:8px;max-height:60vh;overflow:auto;font:.9rem/1.55 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word}.dfo .l{display:block;padding:1px 8px;border-radius:6px}.dfo .ad{background:rgba(74,222,128,.16);color:var(--text)}.dfo .rm{background:rgba(248,113,113,.18);text-decoration:line-through;text-decoration-color:rgba(248,113,113,.7)}.dfo ins,.dfo del{text-decoration:none;border-radius:4px;padding:0 2px}.dfo ins{background:rgba(74,222,128,.22)}.dfo del{background:rgba(248,113,113,.22);text-decoration:line-through}.seg .btn[aria-pressed=true]{border-color:var(--gold);color:var(--gold)}</style>
+<style>.dfo{margin-top:12px;border:1px solid var(--line);border-radius:12px;padding:8px;max-height:60vh;overflow:auto;font:.9rem/1.55 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word}.dfo .l{display:block;padding:1px 8px;border-radius:6px}.dfo .ad{background:rgba(74,222,128,.16);color:var(--text)}.dfo .rm{background:rgba(248,113,113,.18);text-decoration:line-through;text-decoration-color:rgba(248,113,113,.7)}.dfo .gap{display:block;text-align:center;color:var(--muted);font-size:.8rem;padding:2px 0}.dfo .l ins,.dfo .l del{padding:0 1px}.dfo ins,.dfo del{text-decoration:none;border-radius:4px;padding:0 2px}.dfo ins{background:rgba(74,222,128,.22)}.dfo del{background:rgba(248,113,113,.22);text-decoration:line-through}.seg .btn[aria-pressed=true]{border-color:var(--gold);color:var(--gold)}</style>
 <!--DTA:EXTRA--><aside class="privacy-note"><svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5.500c0 4.200 2.800 7.500 7 9.500 4.200-2 7-5.300 7-9.500V6z"/><path d="m9 12 2.200 2.200L15.500 10"/></svg><p data-en="Your text stays in your browser. Nothing is stored or sent anywhere." data-hi="आपका टेक्स्ट आपके ब्राउज़र में ही रहता है। कुछ भी सेव या कहीं भेजा नहीं जाता।">Your text stays in your browser. Nothing is stored or sent anywhere.</p></aside>
 <section class="seo-about">
  <h2 data-en="About Text Diff Checker" data-hi="टेक्स्ट अंतर जांचें के बारे में">About Text Diff Checker</h2>
@@ -97,16 +97,17 @@
  <div><div class="fh"><span data-en="All tools" data-hi="सभी टूल्स">All tools</span></div><ul class="two"><li><a href="/tools/resume-maker"><span data-en="Resume Maker" data-hi="रिज़्यूमे मेकर">Resume Maker</span></a></li><li><a href="/tools/cover-letter"><span data-en="Cover Letter Maker" data-hi="कवर लेटर मेकर">Cover Letter Maker</span></a></li><li><a href="/tools/invoice-maker"><span data-en="Invoice Maker" data-hi="इनवॉइस मेकर">Invoice Maker</span></a></li><li><a href="/tools/unit-converter"><span data-en="Unit Converter" data-hi="यूनिट कन्वर्टर">Unit Converter</span></a></li><li><a href="/tools/sip"><span data-en="SIP Calculator" data-hi="SIP कैलकुलेटर">SIP Calculator</span></a></li><li><a href="/tools/image-editor"><span data-en="Image Editor" data-hi="इमेज एडिटर">Image Editor</span></a></li><li><a href="/tools/pdf-organize"><span data-en="Organize PDF Pages" data-hi="PDF के पेज व्यवस्थित करें">Organize PDF Pages</span></a></li><li><a href="/tools/text-diff"><span data-en="Text Diff Checker" data-hi="टेक्स्ट अंतर जांचें">Text Diff Checker</span></a></li><li><a href="/tools/regex-tester"><span data-en="Regex Tester" data-hi="रेगेक्स टेस्टर">Regex Tester</span></a></li><li><a href="/tools/hash-generator"><span data-en="Hash and UUID Generator" data-hi="हैश और UUID जनरेटर">Hash and UUID Generator</span></a></li><li><a href="/tools/fd-calculator"><span data-en="FD and RD Calculator" data-hi="FD और RD कैलकुलेटर">FD and RD Calculator</span></a></li><li><a href="/tools/doc-scanner"><span data-en="Document Scanner" data-hi="डॉक्यूमेंट स्कैनर">Document Scanner</span></a></li><li><a href="/tools/pdf-fill"><span data-en="Sign and Fill PDF" data-hi="PDF भरें और साइन करें">Sign and Fill PDF</span></a></li><li><a href="/tools/lorem-ipsum"><span data-en="Lorem Ipsum Generator" data-hi="लोरेम इप्सम जनरेटर">Lorem Ipsum Generator</span></a></li><li><a href="/tools/color-palette"><span data-en="Colour Palette Generator" data-hi="कलर पैलेट जनरेटर">Colour Palette Generator</span></a></li><li><a href="/tools/pdf-merge"><span data-en="Merge PDF" data-hi="PDF जोड़ें">Merge PDF</span></a></li><li><a href="/tools/pdf-split"><span data-en="Split PDF" data-hi="PDF अलग करें">Split PDF</span></a></li><li><a href="/tools/image-to-pdf"><span data-en="Image to PDF" data-hi="इमेज से PDF">Image to PDF</span></a></li><li><a href="/tools/image-compress"><span data-en="Compress Image" data-hi="इमेज छोटी करें">Compress Image</span></a></li><li><a href="/tools/image-resize"><span data-en="Resize Image" data-hi="इमेज रीसाइज़">Resize Image</span></a></li><li><a href="/tools/image-convert"><span data-en="Image Converter" data-hi="इमेज कन्वर्टर">Image Converter</span></a></li><li><a href="/tools/word-counter"><span data-en="Word Counter" data-hi="शब्द गिनें">Word Counter</span></a></li><li><a href="/tools/case-converter"><span data-en="Case Converter" data-hi="केस बदलें">Case Converter</span></a></li><li><a href="/tools/typing-helper"><span data-en="Hindi Typing Helper" data-hi="हिंदी टाइपिंग">Hindi Typing Helper</span></a></li><li><a href="/tools/json-formatter"><span data-en="JSON Formatter" data-hi="JSON फॉर्मेटर">JSON Formatter</span></a></li><li><a href="/tools/base64"><span data-en="Base64 Tool" data-hi="Base64 टूल">Base64 Tool</span></a></li><li><a href="/tools/qr-code"><span data-en="QR Code Generator" data-hi="QR कोड बनाएं">QR Code Generator</span></a></li><li><a href="/tools/emi"><span data-en="EMI Calculator" data-hi="EMI कैलकुलेटर">EMI Calculator</span></a></li><li><a href="/tools/age"><span data-en="Age Calculator" data-hi="उम्र कैलकुलेटर">Age Calculator</span></a></li><li><a href="/tools/gst"><span data-en="GST Calculator" data-hi="GST कैलकुलेटर">GST Calculator</span></a></li><li><a href="/tools/percentage"><span data-en="Percentage Calculator" data-hi="प्रतिशत कैलकुलेटर">Percentage Calculator</span></a></li><li><a href="/tools/meta-tags"><span data-en="Meta Tag Generator" data-hi="मेटा टैग जनरेटर">Meta Tag Generator</span></a></li><li><a href="/tools/password"><span data-en="Password Generator" data-hi="पासवर्ड जनरेटर">Password Generator</span></a></li></ul></div>
 </div><div class="foot-bot"><span>© 2026 DTAhub</span><span><span data-en="Made with care in India." data-hi="भारत में प्यार से बनाया गया।">Made with care in India.</span></span></div></footer><!--/DTA:FOOT-->
 <script defer src="/js/tools-data.js"></script>
-<script defer src="/js/tool.js"></script>
+<script defer src="/js/tool.js"></script><script defer src="/js/img.js"></script>
 
 <script type="module">
 
-var mode="line",opt={ic:0,iw:0},last=[],sbs=0;
+var mode="line",opt={ic:0,iw:0,ib:0,co:0},last=[],sbs=0;
 $("sb").onclick=function(){sbs=sbs?0:1;this.setAttribute("aria-pressed",sbs?"true":"false");run()};
 document.querySelectorAll("[data-m]").forEach(function(b){b.onclick=function(){mode=b.dataset.m;document.querySelectorAll("[data-m]").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});run()}});
-["ic","iw"].forEach(function(k){$(k).onclick=function(){opt[k]=opt[k]?0:1;this.setAttribute("aria-pressed",opt[k]?"true":"false");run()}});
+["ic","iw","ib","co"].forEach(function(k){$(k).onclick=function(){opt[k]=opt[k]?0:1;this.setAttribute("aria-pressed",opt[k]?"true":"false");run()}});
 function norm(s){if(opt.ic)s=s.toLowerCase();if(opt.iw)s=s.replace(/\s+/g," ").trim();return s}
-function tok(t){return mode==="line"?t.replace(/\r\n?/g,"\n").split("\n"):t.split(/(\s+)/).filter(function(x){return x!==""})}
+function tok(t){if(mode==="line"){var a=t.replace(/\r\n?/g,"\n").split("\n");return opt.ib?a.filter(function(l){return l.trim()!==""}):a}return t.split(/(\s+)/).filter(function(x){return x!==""})}
+function wops(a,b){return diff(a.split(/(\s+)/).filter(Boolean),b.split(/(\s+)/).filter(Boolean))}
 function diff(A,B){
  var na=A.map(norm),nb=B.map(norm),p=0,s=0;
  while(p<na.length&&p<nb.length&&na[p]===nb[p])p++;
@@ -144,11 +145,31 @@ function run(){
    ops.forEach(function(o){
     if(o[0]==="-"){dl.push(o[1]);rem++}else if(o[0]==="+"){al.push(o[1]);add++}else{flush();cell(o[1]);cell(o[1]);same++}
    });flush();
-  }else ops.forEach(function(o){
-   var d=document.createElement("span");d.className="l"+(o[0]==="+"?" ad":o[0]==="-"?" rm":"");
-   d.textContent=(o[0]==="="?"  ":o[0]+" ")+o[1];frag.appendChild(d);
-   if(o[0]==="+")add++;else if(o[0]==="-")rem++;else same++;
-  });
+  }else{
+   var line=function(txt,cls,pre){var d=document.createElement("span");d.className="l"+(cls?" "+cls:"");d.textContent=pre+txt;frag.appendChild(d);return d};
+   var segs=function(wo,side){var d=document.createElement("span");d.className="l "+(side==="-"?"rm":"ad");d.appendChild(document.createTextNode(side+" "));wo.forEach(function(w){if(w[0]==="="){d.appendChild(document.createTextNode(w[1]))}else if(w[0]===side){var e=document.createElement(side==="-"?"del":"ins");e.textContent=w[1];d.appendChild(e)}});frag.appendChild(d)};
+   var gap=function(n){var g=document.createElement("span");g.className="gap";g.textContent="⋯ "+n+L(" unchanged lines"," लाइनें वैसी ही");frag.appendChild(g)};
+   var i=0,CT=2;
+   while(i<ops.length){
+    if(ops[i][0]==="="){
+     var st=i;while(i<ops.length&&ops[i][0]==="=")i++;
+     var run=ops.slice(st,i);same+=run.length;
+     if(opt.co&&run.length>2*CT+1){
+      var first=st===0,lastr=i===ops.length;
+      var head=first?0:CT,tail=lastr?0:CT;
+      if(run.length>head+tail+1){run.slice(0,head).forEach(function(o){line(o[1],"","  ")});gap(run.length-head-tail);run.slice(run.length-tail).forEach(function(o){line(o[1],"","  ")});continue}
+     }
+     run.forEach(function(o){line(o[1],"","  ")});continue;
+    }
+    var rm=[],ad=[];
+    while(i<ops.length&&ops[i][0]!=="="){(ops[i][0]==="-"?rm:ad).push(ops[i][1]);i++}
+    rem+=rm.length;add+=ad.length;
+    if(rm.length===ad.length){
+     for(var q=0;q<rm.length;q++){var wo=wops(rm[q],ad[q]),sm=0,tl=0;if(wo)wo.forEach(function(w){if(!/^\s+$/.test(w[1])){tl++;if(w[0]==="=")sm++}});
+      if(wo&&tl&&sm/tl>=.3){segs(wo,"-");segs(wo,"+")}else{line(rm[q],"rm","- ");line(ad[q],"ad","+ ")}}
+    }else{rm.forEach(function(x){line(x,"rm","- ")});ad.forEach(function(x){line(x,"ad","+ ")})}
+   }
+  }
  }else{
   ops.forEach(function(o){
    var t=o[0]==="+"?document.createElement("ins"):o[0]==="-"?document.createElement("del"):document.createElement("span");
@@ -158,7 +179,7 @@ function run(){
   });
  }
  out.appendChild(frag);
- $("sa").textContent=add;$("sr").textContent=rem;$("ss").textContent=same;$("res").hidden=false;
+ $("sa").textContent=add;$("sr").textContent=rem;$("ss").textContent=same;var den=2*same+add+rem;$("sp").textContent=(den?Math.round(2*same/den*100):100)+"%";$("res").hidden=false;
 }
 $("go").onclick=run;
 $("sw").onclick=function(){var t=$("a").value;$("a").value=$("b").value;$("b").value=t;run()};
@@ -166,6 +187,7 @@ $("cp").onclick=function(){
  var s=last.filter(function(o){return o[0]!=="="}).map(function(o){return o[0]+" "+o[1]}).join(mode==="line"?"\n":" ");
  copyText(s||L("No changes","कोई बदलाव नहीं"),this);
 };
+$("dl").onclick=function(){var t=last.map(function(o){return(o[0]==="="?"  ":o[0]+" ")+o[1]}).join(mode==="line"?"\n":"");saveBlob(new Blob([t+"\n"],{type:"text/plain;charset=utf-8"}),"changes.diff")};
 $("a").addEventListener("input",run);$("b").addEventListener("input",run);
 
 </script>
