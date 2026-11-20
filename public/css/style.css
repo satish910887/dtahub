@@ -643,3 +643,25 @@ main.tw::before,main.tw::after{display:none}
 /* perf: skip rendering of below-the-fold sections until they near the viewport */
 #tools,#why,#faq{content-visibility:auto;contain-intrinsic-size:auto 700px}
 .sec-h a{display:inline-flex;align-items:center;min-height:32px;padding:0 6px}
+/* logo v2: one-time intro per session, hover sheen. Only transform/opacity, no infinite loops */
+.logo svg{overflow:visible;filter:drop-shadow(0 5px 9px rgba(47,91,234,.32));transition:transform .35s var(--ease)}
+.logo:hover svg{transform:translateY(-1px) scale(1.07) rotate(-3deg)}
+.logo svg *{transform-box:fill-box;transform-origin:center}
+.logo .lg-sh{transform:translateX(-70px)}
+@keyframes lgT{from{opacity:0;transform:scale(.55) rotate(-12deg)}to{opacity:1;transform:none}}
+@keyframes lgD{from{opacity:0;transform:translateX(-7px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes lgP{0%{opacity:0;transform:scale(0)}70%{transform:scale(1.35)}100%{opacity:1;transform:scale(1)}}
+@keyframes lgSh{from{transform:translateX(-70px)}to{transform:translateX(130px)}}
+@keyframes lgSh2{from{transform:translateX(-70px)}to{transform:translateX(130px)}}
+@keyframes lgSpin{0%{transform:scale(1) rotate(0)}50%{transform:scale(1.4) rotate(90deg)}100%{transform:scale(1) rotate(180deg)}}
+@keyframes lgBeat{0%,100%{transform:scale(1)}45%{transform:scale(1.35)}}
+html:not(.lg-seen) .nav .logo .lg-t{animation:lgT .65s cubic-bezier(.2,.9,.25,1.15) both}
+html:not(.lg-seen) .nav .logo .lg-d{animation:lgD .7s .14s cubic-bezier(.2,.8,.2,1) both}
+html:not(.lg-seen) .nav .logo .lg-n{animation:lgP .5s .55s cubic-bezier(.3,1.4,.5,1) both}
+html:not(.lg-seen) .nav .logo .lg-s{animation:lgP .55s .75s cubic-bezier(.3,1.4,.5,1) both}
+html:not(.lg-seen) .nav .logo .lg-sh{animation:lgSh .95s 1s ease-in-out both}
+.logo:hover .lg-sh{animation:lgSh2 .85s ease-in-out}
+.logo:hover .lg-s{animation:lgSpin .8s var(--ease)}
+.logo:hover .lg-n{animation:lgBeat .55s ease}
+.foot .logo svg{filter:none}
+@media(prefers-reduced-motion:reduce){.logo svg,.logo svg *{animation:none!important;transition:none!important}}

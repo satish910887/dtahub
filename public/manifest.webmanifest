@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "DTAhub – Your Everyday Digital Toolkit",
   "short_name": "DTAhub",
   "description": "DTAhub is your everyday digital toolkit: free PDF, image, text, developer tools and calculators that run privately in your browser. No sign-up.",
@@ -15,17 +16,17 @@
   ],
   "icons": [
     {
-      "src": "/icons/icon-192.png",
+      "src": "/icons/dta2-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icons/icon-512.png",
+      "src": "/icons/dta2-512.png",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "/icons/maskable-512.png",
+      "src": "/icons/dta2-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -38,7 +39,7 @@
       "url": "/tools/resume-maker",
       "icons": [
         {
-          "src": "/icons/icon-192.png",
+          "src": "/icons/dta2-192.png",
           "sizes": "192x192"
         }
       ]
@@ -49,7 +50,7 @@
       "url": "/tools/doc-scanner",
       "icons": [
         {
-          "src": "/icons/icon-192.png",
+          "src": "/icons/dta2-192.png",
           "sizes": "192x192"
         }
       ]
@@ -60,7 +61,7 @@
       "url": "/tools/pdf-fill",
       "icons": [
         {
-          "src": "/icons/icon-192.png",
+          "src": "/icons/dta2-192.png",
           "sizes": "192x192"
         }
       ]
@@ -71,7 +72,7 @@
       "url": "/tools/pdf-merge",
       "icons": [
         {
-          "src": "/icons/icon-192.png",
+          "src": "/icons/dta2-192.png",
           "sizes": "192x192"
         }
       ]

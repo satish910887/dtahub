@@ -29,7 +29,7 @@ function block(html, name, content, place) {
 }
 const lastMain = /<\/main>(?![\s\S]*<\/main>)/;
 
-const logo = (s = 32) => `<svg width="${s}" height="${s}" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="t${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b9bff"/><stop offset=".55" stop-color="#2f5bea"/><stop offset="1" stop-color="#5a3df0"/></linearGradient><linearGradient id="h${s}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".34"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="d${s}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#dbe6ff"/></linearGradient><linearGradient id="n${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#3b82f6"/></linearGradient><clipPath id="c${s}"><rect x="2" y="2" width="60" height="60" rx="16"/></clipPath></defs><rect x="2" y="2" width="60" height="60" rx="16" fill="url(#t${s})"/><g clip-path="url(#c${s})"><rect x="2" y="2" width="60" height="30" fill="url(#h${s})"/><circle cx="58" cy="62" r="26" fill="#22d3ee" opacity=".16"/></g><rect x="2.6" y="2.6" width="58.8" height="58.8" rx="15.4" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="1.2"/><path fill-rule="evenodd" fill="url(#d${s})" d="M18 15h14a17 17 0 0 1 0 34H18zM26.500 23v18H32a9 9 0 0 0 0-18z"/><circle cx="32.500" cy="32" r="3.600" fill="url(#n${s})"/><circle cx="47.500" cy="17" r="3" fill="#7ff0ff"/></svg>`;
+const logo = (s = 32) => `<svg width="${s}" height="${s}" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="t${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#63a4ff"/><stop offset=".5" stop-color="#2f5bea"/><stop offset="1" stop-color="#5a3df0"/></linearGradient><linearGradient id="h${s}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><linearGradient id="s${s}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset=".6" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#9ad7ff" stop-opacity=".35"/></linearGradient><linearGradient id="d${s}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#d3e1ff"/></linearGradient><linearGradient id="n${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#3b82f6"/></linearGradient><clipPath id="c${s}"><rect x="2" y="2" width="60" height="60" rx="16"/></clipPath></defs><g class="lg-t"><rect x="2" y="2" width="60" height="60" rx="16" fill="url(#t${s})"/><g clip-path="url(#c${s})"><rect x="2" y="2" width="60" height="30" fill="url(#h${s})"/><circle cx="58" cy="64" r="27" fill="#22d3ee" opacity=".2"/><circle cx="6" cy="2" r="22" fill="#fff" opacity=".07"/></g><rect x="2.6" y="2.6" width="58.8" height="58.8" rx="15.4" fill="none" stroke="url(#s${s})" stroke-width="1.3"/></g><g clip-path="url(#c${s})"><g transform="rotate(24 32 32)"><rect class="lg-sh" x="-6" y="-14" width="14" height="92" fill="#fff" opacity=".38"/></g></g><g class="lg-d"><path fill-rule="evenodd" fill="#0e1f7a" opacity=".3" transform="translate(0 1.8)" d="M18 15h14a17 17 0 0 1 0 34H18zM26.500 23v18H32a9 9 0 0 0 0-18z"/><path fill-rule="evenodd" fill="url(#d${s})" d="M18 15h14a17 17 0 0 1 0 34H18zM26.500 23v18H32a9 9 0 0 0 0-18z"/></g><circle class="lg-n" cx="32.500" cy="32" r="3.600" fill="url(#n${s})"/><path class="lg-s" fill="#bff6ff" d="M48 11.500l1.500 4 4 1.500-4 1.500-1.500 4-1.500-4-4-1.500 4-1.500z"/></svg>`;
 
 /* ---------- shared chrome ---------- */
 function header() {
@@ -92,7 +92,7 @@ ${m.noindex ? '<meta name="robots" content="noindex">' : `<meta name="robots" co
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(m.title)}"><meta name="twitter:description" content="${e(m.desc)}"><meta name="twitter:image" content="${SITE}/og.png">
 <meta name="theme-color" content="#f4f7fe">
 <meta name="google-site-verification" content="pVzOBFgeCkMA5nz0v4wBgB06biWAj7AIt9ABl4Ha6D4">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"><link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/favicon-v2.svg" type="image/svg+xml"><link rel="icon" href="/icons/dta2-192.png" sizes="192x192" type="image/png"><link rel="apple-touch-icon" href="/icons/dta2-180.png"><script>try{sessionStorage.getItem("dta_lg")?document.documentElement.classList.add("lg-seen"):sessionStorage.setItem("dta_lg","1")}catch(e){}</script><link rel="manifest" href="/manifest.webmanifest">
 <script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);var ac=localStorage.getItem("accent");if(ac==="emerald"||ac==="rose")document.documentElement.setAttribute("data-accent",ac);if(localStorage.getItem("lang")==="hi")document.documentElement.lang="hi";if(localStorage.getItem("motion")==="off")document.documentElement.setAttribute("data-motion","off")}catch(e){}</script>
 <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
 ${(m.jsonld || []).map(ld).join("\n")}`;
@@ -176,7 +176,7 @@ function catPage(c) {
   const file = path.join(dir, "index.html");
   const html = `<!DOCTYPE html>
 <html lang="en" data-theme="light">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/tool.css"></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><script>try{sessionStorage.getItem("dta_lg")?document.documentElement.classList.add("lg-seen"):sessionStorage.setItem("dta_lg","1")}catch(e){}</script><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/tool.css"></head>
 <body><div class="bg-glow"></div>
 <main id="main" class="wrap">
 <div class="page-h"><!--DTA:CRUMBS--><!--/DTA:CRUMBS-->
@@ -236,7 +236,7 @@ function buildPages() {
     type: "home", path: "/", title: S["/"].title, desc: S["/"].desc,
     jsonld: [
       { "@context": "https://schema.org", "@type": "WebSite", name: "DTAhub", url: SITE + "/", description: S["/"].desc, inLanguage: ["en", "hi"] },
-      { "@context": "https://schema.org", "@type": "Organization", name: "DTAhub", url: SITE + "/", logo: SITE + "/icons/icon-512.png" },
+      { "@context": "https://schema.org", "@type": "Organization", name: "DTAhub", url: SITE + "/", logo: SITE + "/icons/dta2-512.png" },
       { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: D.FAQ.map((f) => ({ "@type": "Question", name: f.q.en, acceptedAnswer: { "@type": "Answer", text: f.a.en } })) }
     ]
   });
@@ -249,7 +249,7 @@ function buildPages() {
     const p = `/blog/${slug}.html`, cr = [H, { en: "Guides", hi: "गाइड्स", url: "/blog/" }, { en: b.en, hi: b.hi, url: p }];
     processPage(path.join(PUB, "blog", slug + ".html"), {
       type: "article", path: p, title: `${b.en} | DTAhub`, desc: b.desc,
-      jsonld: [{ "@context": "https://schema.org", "@type": "Article", headline: b.en, description: b.desc, datePublished: b.date, dateModified: b.date, mainEntityOfPage: abs(p), author: { "@type": "Organization", name: "DTAhub" }, publisher: { "@type": "Organization", name: "DTAhub", logo: { "@type": "ImageObject", url: SITE + "/icons/icon-512.png" } }, image: SITE + "/og.png" }, crumbLD(cr)]
+      jsonld: [{ "@context": "https://schema.org", "@type": "Article", headline: b.en, description: b.desc, datePublished: b.date, dateModified: b.date, mainEntityOfPage: abs(p), author: { "@type": "Organization", name: "DTAhub" }, publisher: { "@type": "Organization", name: "DTAhub", logo: { "@type": "ImageObject", url: SITE + "/icons/dta2-512.png" } }, image: SITE + "/og.png" }, crumbLD(cr)]
     }, { crumbs: cr });
   }
   processPage(path.join(PUB, "404.html"), { type: "404", path: "/404", noindex: true, title: "Page not found | DTAhub", desc: "This page could not be found. Search DTAhub for the tool you need." });
@@ -282,8 +282,8 @@ function buildSite() {
   const meta = (u) => (u === "/" ? ["daily", "1.0"] : u.startsWith("/category/") ? ["weekly", "0.8"] : u.startsWith("/tools/") ? ["monthly", D.TOOLS.find((t) => D.toolUrl(t) === u).featured ? "0.9" : "0.7"] : u.startsWith("/blog/") ? ["monthly", u === "/blog/" ? "0.6" : "0.5"] : ["yearly", "0.3"]);
   fs.writeFileSync(path.join(PUB, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => { const [cf, pr] = meta(u); return `<url><loc>${abs(u)}</loc><lastmod>${lm[u]}</lastmod><changefreq>${cf}</changefreq><priority>${pr}</priority></url>`; }).join("\n")}\n</urlset>\n`);
   fs.writeFileSync(path.join(PUB, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /404\n\nSitemap: ${SITE}/sitemap.xml\n`);
-  const sc = D.TOOLS.filter((t) => t.featured).slice(0, 4).map((t) => ({ name: t.en, short_name: t.en, url: D.toolUrl(t), icons: [{ src: "/icons/icon-192.png", sizes: "192x192" }] }));
-  fs.writeFileSync(path.join(PUB, "manifest.webmanifest"), JSON.stringify({ name: "DTAhub – Your Everyday Digital Toolkit", short_name: "DTAhub", description: D.STATIC_PAGES["/"].desc, start_url: "/", scope: "/", display: "standalone", orientation: "portrait", background_color: "#f4f7fe", theme_color: "#2f5bea", lang: "en", categories: ["utilities", "productivity"], icons: [{ src: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }, { src: "/icons/icon-512.png", sizes: "512x512", type: "image/png" }, { src: "/icons/maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" }], shortcuts: sc }, null, 2) + "\n");
+  const sc = D.TOOLS.filter((t) => t.featured).slice(0, 4).map((t) => ({ name: t.en, short_name: t.en, url: D.toolUrl(t), icons: [{ src: "/icons/dta2-192.png", sizes: "192x192" }] }));
+  fs.writeFileSync(path.join(PUB, "manifest.webmanifest"), JSON.stringify({ id: "/", name: "DTAhub – Your Everyday Digital Toolkit", short_name: "DTAhub", description: D.STATIC_PAGES["/"].desc, start_url: "/", scope: "/", display: "standalone", orientation: "portrait", background_color: "#f4f7fe", theme_color: "#2f5bea", lang: "en", categories: ["utilities", "productivity"], icons: [{ src: "/icons/dta2-192.png", sizes: "192x192", type: "image/png" }, { src: "/icons/dta2-512.png", sizes: "512x512", type: "image/png" }, { src: "/icons/dta2-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" }], shortcuts: sc }, null, 2) + "\n");
   fs.writeFileSync(path.join(PUB, "_headers"), `# Security headers. If you add Google AdSense later, its domains must be added to script-src, img-src, frame-src and connect-src.
 /*
   X-Content-Type-Options: nosniff
@@ -307,7 +307,7 @@ function buildSite() {
 /og.png
   Cache-Control: public, max-age=86400
 
-/favicon.svg
+/favicon-v2.svg
   Cache-Control: public, max-age=86400
 `);
 
