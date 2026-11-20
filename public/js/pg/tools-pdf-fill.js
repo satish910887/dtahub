@@ -11,7 +11,7 @@ $("f").addEventListener("change",async function(){
  try{
   $("dt").textContent=L("Opening...","खोल रहे हैं...");
   var P=await lib();bytes=new Uint8Array(await f.arrayBuffer());file=f;
-  doc=await P.getDocument({data:bytes.slice()}).promise;
+  doc=await P.getDocument({isEvalSupported:false,data:bytes.slice()}).promise;
   items=[];sel=null;PG=[];FV={};FD={};hist=[];hp=-1;$("pages").textContent="";
   var maxW=Math.min(820,Math.max(260,($("pages").parentNode.clientWidth||340)-4)),io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){io.unobserve(e.target);draw(+e.target.dataset.i)}})},{rootMargin:"500px"});
   var n=Math.min(doc.numPages,200);
@@ -367,7 +367,7 @@ $("go").onclick=async function(){
   var out=await pdf.save();
   if(raster){
    b.textContent=L("Removing hidden text...","छुपा टेक्स्ट हटा रहे हैं...");
-   var P=await lib(),rd=await P.getDocument({data:out.slice()}).promise,src=await O.PDFDocument.load(out),fin=await O.PDFDocument.create();
+   var P=await lib(),rd=await P.getDocument({isEvalSupported:false,data:out.slice()}).promise,src=await O.PDFDocument.load(out),fin=await O.PDFDocument.create();
    for(var i2=0;i2<src.getPageCount();i2++){
     if(redactPages[i2]){
      var rp=await rd.getPage(i2+1),v1=rp.getViewport({scale:1}),sc=Math.min(2.4,3200/Math.max(v1.width,v1.height)),v2=rp.getViewport({scale:sc}),cv=document.createElement("canvas");

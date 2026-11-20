@@ -299,8 +299,10 @@ function buildSite() {
   /* hashes of the few inline scripts that remain (theme init in <head>); everything else is an external file */
   const inl = new Set();
   for (const f of walk(PUB).filter((x) => x.endsWith(".html"))) for (const m of fs.readFileSync(f, "utf8").matchAll(/<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/g)) { if (/ld\+json/.test(m[1])) continue; inl.add("'sha256-" + crypto.createHash("sha256").update(m[2]).digest("base64") + "'"); }
+  const sty = new Set();
+  for (const f of walk(PUB).filter((x) => x.endsWith(".html"))) for (const m of fs.readFileSync(f, "utf8").matchAll(/<style(?:\s[^>]*)?>([\s\S]*?)<\/style>/g)) sty.add("'sha256-" + crypto.createHash("sha256").update(m[1]).digest("base64") + "'");
   if (inl.size > 6) console.warn("WARNING: many distinct inline scripts:", inl.size);
-  const CSP = `default-src 'self'; script-src 'self' ${[...inl].join(" ")}; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.web3forms.com; manifest-src 'self'; worker-src 'self'; frame-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests`;
+  const CSP = `default-src 'self'; script-src 'self' ${[...inl].join(" ")}; script-src-attr 'none'; style-src 'self' ${[...sty].join(" ")}; style-src-attr 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.web3forms.com; manifest-src 'self'; worker-src 'self'; frame-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests`;
   fs.writeFileSync(path.join(PUB, "_headers"), `# Security headers. If you add Google AdSense later, its domains must be added to script-src, img-src, frame-src and connect-src.
 /*
   X-Content-Type-Options: nosniff
@@ -310,7 +312,9 @@ function buildSite() {
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Resource-Policy: same-origin
   X-Permitted-Cross-Domain-Policies: none
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), interest-cohort=()
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), accelerometer=(), gyroscope=(), magnetometer=(), display-capture=(), midi=(), hid=(), idle-detection=(), screen-wake-lock=(), interest-cohort=()
+  X-DNS-Prefetch-Control: off
+  Origin-Agent-Cluster: ?1
   Content-Security-Policy: ${CSP}
 
 /sw.js

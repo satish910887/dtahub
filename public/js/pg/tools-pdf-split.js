@@ -34,7 +34,7 @@ async function thumbs(f){
  var tok=++thTok;$("th").innerHTML="";$("thh").hidden=true;
  try{
   if(!pj){pj=await import("/js/vendor/pdfjs/pdf.min.mjs");pj.GlobalWorkerOptions.workerSrc="/js/vendor/pdfjs/pdf.worker.min.mjs"}
-  var doc=await pj.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise,n=Math.min(doc.numPages,120);
+  var doc=await pj.getDocument({isEvalSupported:false,data:new Uint8Array(await f.arrayBuffer())}).promise,n=Math.min(doc.numPages,120);
   $("thh").hidden=false;
   for(var i=1;i<=n;i++){
    if(tok!==thTok)return;

@@ -16,7 +16,7 @@ async function loadThumbs(f){
  var t=++tok;pdoc=null;
  try{
   if(!pj){pj=await import("/js/vendor/pdfjs/pdf.min.mjs");pj.GlobalWorkerOptions.workerSrc="/js/vendor/pdfjs/pdf.worker.min.mjs"}
-  var d=await pj.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise;if(t!==tok)return;pdoc=d;
+  var d=await pj.getDocument({isEvalSupported:false,data:new Uint8Array(await f.arrayBuffer())}).promise;if(t!==tok)return;pdoc=d;
   var n=Math.min(d.numPages,MAXT);
   for(var i=1;i<=n;i++){
    if(t!==tok)return;var pg=await d.getPage(i),v0=pg.getViewport({scale:1}),vp=pg.getViewport({scale:240/Math.max(v0.width,v0.height)});
@@ -117,7 +117,7 @@ $("gi").onclick=async function(){
  if(n>80){say("err",L("Too many pages for image export (max 80). Delete some pages first.","इमेज एक्सपोर्ट के लिए पेज बहुत ज़्यादा हैं (अधिकतम 80)। पहले कुछ पेज हटाएं।"));return}
  var b=$("gi"),old=b.textContent;b.disabled=true;
  try{
-  if(!pdoc){if(!pj){pj=await import("/js/vendor/pdfjs/pdf.min.mjs");pj.GlobalWorkerOptions.workerSrc="/js/vendor/pdfjs/pdf.worker.min.mjs"}pdoc=await pj.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise}
+  if(!pdoc){if(!pj){pj=await import("/js/vendor/pdfjs/pdf.min.mjs");pj.GlobalWorkerOptions.workerSrc="/js/vendor/pdfjs/pdf.worker.min.mjs"}pdoc=await pj.getDocument({isEvalSupported:false,data:new Uint8Array(await file.arrayBuffer())}).promise}
   var fl=[],p0=await pdoc.getPage(1),v0=p0.getViewport({scale:1}),pad=String(n).length;
   for(var i=0;i<n;i++){
    b.textContent=(i+1)+"/"+n;var e=ents[i],c=document.createElement("canvas"),x;
