@@ -55,8 +55,8 @@
       ]
     },
     {
-      "name": "Sign and Fill PDF",
-      "short_name": "Sign and Fill PDF",
+      "name": "PDF Editor: Fill, Sign, Annotate",
+      "short_name": "PDF Editor: Fill, Sign, Annotate",
       "url": "/tools/pdf-fill",
       "icons": [
         {
