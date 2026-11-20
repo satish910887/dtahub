@@ -343,3 +343,8 @@
   function start() { link(); try { new MutationObserver(later).observe(document.body, { childList: true, subtree: true }); } catch (e) {} }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start); else start();
 })();
+/* assistant launcher: loaded after the page is idle, so it never delays the first paint */
+(function () {
+  function go() { if (window.__dtaAst) return; var s = document.createElement("script"); s.src = "/js/assistant.js"; s.defer = true; document.head.appendChild(s); }
+  (window.requestIdleCallback || function (f) { setTimeout(f, 1500); })(go, { timeout: 3000 });
+})();

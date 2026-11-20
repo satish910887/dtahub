@@ -665,3 +665,10 @@ html:not(.lg-seen) .nav .logo .lg-sh{animation:lgSh .95s 1s ease-in-out both}
 .logo:hover .lg-n{animation:lgBeat .55s ease}
 .foot .logo svg{filter:none}
 @media(prefers-reduced-motion:reduce){.logo svg,.logo svg *{animation:none!important;transition:none!important}}
+/* assistant launcher */
+.ast-fab{position:fixed;z-index:55;right:16px;bottom:18px;height:54px;min-width:54px;padding:0 16px 0 15px;border-radius:27px;border:0;display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#4f8cff,#3b4de0 60%,#5a3df0);color:#fff;font:700 .92rem/1 inherit;font-family:inherit;cursor:pointer;box-shadow:0 10px 28px -8px rgba(47,91,234,.7),inset 0 1px 0 rgba(255,255,255,.35);transition:transform .2s var(--ease),box-shadow .2s}
+.ast-fab:hover{transform:translateY(-2px)}.ast-fab:active{transform:scale(.95)}
+.ast-fab:focus-visible{outline:3px solid var(--gold2);outline-offset:3px}
+.ast-open .ast-fab{display:none}
+@media(max-width:760px){.ast-fab{bottom:84px;right:12px;height:50px;min-width:50px;padding:0 14px}.ast-fab .ast-fl{display:none}}
+@media print{.ast-fab{display:none}}
