@@ -257,13 +257,24 @@ function buildPages() {
 
 /* ---------- sitemap, robots, manifest, headers, service worker ---------- */
 function walk(dir, out = []) { for (const f of fs.readdirSync(dir)) { const p = path.join(dir, f); fs.statSync(p).isDirectory() ? walk(p, out) : out.push(p); } return out; }
+/* CSP: no inline scripts in the page body. Each one becomes a real file under /js/pg/ (category pages share files by content hash). */
+function externalScript(f, code) {
+  const rel = path.relative(PUB, f).replace(/\\/g, "/").replace(/\/index\.html$|\.html$/, "");
+  const cat = rel.startsWith("category/"), base = cat ? "cat-" + crypto.createHash("sha1").update(code).digest("hex").slice(0, 8) : (rel || "index").replace(/\//g, "-");
+  const n = (seen.get(f) || 0) + 1; seen.set(f, n);
+  const name = cat || n === 1 ? base : base + "-" + n;
+  fs.mkdirSync(path.join(PUB, "js", "pg"), { recursive: true });
+  fs.writeFileSync(path.join(PUB, "js", "pg", name + ".js"), code.trim() + "\n");
+  return '<script type="module" src="/js/pg/' + name + '.js"></script>';
+}
+const seen = new Map();
 /* speed: scripts after <body> no longer block the first paint (external ones get defer, inline ones become modules, which also wait for the page) */
 function finalizePages() {
 for (const f of walk(PUB).filter((x) => x.endsWith(".html"))) {
   const h = fs.readFileSync(f, "utf8"), i = h.indexOf("<body");
   if (i < 0) continue;
   const cleanHref = (m, p, s) => `href="${p.endsWith("/index") ? p.slice(0, -5) : p}${s || ""}"`;
-  const out = h.slice(0, i).replace(/href="(\/[^"#?]*?)\.html([#?][^"]*)?"/g, cleanHref) + h.slice(i).replace(/href="(\/[^"#?]*?)\.html([#?][^"]*)?"/g, cleanHref).replace(/<script src="([^"]+)"><\/script>/g, '<script defer src="$1"></script>').replace(/<script>([\s\S]*?)<\/script>/g, (m, c) => '<script type="module">' + c + "</script>");
+  const out = h.slice(0, i).replace(/href="(\/[^"#?]*?)\.html([#?][^"]*)?"/g, cleanHref) + h.slice(i).replace(/href="(\/[^"#?]*?)\.html([#?][^"]*)?"/g, cleanHref).replace(/<script src="([^"]+)"><\/script>/g, '<script defer src="$1"></script>').replace(/<script( type="module")?>([\s\S]*?)<\/script>/g, (m, t, c) => externalScript(f, c));
   if (out !== h) fs.writeFileSync(f, out);
 }
 }
@@ -284,13 +295,22 @@ function buildSite() {
   fs.writeFileSync(path.join(PUB, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /404\n\nSitemap: ${SITE}/sitemap.xml\n`);
   const sc = D.TOOLS.filter((t) => t.featured).slice(0, 4).map((t) => ({ name: t.en, short_name: t.en, url: D.toolUrl(t), icons: [{ src: "/icons/dta2-192.png", sizes: "192x192" }] }));
   fs.writeFileSync(path.join(PUB, "manifest.webmanifest"), JSON.stringify({ id: "/", name: "DTAhub – Your Everyday Digital Toolkit", short_name: "DTAhub", description: D.STATIC_PAGES["/"].desc, start_url: "/", scope: "/", display: "standalone", orientation: "portrait", background_color: "#f4f7fe", theme_color: "#2f5bea", lang: "en", categories: ["utilities", "productivity"], icons: [{ src: "/icons/dta2-192.png", sizes: "192x192", type: "image/png" }, { src: "/icons/dta2-512.png", sizes: "512x512", type: "image/png" }, { src: "/icons/dta2-maskable-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" }], shortcuts: sc }, null, 2) + "\n");
+  /* hashes of the few inline scripts that remain (theme init in <head>); everything else is an external file */
+  const inl = new Set();
+  for (const f of walk(PUB).filter((x) => x.endsWith(".html"))) for (const m of fs.readFileSync(f, "utf8").matchAll(/<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/g)) { if (/ld\+json/.test(m[1])) continue; inl.add("'sha256-" + crypto.createHash("sha256").update(m[2]).digest("base64") + "'"); }
+  if (inl.size > 6) console.warn("WARNING: many distinct inline scripts:", inl.size);
+  const CSP = `default-src 'self'; script-src 'self' ${[...inl].join(" ")}; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.web3forms.com; manifest-src 'self'; worker-src 'self'; frame-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests`;
   fs.writeFileSync(path.join(PUB, "_headers"), `# Security headers. If you add Google AdSense later, its domains must be added to script-src, img-src, frame-src and connect-src.
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.web3forms.com; manifest-src 'self'; worker-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  X-Permitted-Cross-Domain-Policies: none
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=(), interest-cohort=()
+  Content-Security-Policy: ${CSP}
 
 /sw.js
   Cache-Control: no-cache
