@@ -49,3 +49,8 @@
 }
 @media(prefers-reduced-motion:reduce){.ast-panel,.ast-scrim{transition:none}.ast-m{animation:none}.ast-log{scroll-behavior:auto}}
 @media print{.ast-panel,.ast-scrim{display:none!important}}
+
+.ast-copy{margin-top:9px;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--brand);font:inherit;font-size:.78rem;font-weight:600;cursor:pointer;min-height:32px}
+.ast-copy:hover{background:var(--card2)}
+.ast-sg{display:flex;flex-wrap:wrap;gap:6px;padding:8px 12px 0;border-top:1px solid var(--line)}
+.ast-sg[hidden]{display:none}

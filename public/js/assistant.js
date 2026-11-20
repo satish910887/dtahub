@@ -37,18 +37,23 @@
     el.log = mk("div", "ast-log"); el.log.setAttribute("role", "log"); el.log.setAttribute("aria-live", "polite"); el.log.tabIndex = 0;
     var f = mk("form", "ast-f"); el.in = mk("textarea"); el.in.rows = 1; el.in.maxLength = 300; el.in.id = "astIn"; el.in.setAttribute("autocomplete", "off"); el.in.spellcheck = false;
     el.send = mk("button", "ast-send"); el.send.type = "submit"; el.send.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-    f.appendChild(el.in); f.appendChild(el.send);
+    el.sg = mk("div", "ast-sg"); el.sg.hidden = true; f.appendChild(el.in); f.appendChild(el.send);
     el.note = mk("p", "ast-n");
-    p.appendChild(h); p.appendChild(el.log); p.appendChild(f); p.appendChild(el.note);
+    p.appendChild(h); p.appendChild(el.log); p.appendChild(el.sg); p.appendChild(f); p.appendChild(el.note);
     var scrim = mk("div", "ast-scrim"); scrim.hidden = true; el.scrim = scrim;
     document.body.appendChild(scrim); document.body.appendChild(p); el.panel = p; el.clr = cl; el.x = x;
     x.addEventListener("click", close); scrim.addEventListener("click", close);
     cl.addEventListener("click", clearChat);
-    f.addEventListener("submit", function (e) { e.preventDefault(); var v = el.in.value.trim(); if (v) { el.in.value = ""; grow(); ask(v); } });
+    f.addEventListener("submit", function (e) { e.preventDefault(); var v = el.in.value.trim(); if (v) { el.in.value = ""; grow(); suggest(); ask(v); } });
     el.in.addEventListener("keydown", function (e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); f.requestSubmit ? f.requestSubmit() : f.dispatchEvent(new Event("submit", { cancelable: true })); } });
-    el.in.addEventListener("input", grow);
+    el.in.addEventListener("input", function () { grow(); suggest(); });
     p.addEventListener("keydown", function (e) { if (e.key === "Escape") { e.stopPropagation(); close(); } });
     paintStatic();
+  }
+  function suggest() {
+    var v = el.in.value.trim(), out = engineReady && v.length > 1 ? window.DTAAssist.suggest(v, lang()) : [];
+    el.sg.textContent = ""; el.sg.hidden = !out.length;
+    out.forEach(function (x) { var b = mk("button", "ast-chip", x); b.type = "button"; b.addEventListener("click", function () { el.in.value = ""; grow(); suggest(); ask(x); }); el.sg.appendChild(b); });
   }
   function grow() { el.in.style.height = "auto"; el.in.style.height = Math.min(110, el.in.scrollHeight) + "px"; }
   function paintStatic() {
@@ -80,7 +85,9 @@
       else if (b.t === "calc") {
         var c = mk("div", "ast-calc"); c.appendChild(mk("b", "ast-ct", b.title)); if (b.big) c.appendChild(mk("div", "ast-big", b.big));
         if (b.rows && b.rows.length) { var tb = mk("dl", "ast-rows"); b.rows.forEach(function (r) { tb.appendChild(mk("dt", "", r[0])); tb.appendChild(mk("dd", "", r[1])); }); c.appendChild(tb); }
-        if (b.note) c.appendChild(mk("small", "ast-cn", b.note)); box.appendChild(c);
+        if (b.note) c.appendChild(mk("small", "ast-cn", b.note));
+        if (b.rows && b.rows.length) { var cp = mk("button", "ast-copy", L2("Copy result", "नतीजा कॉपी करें")); cp.type = "button"; cp.addEventListener("click", function () { var tx = b.title + "\n" + b.rows.map(function (r) { return r[0] + ": " + r[1]; }).join("\n"); var done = function () { cp.textContent = L2("Copied", "कॉपी हो गया"); setTimeout(function () { cp.textContent = L2("Copy result", "नतीजा कॉपी करें"); }, 1600); }; try { navigator.clipboard.writeText(tx).then(done, function () { if (window.toast) window.toast(L2("Could not copy", "कॉपी नहीं हो सका"), "err"); }); } catch (e) { if (window.toast) window.toast(L2("Could not copy", "कॉपी नहीं हो सका"), "err"); } }); c.appendChild(cp); }
+        box.appendChild(c);
       }
       else if (b.t === "links") { var l = mk("div", "ast-links"); b.items.forEach(function (i) { if (/^\/[^/]/.test(i.href) || i.href === "/") { var a = mk("a", "ast-link", i.label); a.href = i.href; l.appendChild(a); } }); box.appendChild(l); }
     });
@@ -96,7 +103,7 @@
     el.log.appendChild(row); return row;
   }
   function scrollEnd(row) { if (row && row.previousElementSibling && row.classList.contains("ast-a")) { el.log.scrollTop = row.offsetTop - 8; } else el.log.scrollTop = el.log.scrollHeight; }
-  function repaintChips() { var chipRows = el.log.querySelectorAll(".ast-chips"); for (var i = 0; i < chipRows.length - 1; i++) chipRows[i].remove(); }
+  function repaintChips(all) { var chipRows = el.log.querySelectorAll(".ast-chips"); for (var i = 0; i < chipRows.length - (all ? 0 : 1); i++) chipRows[i].remove(); }
 
   /* ---------- logic ---------- */
   function runActs(blocks) {
@@ -115,7 +122,7 @@
       try { res = window.DTAAssist.reply(text, { mem: st.mem, page: pageTool(), siteLang: lang(), now: new Date() }); }
       catch (e) { res = { blocks: [{ t: "p", text: L2("Sorry, something went wrong on my side. Please try again.", "माफ़ कीजिए, मुझसे कुछ गड़बड़ हो गई। कृपया दोबारा कोशिश करें।") }], chips: [], mem: null }; }
       if (res.mem !== null) st.mem = res.mem;
-      var am = { r: "a", blocks: res.blocks.filter(function (b) { return b.t !== "act"; }), chips: res.chips || [] }; st.msgs.push(am); repaintChips();
+      var am = { r: "a", blocks: res.blocks.filter(function (b) { return b.t !== "act"; }), chips: res.chips || [] }; st.msgs.push(am); repaintChips(true);
       var row = addMsg(am, true); scrollEnd(row); save(); runActs(res.blocks);
     }).catch(function () { var row = addMsg({ r: "a", blocks: [{ t: "p", text: L2("Could not load the assistant. Check your internet once and try again.", "असिस्टेंट लोड नहीं हो सका। एक बार इंटरनेट जांचकर दोबारा कोशिश करें।") }] }, true); scrollEnd(row); });
   }

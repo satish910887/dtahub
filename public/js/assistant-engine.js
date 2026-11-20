@@ -286,7 +286,7 @@
     if (m) { r = parseFloat(m[1]); work = cut(work, m.index, m.index + m[0].length); }
     m = /(\d+(?:\.\d+)?)\s*(years?|yrs?|yr|saal|sal|वर्ष|साल|months?|mo|mahine|mahina|महीने|महीना|माह)(?![\p{L}])/iu.exec(work);
     if (m) { var isY = /^(y|s|व|सा)/i.test(m[2]); t = parseFloat(m[1]) * (isY ? 12 : 1); work = cut(work, m.index, m.index + m[0].length); }
-    else { m = /(?:tenure|time|period|for|avadhi|अवधि)\D{0,10}(\d+(?:\.\d+)?)/.exec(work); }
+    else { m = /(?:tenure|time|period|for|avadhi|अवधि)\D{0,10}(\d+(?:\.\d+)?)/.exec(work); if (m) { var tv = parseFloat(m[1]); t = tv <= 40 ? tv * 12 : tv; work = cut(work, m.index, m.index + m[0].length); } }
     var ns = numsIn(work).filter(function (n) { return n.v > 0; });
     return { r: r, months: t, nums: ns, work: work };
   }
@@ -318,7 +318,7 @@
       var e = extractLoan(s);
       if (e.r != null && e.months && e.nums.length) {
         var P = e.nums[0].v, i = e.r / 1200, n = Math.round(e.months), fv = i === 0 ? P * n : P * ((Math.pow(1 + i, n) - 1) / i) * (1 + i), inv = P * n;
-        return { title: T("SIP result", "SIP का नतीजा", lang), rows: [[T("Monthly SIP", "मासिक SIP", lang), inr(P)], [T("Total invested", "कुल निवेश", lang), inr(inv)], [T("Estimated gain", "अनुमानित लाभ", lang), inr(fv - inv)], [T("Maturity value", "मैच्योरिटी वैल्यू", lang), inr(fv)]], big: inr(fv), note: T("Assumes a steady " + e.r + "% a year, invested at the start of each month. Real returns vary.", "मान लिया गया: हर साल स्थिर " + e.r + "%, हर महीने की शुरुआत में निवेश। असली रिटर्न बदलते हैं।", lang), tool: "sip" };
+        return { st: { k: "sip", P: P, r: e.r, n: n }, title: T("SIP result", "SIP का नतीजा", lang), rows: [[T("Monthly SIP", "मासिक SIP", lang), inr(P)], [T("Total invested", "कुल निवेश", lang), inr(inv)], [T("Estimated gain", "अनुमानित लाभ", lang), inr(fv - inv)], [T("Maturity value", "मैच्योरिटी वैल्यू", lang), inr(fv)]], big: inr(fv), note: T("Assumes a steady " + e.r + "% a year, invested at the start of each month. Real returns vary.", "मान लिया गया: हर साल स्थिर " + e.r + "%, हर महीने की शुरुआत में निवेश। असली रिटर्न बदलते हैं।", lang), tool: "sip" };
       }
       return { title: T("SIP needs 3 things", "SIP के लिए 3 चीज़ें चाहिए", lang), rows: [], note: T("Try: SIP 5000 per month at 12% for 10 years", "ऐसे लिखें: SIP 5000 महीना 12% 10 साल", lang), tool: "sip" };
     }
@@ -326,7 +326,7 @@
       var e2 = extractLoan(s);
       if (e2.r != null && e2.months && e2.nums.length) {
         var P2 = e2.nums.sort(function (a, b) { return b.v - a.v; })[0].v, i2 = e2.r / 1200, n2 = Math.round(e2.months), emi = i2 === 0 ? P2 / n2 : P2 * i2 * Math.pow(1 + i2, n2) / (Math.pow(1 + i2, n2) - 1), tot = emi * n2;
-        return { title: T("Loan EMI", "लोन की EMI", lang), rows: [[T("Monthly EMI", "मासिक EMI", lang), inr(emi)], [T("Loan amount", "लोन राशि", lang), inr(P2)], [T("Total interest", "कुल ब्याज", lang), inr(tot - P2)], [T("Total payment", "कुल भुगतान", lang), inr(tot)]], big: inr(emi) + T(" per month", " प्रति माह", lang), note: T(pl(e2.r) + "% a year for " + n2 + " months, reducing balance.", "सालाना " + pl(e2.r) + "% , " + n2 + " महीने, घटते बैलेंस पर।", lang), tool: "emi" };
+        return { st: { k: "emi", P: P2, r: e2.r, n: n2 }, title: T("Loan EMI", "लोन की EMI", lang), rows: [[T("Monthly EMI", "मासिक EMI", lang), inr(emi)], [T("Loan amount", "लोन राशि", lang), inr(P2)], [T("Total interest", "कुल ब्याज", lang), inr(tot - P2)], [T("Total payment", "कुल भुगतान", lang), inr(tot)]], big: inr(emi) + T(" per month", " प्रति माह", lang), note: T(pl(e2.r) + "% a year for " + n2 + " months, reducing balance.", "सालाना " + pl(e2.r) + "% , " + n2 + " महीने, घटते बैलेंस पर।", lang), tool: "emi" };
       }
       return { title: T("EMI needs 3 things", "EMI के लिए 3 चीज़ें चाहिए", lang), rows: [], note: T("Try: EMI of 5 lakh at 9% for 5 years", "ऐसे लिखें: 5 लाख का EMI 9% पर 5 साल", lang), tool: "emi" };
     }
@@ -334,7 +334,7 @@
       var e3 = extractLoan(s);
       if (e3.r != null && e3.months && e3.nums.length) {
         var P3 = e3.nums[0].v, yrs = e3.months / 12, A = P3 * Math.pow(1 + e3.r / 400, 4 * yrs);
-        return { title: T("FD maturity", "FD मैच्योरिटी", lang), rows: [[T("Deposit", "जमा राशि", lang), inr(P3)], [T("Interest earned", "मिला ब्याज", lang), inr(A - P3)], [T("Maturity value", "मैच्योरिटी वैल्यू", lang), inr(A)]], big: inr(A), note: T("Interest compounded quarterly, as most banks do.", "ब्याज तिमाही चक्रवृद्धि, जैसा ज़्यादातर बैंक करते हैं।", lang), tool: "fd-calculator" };
+        return { st: { k: "fd", P: P3, r: e3.r, n: e3.months }, title: T("FD maturity", "FD मैच्योरिटी", lang), rows: [[T("Deposit", "जमा राशि", lang), inr(P3)], [T("Interest earned", "मिला ब्याज", lang), inr(A - P3)], [T("Maturity value", "मैच्योरिटी वैल्यू", lang), inr(A)]], big: inr(A), note: T("Interest compounded quarterly, as most banks do.", "ब्याज तिमाही चक्रवृद्धि, जैसा ज़्यादातर बैंक करते हैं।", lang), tool: "fd-calculator" };
       }
     }
     if (/(compound interest|chakravriddhi|चक्रवृद्धि|\bci\b)/.test(s) || /(simple interest|saadha|sadharan|साधारण|\bsi\b)/.test(s)) {
@@ -350,6 +350,44 @@
         var amt = ns.sort(function (a, b) { return b.v - a.v; })[0].v, rev = /(incl|inclusive|included|with gst|nikalo|nikal|remove|reverse|excluding|ke andar|se gst|निकालो|निकाल)/.test(s), base, g, tt;
         if (rev) { base = amt / (1 + rate / 100); g = amt - base; tt = amt; } else { base = amt; g = amt * rate / 100; tt = amt + g; }
         return { title: T("GST at " + rate + "%", rate + "% GST", lang), rows: [[T("Price without GST", "GST के बिना कीमत", lang), inr(base, 2)], ["GST (" + rate + "%)", inr(g, 2)], ["CGST + SGST", inr(g / 2, 2) + " + " + inr(g / 2, 2)], [T("Price with GST", "GST के साथ कीमत", lang), inr(tt, 2)]], big: inr(rev ? base : tt, 2), note: (rm ? "" : T("No rate given, so 18% is assumed. ", "दर नहीं बताई, इसलिए 18% मानी गई। ", lang)) + (rev ? T("GST taken out of a GST-inclusive price.", "GST वाली कीमत से GST निकाला गया।", lang) : T("GST added to the price.", "कीमत में GST जोड़ा गया।", lang)), tool: "gst" };
+      }
+    }
+    /* BMI */
+    if (/\bbmi\b|body mass|मोटापा/.test(s)) {
+      var wk = /(\d+(?:\.\d+)?)\s*(?:kg|kgs|kilo|किलो)/.exec(s), hm = /(\d+(?:\.\d+)?)\s*(cm|centimet\w*|m|meters?|metres?|ft|feet|foot|inch|inches|सेमी)(?![\p{L}])/u.exec(s), hv = null;
+      if (hm) { var hn = parseFloat(hm[1]), hu = hm[2]; hv = /^(cm|centi|सेमी)/.test(hu) ? hn / 100 : /^(ft|feet|foot)/.test(hu) ? hn * .3048 : /^inch/.test(hu) ? hn * .0254 : hn; }
+      if (wk && hv && hv > .5 && hv < 2.8) {
+        var w0 = parseFloat(wk[1]), bmi = w0 / (hv * hv), cat = bmi < 18.5 ? ["Below the usual range", "सामान्य सीमा से कम"] : bmi < 25 ? ["In the usual range", "सामान्य सीमा में"] : bmi < 30 ? ["Above the usual range", "सामान्य सीमा से ऊपर"] : ["Well above the usual range", "सामान्य सीमा से काफी ऊपर"];
+        return { title: "BMI", rows: [["BMI", pl(bmi, 1)], [T("Range (WHO adult)", "रेंज (WHO वयस्क)", lang), T(cat[0], cat[1], lang)], [T("Usual range", "सामान्य सीमा", lang), "18.5 – 24.9"]], big: pl(bmi, 1), note: T("A rough screening number only, not medical advice. Ask a doctor about your health.", "यह सिर्फ मोटा अंदाज़ा है, मेडिकल सलाह नहीं। सेहत के बारे में डॉक्टर से पूछें।", lang) };
+      }
+      return { title: T("BMI needs weight and height", "BMI के लिए वज़न और ऊंचाई चाहिए", lang), rows: [], note: T("Try: BMI 70 kg 175 cm", "ऐसे लिखें: BMI 70 kg 175 cm", lang) };
+    }
+    /* profit and loss */
+    var pm = /(?:cost|cp|bought|kharid\w*|खरीद\w*|लागत)\D{0,14}(\d[\d,]*(?:\.\d+)?)[^\d]{1,30}?(?:sell\w*|sold|sp|bech\w*|बेच\w*|बिक्री)\D{0,14}(\d[\d,]*(?:\.\d+)?)/.exec(s);
+    if (pm) {
+      var cp = fnum(pm[1]), sp = fnum(pm[2]);
+      if (cp > 0) { var df = sp - cp, loss = df < 0; return { title: loss ? T("Loss", "नुकसान", lang) : df === 0 ? T("No profit, no loss", "न नफा न नुकसान", lang) : T("Profit", "मुनाफा", lang), rows: [[T("Cost price", "खरीद कीमत", lang), pl(cp)], [T("Selling price", "बिक्री कीमत", lang), pl(sp)], [loss ? T("Loss", "नुकसान", lang) : T("Profit", "मुनाफा", lang), pl(Math.abs(df))], ["% " + T("on cost", "लागत पर", lang), pl(Math.abs(df) / cp * 100, 2) + "%"]], big: pl(Math.abs(df) / cp * 100, 2) + "%" }; }
+    }
+    /* average */
+    if (/\b(average|avg|mean|ausat)\b|औसत/.test(s)) {
+      var an = numsIn(s).map(function (x) { return x.v; });
+      if (an.length >= 2) { var sum = an.reduce(function (a, b) { return a + b; }, 0); return { title: T("Average", "औसत", lang), rows: [[T("Numbers", "संख्याएं", lang), an.length + ""], [T("Sum", "जोड़", lang), pl(sum, 6)], [T("Average", "औसत", lang), pl(sum / an.length, 6)]], big: pl(sum / an.length, 6) }; }
+    }
+    /* split a bill */
+    var sb = /(split|divide|bant\w*|baant\w*|बांट\w*|बाँट\w*)/.test(s) ? numsIn(s).filter(function (x) { return x.v > 0; }) : [];
+    if (sb.length >= 2) {
+      var tot0 = Math.max(sb[0].v, sb[1].v), ppl = Math.min(sb[0].v, sb[1].v);
+      if (ppl >= 1 && ppl === Math.floor(ppl) && ppl <= 1000) return { title: T("Split equally", "बराबर बांटना", lang), rows: [[T("Total", "कुल", lang), pl(tot0)], [T("People", "लोग", lang), pl(ppl, 0)], [T("Each pays", "हर एक का हिस्सा", lang), pl(tot0 / ppl, 2)]], big: pl(tot0 / ppl, 2) };
+    }
+    /* days between dates, days left */
+    if (/\b(days?|din|dino|weeks?|months?)\b|दिन|कितने दिन/.test(s) && /(between|beech|bich|till|until|left|baki|bache|bachi|से|tak|to|and|aur|से)/.test(s)) {
+      var parts = s.split(/\s+(?:and|to|aur|se|till|until|tak|से|तक)\s+/), d1 = null, d2 = null;
+      if (parts.length >= 2) { d1 = parseDate(parts[0]); d2 = parseDate(parts.slice(1).join(" ")); }
+      var td0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()); if (!d1 && d2) d1 = td0; else if (d1 && !d2 && parts.length >= 2 && !/\d/.test(parts[1].replace(/\s/g, ""))) d2 = td0;
+      if (!d1 && !d2) { var dd = parseDate(s); if (dd && dd >= new Date(now.getFullYear(), now.getMonth(), now.getDate())) { d1 = new Date(now.getFullYear(), now.getMonth(), now.getDate()); d2 = dd; } }
+      if (d1 && d2) {
+        var dn = Math.round((d2 - d1) / 864e5), ab = Math.abs(dn), wks = Math.floor(ab / 7);
+        return { title: T("Days between", "दिनों का अंतर", lang), rows: [[T("From", "से", lang), d1.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })], [T("To", "तक", lang), d2.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })], [T("Days", "दिन", lang), pl(ab, 0)], [T("Weeks and days", "हफ्ते और दिन", lang), wks + T(" weeks ", " हफ्ते ", lang) + (ab % 7) + T(" days", " दिन", lang)]], big: pl(ab, 0) + T(" days", " दिन", lang) };
       }
     }
     /* percentages and discounts */
@@ -435,6 +473,14 @@
     if (mem.ids && /^(2|second|doosra|दूसरा)[\s!.?]*$/.test(s) && mem.ids[1]) { B.push({ t: "act", act: "nav", v: "/tools/" + mem.ids[1] }); P("Opening it now.", "अभी खोल रहा हूं।"); return ret(mem); }
     if (mem.ids && /^(how|kaise|how to use|steps|use kaise|kaise use|कैसे)[\s?!.]*$|^(how do i use it|kaise chalta hai|kaise use karun|use how)[\s?!.]*$/.test(s)) { return howTo(D.tool(mem.ids[0])); }
     if (/^(more|aur|more options|aur batao|aur dikhao|and\??|और|और बताओ)[\s!.?]*$/.test(s) && mem.q) { var all = toolByQuery(mem.q).map(function (x) { return x.d.id; }); var alt = (mem.more || []).filter(function (id) { return mem.ids.indexOf(id) < 0; }); if (!alt.length) { alt = toolIdx.search(tokens(mem.q)).map(function (x) { return x.d.id; }).filter(function (id) { return mem.ids.indexOf(id) < 0; }).slice(0, 3); } if (alt.length) { P("Here are more options:", "और विकल्प ये हैं:"); toolBlock(alt); return ret({ ids: alt, q: mem.q }); } }
+    /* what-if follow-up on the last EMI, SIP or FD result */
+    if (mem.calc && s.split(" ").length <= 8 && /(what if|agar|if |rate|byaj|tenure|saal|sal\b|years?|months?|mahine|%|lakh|amount|instead|badal|change|\bmake\b|\bset\b|कर दो|अगर|और)/.test(s) && !/\b(emi|sip|fd|gst|loan)\b/.test(s)) {
+      var fe = extractLoan(s), mc = mem.calc, nr = fe.r != null ? fe.r : mc.r, nn = fe.months ? fe.months : mc.n, nP = fe.nums.length ? fe.nums.sort(function (a, b) { return b.v - a.v; })[0].v : mc.P;
+      if (fe.r != null || fe.months || fe.nums.length) {
+        var fc = calc(mc.k + " " + nP + " " + nr + "% " + nn + " months", lang, now);
+        if (fc) { P("Updated with your change:", "आपके बदलाव के साथ नया हिसाब:"); B.push({ t: "calc", title: fc.title, rows: fc.rows, big: fc.big, note: fc.note }); chips = lang === "hi" ? ["दर 10% करो", "5 साल करो"] : ["what if rate 10%", "what if 7 years"]; return ret({ ids: mem.ids || null, q: mem.q || "", calc: fc.st || mc }); }
+      }
+    }
     /* how-to for the page the user is on */
     if (ctx.page && SELF_TOOL.test(s)) { var pt = D.tool(ctx.page); if (pt) return howTo(pt); }
     if (/^(how to use|kaise use|kaise chalate|how does)\s+(.+)/.test(s)) { var nm = findToolName(s.replace(/^(how to use|kaise use|kaise chalate|how does)\s+/, "").replace(/\s+(work|kaise|use kare|kaise karte|kaise karun)$/, "")); if (nm) return howTo(nm); }
@@ -459,7 +505,7 @@
 
     /* calculators */
     var c = calc(raw, lang, now);
-    if (c) { B.push({ t: "calc", title: c.title, rows: c.rows, big: c.big, note: c.note }); if (c.tool) { B.push({ t: "tools", ids: [c.tool], small: true }); chips = [t("Open " + D.tool(c.tool).en, D.tool(c.tool).hi + " खोलें")]; } return ret(c.tool ? { ids: [c.tool], q: c.title } : null); }
+    if (c) { B.push({ t: "calc", title: c.title, rows: c.rows, big: c.big, note: c.note }); if (c.st) { chips = lang === "hi" ? ["दर 10% करो", "5 साल करो"] : ["what if rate 10%", "what if 7 years"]; } if (c.tool) { B.push({ t: "tools", ids: [c.tool], small: true }); chips = [t("Open " + D.tool(c.tool).en, D.tool(c.tool).hi + " खोलें")].concat(c.st ? chips : []); } return ret(c.tool || c.st ? { ids: c.tool ? [c.tool] : null, q: c.title, calc: c.st || null } : null); }
 
     /* known gaps: say so honestly */
     var sc = tokens(raw, true).join(" ");
@@ -495,6 +541,16 @@
     starter(); return ret();
   }
 
-  var API = { reply: reply, calc: calc, calcExpr: calcExpr, tokens: tokens, words: words, norm: norm };
+  /* typeahead: tool names and a few ready phrases that start with what the person has typed */
+  var PHRASES = [["EMI of 5 lakh at 9% for 5 years", "5 लाख का EMI 9% पर 5 साल"], ["SIP 5000 per month at 12% for 10 years", "SIP 5000 महीना 12% 10 साल"], ["GST 18% on 2500", "2500 पर 18% GST"], ["5 km to miles", "5 km को miles में"], ["BMI 70 kg 175 cm", "BMI 70 kg 175 cm"], ["days between 1 jan 2026 and 15 mar 2026", "1 jan 2026 से 15 mar 2026 तक के दिन"], ["reduce photo size", "फोटो का साइज़ कम करना है"], ["merge PDF files", "PDF जोड़नी है"], ["make a resume", "रिज़्यूमे बनाना है"], ["remove background from photo", "फोटो का बैकग्राउंड हटाना है"]];
+  function suggest(input, siteLang) {
+    var q = norm(String(input || "")); if (q.length < 2) return [];
+    var hi = isHindiInput(input) || siteLang === "hi", out = [];
+    PHRASES.forEach(function (p) { var x = hi ? p[1] : p[0]; if (norm(x).indexOf(q) === 0 || (q.length > 2 && norm(p[0]).indexOf(q) === 0)) out.push(x); });
+    D.TOOLS.forEach(function (t) { var n = norm(t.en), h = norm(t.hi); if (out.length < 4 && (n.indexOf(q) === 0 || h.indexOf(q) === 0 || (q.length > 2 && n.indexOf(" " + q) > -1))) out.push((hi ? "खोलें " : "Open ") + (hi ? t.hi : t.en)); });
+    return out.filter(function (x, i) { return out.indexOf(x) === i; }).slice(0, 4);
+  }
+
+  var API = { reply: reply, suggest: suggest, calc: calc, calcExpr: calcExpr, tokens: tokens, words: words, norm: norm };
   if (isNode) module.exports = API; else root.DTAAssist = API;
 })(typeof window !== "undefined" ? window : globalThis);
