@@ -55,7 +55,7 @@
 <main id="main" class="tw">
 <!--DTA:CRUMBS--><nav aria-label="Breadcrumb"><ol class="crumbs"><li><a href="/"><span data-en="Home" data-hi="होम">Home</span></a></li><li><a href="/category/image/"><span data-en="Image Tools" data-hi="इमेज टूल्स">Image Tools</span></a></li><li aria-current="page"><span data-en="Resize Image" data-hi="इमेज रीसाइज़">Resize Image</span></li></ol></nav><!--/DTA:CRUMBS-->
 <h1 data-en="Resize Image" data-hi="इमेज रीसाइज़">Resize Image</h1>
-<p class="lead" data-en="Change the width and height of a photo." data-hi="फोटो की चौड़ाई और ऊंचाई बदलें।">Resize.</p>
+<p class="lead" data-en="Change the width and height of a photo." data-hi="फोटो की चौड़ाई और ऊंचाई बदलें।">Change the width and height of a photo.</p>
 <!--DTA:ACTIONS--><div class="tool-acts">
  <button class="btn" type="button" data-fav="image-resize" aria-pressed="false"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.9l6.1-.8z"/></svg><span class="n" data-en="Save" data-hi="सेव करें">Save</span><span class="y" data-en="Saved" data-hi="सेव हो गया">Saved</span></button>
  <button class="btn" type="button" data-share><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6"/></svg><span data-en="Share" data-hi="शेयर">Share</span></button>
@@ -76,14 +76,14 @@
   </div>
   <div class="two">
    <div><label for="un" data-en="Unit" data-hi="यूनिट">Unit</label><select id="un"><option value="px">px</option><option value="cm">cm</option><option value="mm">mm</option><option value="in">inch</option></select></div>
-   <div><label for="dpi" data-en="DPI (for cm / mm / inch)" data-hi="DPI (cm / mm / inch के लिए)">DPI</label><input id="dpi" type="number" inputmode="numeric" min="30" max="1200" value="300"></div>
+   <div><label for="dpi" data-en="DPI (for cm / mm / inch)" data-hi="DPI (cm / mm / inch के लिए)">DPI (for cm / mm / inch)</label><input id="dpi" type="number" inputmode="numeric" min="30" max="1200" value="300"></div>
   </div>
-  <label class="chk"><input id="lock" type="checkbox" checked><span data-en="Keep proportions" data-hi="अनुपात वही रखें">Lock</span></label>
+  <label class="chk"><input id="lock" type="checkbox" checked><span data-en="Keep proportions" data-hi="अनुपात वही रखें">Keep proportions</span></label>
   <div class="two">
-   <div><label for="fit" data-en="If proportions differ" data-hi="अनुपात अलग हो तो">Fit mode</label><select id="fit"><option value="stretch">Stretch</option><option value="contain">Fit inside (add background)</option><option value="cover">Fill and crop</option></select></div>
+   <div><label for="fit" data-en="If proportions differ" data-hi="अनुपात अलग हो तो">If proportions differ</label><select id="fit"><option value="stretch">Stretch</option><option value="contain">Fit inside (add background)</option><option value="cover">Fill and crop</option></select></div>
    <div><label for="bg" data-en="Background" data-hi="बैकग्राउंड">Background</label><input id="bg" type="color" value="#ffffff"></div>
   </div>
-  <label for="fmt" data-en="Output format" data-hi="आउटपुट फॉर्मेट">Format</label>
+  <label for="fmt" data-en="Output format" data-hi="आउटपुट फॉर्मेट">Output format</label>
   <select id="fmt"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select>
   <div class="seg"><button class="btn gold" id="go" type="button" data-en="Resize" data-hi="रीसाइज़ करें">Resize</button></div>
  </div>

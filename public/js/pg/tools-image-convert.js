@@ -21,7 +21,7 @@ async function run(){
  $("qv").textContent=$("q").value;$("qbox").hidden=t==="image/png";$("bgbox").hidden=t!=="image/jpeg";
  for(var it of items){it.out=it.im?await enc(it.im,t,+$("q").value/100,$("bg").value):null;if(my!==busy)return}
  var ok=items.filter(function(i){return i.out&&i.out.type===t});
- if(!ok.length){$("err").hidden=false;$("err").textContent=L("This format is not supported on your browser.","आपके ब्राउज़र में यह फॉर्मेट सपोर्ट नहीं है।");$("res").hidden=true;return}
+ if(!ok.length){$("err").hidden=false;$("err").textContent=items.some(function(i){return i.im})?L("This format is not supported on your browser.","आपके ब्राउज़र में यह फॉर्मेट सपोर्ट नहीं है।"):L("Could not open this image. The file may be damaged or not an image.","यह इमेज खुल नहीं सकी। फ़ाइल खराब हो सकती है या इमेज नहीं है।");$("res").hidden=true;return}
  $("err").hidden=true;var one=ok.length===1,o=ok[0];
  $("info").textContent=ok.length>1?ok.length+L(" images converted to "," इमेज बदली गईं → ")+extOf(t).toUpperCase():(o.f.type||"image").replace("image/","").toUpperCase()+" → "+extOf(o.out.type).toUpperCase()+" • "+sizeOf(o.f.size)+" → "+sizeOf(o.out.size);
  $("pv").hidden=!one;$("list").hidden=one;$("dl").hidden=!one;$("dz").hidden=one;

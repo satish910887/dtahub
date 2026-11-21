@@ -270,6 +270,25 @@ function externalScript(f, code) {
 const seen = new Map();
 /* speed: scripts after <body> no longer block the first paint (external ones get defer, inline ones become modules, which also wait for the page) */
 function finalizePages() {
+  /* Make the visible fallback text equal to the English text (data-en) so no-JS readers and crawlers see real wording, not short stubs. */
+  for (const f of walk(PUB).filter((x) => x.endsWith(".html"))) {
+    let h = fs.readFileSync(f, "utf8"), n = h;
+    n = n.replace(/<(span|p|h1|h2|h3|button|label|a|b|small|li)([^>]*?)\sdata-en="([^"]*)"([^>]*)>([^<]*)<\/\1>/g, (m, tag, a1, en, a2, txt) => (txt.trim() === en || /data-(?:hi|en)-skip/.test(a1 + a2)) ? m : `<${tag}${a1} data-en="${en}"${a2}>${en}</${tag}>`);
+    if (n !== h) fs.writeFileSync(f, n);
+  }
+  /* Pre-render the tool lists so they are in the HTML itself (search engines, no-JS readers, faster first paint); app.js re-renders the same cards. */
+  {
+    const f = path.join(PUB, "index.html");
+    if (fs.existsSync(f)) {
+      let h = fs.readFileSync(f, "utf8");
+      const put = (k, inner) => { h = h.replace(new RegExp("<!--DTA:" + k + "-->[\\s\\S]*?<!--/DTA:" + k + "-->"), () => "<!--DTA:" + k + "-->" + inner + "<!--/DTA:" + k + "-->"); };
+      const feat = D.TOOLS.map((t, i) => ({ t, i })).sort((a, b) => (b.t.featured ? 1 : 0) - (a.t.featured ? 1 : 0) || a.i - b.i).map((x) => x.t);
+      put("GRID", feat.map((t) => D.cardHTML(t, false)).join(""));
+      put("TOP", D.TOOLS.filter((t) => t.featured).slice(0, 6).map((t) => D.cardHTML(t, false)).join(""));
+      put("CATS", D.CATS.map(D.catCardHTML).join(""));
+      fs.writeFileSync(f, h);
+    }
+  }
 for (const f of walk(PUB).filter((x) => x.endsWith(".html"))) {
   const h = fs.readFileSync(f, "utf8"), i = h.indexOf("<body");
   if (i < 0) continue;

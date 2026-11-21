@@ -55,7 +55,7 @@
 <main id="main" class="tw">
 <!--DTA:CRUMBS--><nav aria-label="Breadcrumb"><ol class="crumbs"><li><a href="/"><span data-en="Home" data-hi="होम">Home</span></a></li><li><a href="/category/calc/"><span data-en="Calculators" data-hi="कैलकुलेटर">Calculators</span></a></li><li aria-current="page"><span data-en="GST Calculator" data-hi="GST कैलकुलेटर">GST Calculator</span></li></ol></nav><!--/DTA:CRUMBS-->
 <h1 data-en="GST Calculator" data-hi="GST कैलकुलेटर">GST Calculator</h1>
-<p class="lead" data-en="Add GST to a price or remove it from a GST-inclusive price." data-hi="कीमत में GST जोड़ें या GST वाली कीमत से हटाएं।">Add or remove GST.</p>
+<p class="lead" data-en="Add GST to a price or remove it from a GST-inclusive price." data-hi="कीमत में GST जोड़ें या GST वाली कीमत से हटाएं।">Add GST to a price or remove it from a GST-inclusive price.</p>
 <!--DTA:ACTIONS--><div class="tool-acts">
  <button class="btn" type="button" data-fav="gst" aria-pressed="false"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.9l6.1-.8z"/></svg><span class="n" data-en="Save" data-hi="सेव करें">Save</span><span class="y" data-en="Saved" data-hi="सेव हो गया">Saved</span></button>
  <button class="btn" type="button" data-share><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6"/></svg><span data-en="Share" data-hi="शेयर">Share</span></button>
@@ -66,9 +66,9 @@
   <button class="chip on" id="madd" data-en="Add GST" data-hi="GST जोड़ें">Add GST</button>
   <button class="chip" id="mrem" data-en="Remove GST" data-hi="GST हटाएं">Remove GST</button>
  </div>
- <label data-en="Amount (₹)" data-hi="राशि (₹)">Amount</label>
+ <label data-en="Amount (₹)" data-hi="राशि (₹)">Amount (₹)</label>
  <input id="amt" type="number" inputmode="decimal" value="1000" min="0">
- <label data-en="GST rate (%)" data-hi="GST दर (%)">GST rate</label>
+ <label data-en="GST rate (%)" data-hi="GST दर (%)">GST rate (%)</label>
  <input id="rate" type="number" inputmode="decimal" value="18" min="0" step="0.01">
  <div class="seg" id="rch">
   <button class="chip r" data-r="0.25">0.25%</button>
@@ -81,22 +81,22 @@
   <button class="chip r" data-r="28">28%</button>
  </div>
  <div class="seg"><button class="chip on" type="button" id="tin" data-en="Same state (CGST + SGST)" data-hi="एक ही राज्य (CGST + SGST)">Same state (CGST + SGST)</button><button class="chip" type="button" id="tout" data-en="Other state (IGST)" data-hi="दूसरा राज्य (IGST)">Other state (IGST)</button></div>
- <label class="chk"><input id="rnd" type="checkbox"><span data-en="Round total to nearest rupee" data-hi="कुल राशि को पास के रुपये में राउंड करें">Round total</span></label>
+ <label class="chk"><input id="rnd" type="checkbox"><span data-en="Round total to nearest rupee" data-hi="कुल राशि को पास के रुपये में राउंड करें">Round total to nearest rupee</span></label>
 </div>
 <div class="panel" id="res" hidden>
  <div class="stats">
-  <div class="stat"><small data-en="Price without GST" data-hi="GST के बिना कीमत">Net</small><b id="o-net"></b></div>
-  <div class="stat"><small data-en="GST amount" data-hi="GST राशि">GST</small><b id="o-gst"></b></div>
+  <div class="stat"><small data-en="Price without GST" data-hi="GST के बिना कीमत">Price without GST</small><b id="o-net"></b></div>
+  <div class="stat"><small data-en="GST amount" data-hi="GST राशि">GST amount</small><b id="o-gst"></b></div>
   <div class="stat" id="wc"><small>CGST</small><b id="o-c"></b></div>
   <div class="stat" id="ws"><small>SGST</small><b id="o-s"></b></div>
   <div class="stat" id="wi" hidden><small>IGST</small><b id="o-i"></b></div>
   <div class="stat" id="wr" hidden><small data-en="Round-off" data-hi="राउंड-ऑफ">Round-off</small><b id="o-r"></b></div>
-  <div class="stat big"><small data-en="Price with GST" data-hi="GST के साथ कीमत">Total</small><b id="o-tot"></b></div>
+  <div class="stat big"><small data-en="Price with GST" data-hi="GST के साथ कीमत">Price with GST</small><b id="o-tot"></b></div>
  </div>
  <div class="seg" style="justify-content:center"><button class="btn" type="button" id="cpy" data-en="Copy summary" data-hi="सार कॉपी करें">Copy summary</button></div>
 </div>
 <div class="panel"><details id="bill"><summary data-en="Itemised bill (many items, different rates)" data-hi="आइटम वाला बिल (कई आइटम, अलग दरें)">Itemised bill (many items, different rates)</summary>
- <p class="hint" data-en="Prices here are without GST. Uses the same-state / other-state choice above." data-hi="यहां कीमतें GST के बिना हैं। ऊपर का एक राज्य / दूसरा राज्य विकल्प लागू होता है।">Prices are without GST.</p>
+ <p class="hint" data-en="Prices here are without GST. Uses the same-state / other-state choice above." data-hi="यहां कीमतें GST के बिना हैं। ऊपर का एक राज्य / दूसरा राज्य विकल्प लागू होता है।">Prices here are without GST. Uses the same-state / other-state choice above.</p>
  <div id="rows"></div>
  <div class="seg"><button class="btn" type="button" id="addr" data-en="+ Add item" data-hi="+ आइटम जोड़ें">+ Add item</button><button class="btn" type="button" id="csv" data-en="Download CSV" data-hi="CSV डाउनलोड">Download CSV</button></div>
  <div class="stats" id="bt"></div>

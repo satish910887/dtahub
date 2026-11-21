@@ -55,7 +55,7 @@
 <main id="main" class="tw">
 <!--DTA:CRUMBS--><nav aria-label="Breadcrumb"><ol class="crumbs"><li><a href="/"><span data-en="Home" data-hi="होम">Home</span></a></li><li><a href="/category/image/"><span data-en="Image Tools" data-hi="इमेज टूल्स">Image Tools</span></a></li><li aria-current="page"><span data-en="Compress Image" data-hi="इमेज छोटी करें">Compress Image</span></li></ol></nav><!--/DTA:CRUMBS-->
 <h1 data-en="Compress Image" data-hi="इमेज छोटी करें">Compress Image</h1>
-<p class="lead" data-en="Make photos smaller. Everything happens on your phone, nothing is uploaded." data-hi="फोटो का साइज़ घटाएं। सब कुछ आपके फोन पर होता है, कुछ अपलोड नहीं होता।">Compress.</p>
+<p class="lead" data-en="Make photos smaller. Everything happens on your phone, nothing is uploaded." data-hi="फोटो का साइज़ घटाएं। सब कुछ आपके फोन पर होता है, कुछ अपलोड नहीं होता।">Make photos smaller. Everything happens on your phone, nothing is uploaded.</p>
 <!--DTA:ACTIONS--><div class="tool-acts">
  <button class="btn" type="button" data-fav="image-compress" aria-pressed="false"><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3.5 2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6L3.2 9.9l6.1-.8z"/></svg><span class="n" data-en="Save" data-hi="सेव करें">Save</span><span class="y" data-en="Saved" data-hi="सेव हो गया">Saved</span></button>
  <button class="btn" type="button" data-share><svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 10.8 7.6-3.6M8.2 13.2l7.6 3.6"/></svg><span data-en="Share" data-hi="शेयर">Share</span></button>
@@ -66,10 +66,10 @@
  <div id="ctl" hidden>
   <div class="seg" role="group" aria-label="Mode"><button class="chip on" type="button" id="mq" data-en="By quality" data-hi="क्वालिटी से">By quality</button><button class="chip" type="button" id="mt" data-en="Target size" data-hi="टारगेट साइज़">Target size</button></div>
   <div id="bq"><label for="q"><span data-en="Quality" data-hi="क्वालिटी">Quality</span>: <b id="qv">70</b>%</label><input id="q" type="range" min="10" max="100" value="70"></div>
-  <div id="bt" hidden><label for="tk" data-en="Target size (KB) per image" data-hi="हर इमेज का टारगेट साइज़ (KB)">Target size (KB)</label><input id="tk" type="number" inputmode="numeric" min="5" value="100"></div>
+  <div id="bt" hidden><label for="tk" data-en="Target size (KB) per image" data-hi="हर इमेज का टारगेट साइज़ (KB)">Target size (KB) per image</label><input id="tk" type="number" inputmode="numeric" min="5" value="100"></div>
   <div class="two">
-   <div><label for="fmt" data-en="Output format" data-hi="आउटपुट फॉर्मेट">Format</label><select id="fmt"><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select></div>
-   <div><label for="mx" data-en="Max width/height (px, 0 = keep)" data-hi="अधिकतम चौड़ाई/ऊंचाई (px, 0 = वही)">Max side</label><input id="mx" type="number" inputmode="numeric" min="0" value="0"></div>
+   <div><label for="fmt" data-en="Output format" data-hi="आउटपुट फॉर्मेट">Output format</label><select id="fmt"><option value="image/jpeg">JPG</option><option value="image/webp">WebP</option></select></div>
+   <div><label for="mx" data-en="Max width/height (px, 0 = keep)" data-hi="अधिकतम चौड़ाई/ऊंचाई (px, 0 = वही)">Max width/height (px, 0 = keep)</label><input id="mx" type="number" inputmode="numeric" min="0" value="0"></div>
   </div>
  </div>
  <div class="err" id="err" hidden></div>

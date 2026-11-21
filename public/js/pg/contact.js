@@ -17,9 +17,9 @@ var T0=Date.now();
   if($("hp").value)return;
   var now=Date.now(),RL="dta_cf_v1",hs=[];try{hs=JSON.parse(localStorage.getItem(RL)||"[]").filter(function(t){return now-t<864e5})}catch(x){}
   if(now-T0<3000||(hs.length&&now-hs[hs.length-1]<30000)||hs.length>=5){err.hidden=false;err.textContent=L("Please wait a little before sending again.","कृपया दोबारा भेजने से पहले थोड़ा रुकें।");return}
-  try{hs.push(now);localStorage.setItem(RL,JSON.stringify(hs))}catch(x){}
   if(m.length<5){err.hidden=false;err.textContent=L("Please write a message (at least 5 characters).","कृपया संदेश लिखें (कम से कम 5 अक्षर)।");return}
   if(em&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)){err.hidden=false;err.textContent=L("That email does not look right.","यह ईमेल सही नहीं लग रहा।");return}
+  try{hs.push(now);localStorage.setItem(RL,JSON.stringify(hs))}catch(x){}
   var old=btn.textContent;btn.disabled=true;btn.textContent=L("Sending...","भेजा जा रहा है...");
   fetch("https://api.web3forms.com/submit",{method:"POST",headers:{"Content-Type":"application/json",Accept:"application/json"},
    body:JSON.stringify({access_key:key,subject:"DTAhub: "+$("ty").value,from_name:$("nm").value.trim()||"DTAhub visitor",name:$("nm").value.trim(),email:em,message:m,botcheck:""})})
