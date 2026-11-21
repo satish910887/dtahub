@@ -135,6 +135,8 @@
     "resume-maker": "resume job template pdf career",
     "cover-letter": "cover letter job application letter",
     "invoice-maker": "invoice gst receipt pdf upi qr",
+    "number-to-words": "number amount words rupees rupaye cheque likho shabdon hindi english lakh crore paise",
+    "exam-photo": "exam photo signature form upload kb size passport pixels jpg application sarkari naukri 20kb 50kb photo signature resize",
     "unit-converter": "unit convert length weight area temperature volume speed data km miles kg pounds",
     "sip": "sip investment returns calculator monthly",
     "fd-calculator": "fd rd fixed deposit recurring deposit maturity interest bank",
@@ -152,7 +154,7 @@
   /* ---------- knowledge ---------- */
   var FAQX = [
     { q: { en: "What is DTAhub?", hi: "DTAhub क्या है?" }, k: "what is dtahub about site website this platform purpose",
-      a: { en: "DTAhub is a free toolkit of 33 tools in your browser: PDF and image tools, text and developer tools, calculators, and resume, cover letter and invoice makers. No sign-up, in English and Hindi, and your files never leave your device.", hi: "DTAhub आपके ब्राउज़र में 33 फ्री टूल्स का सेट है: PDF और इमेज टूल्स, टेक्स्ट और डेवलपर टूल्स, कैलकुलेटर, और रिज़्यूमे, कवर लेटर और इनवॉइस मेकर। न साइन-अप, अंग्रेज़ी और हिंदी में, और आपकी फाइलें आपके डिवाइस से बाहर नहीं जातीं।" } },
+      a: { en: "DTAhub is a free toolkit of " + D.TOOLS.length + " tools in your browser: PDF and image tools, text and developer tools, calculators, and resume, cover letter and invoice makers. No sign-up, in English and Hindi, and your files never leave your device.", hi: "DTAhub आपके ब्राउज़र में 33 फ्री टूल्स का सेट है: PDF और इमेज टूल्स, टेक्स्ट और डेवलपर टूल्स, कैलकुलेटर, और रिज़्यूमे, कवर लेटर और इनवॉइस मेकर। न साइन-अप, अंग्रेज़ी और हिंदी में, और आपकी फाइलें आपके डिवाइस से बाहर नहीं जातीं।" } },
     { q: { en: "What file types and sizes are supported?", hi: "कौन सी फाइल और कितना साइज़ चलता है?" }, k: "file type format size limit mb supported maximum big large",
       a: { en: "Images: JPG, PNG, WebP and most photos from your phone, up to 30 MB each. PDFs: up to 50 MB. Very large files can be slow on older phones.", hi: "इमेज: JPG, PNG, WebP और फोन की ज़्यादातर फोटो, हर एक 30 MB तक। PDF: 50 MB तक। बहुत बड़ी फाइलें पुराने फोन पर धीमी हो सकती हैं।" } },
     { q: { en: "Is it safe? Do you see my files?", hi: "क्या यह सुरक्षित है? क्या आप मेरी फाइलें देखते हैं?" }, k: "safe secure privacy private see data stored server upload trust security",
@@ -172,7 +174,7 @@
     { q: { en: "How do I fill a PDF form or sign a PDF?", hi: "PDF फॉर्म कैसे भरूं या साइन कैसे करूं?" }, k: "fill pdf form sign signature type text tick date",
       a: { en: "Open PDF Editor, choose your PDF, tap the blue boxes to fill real form fields, or pick Text, Tick, Date or Sign and tap on the page. Then download the edited PDF.", hi: "PDF Editor खोलें, अपनी PDF चुनें, असली फॉर्म फील्ड भरने के लिए नीले बॉक्स पर टैप करें, या Text, Tick, Date या Sign चुनकर पन्ने पर टैप करें। फिर एडिट की हुई PDF डाउनलोड करें।" }, tool: "pdf-fill" },
     { q: { en: "How do I make a photo 50 KB or 100 KB for a form?", hi: "फॉर्म के लिए फोटो 50 KB या 100 KB कैसे करूं?" }, k: "photo size kb 50 100 20 form upload exam passport signature reduce",
-      a: { en: "First resize the photo to the pixels or centimetres the form asks for with Image Resizer, then use Image Compressor and set the target size in KB. Check the guide below for the full steps.", hi: "पहले Image Resizer से फोटो को फॉर्म के बताए पिक्सेल या सेंटीमीटर में बदलें, फिर Image Compressor में KB का टारगेट साइज़ डालें। पूरे स्टेप्स के लिए नीचे की गाइड देखें।" }, tool: "image-compress", guide: "photo-size-for-forms-guide" }
+      a: { en: "Open Exam Photo & Signature Resizer, choose your photo or signature, type the exact pixels and the minimum and maximum KB from your form, and tap Make it fit. It finds the right quality for you and shows a clear tick when the size matches. Check the guide below for more.", hi: "Exam Photo & Signature Resizer खोलें, अपनी फोटो या सिग्नेचर चुनें, फॉर्म के सटीक पिक्सेल और न्यूनतम-अधिकतम KB डालें, और Make it fit दबाएं। टूल सही क्वालिटी खुद ढूंढता है और साइज़ मिलने पर साफ टिक दिखाता है। ज़्यादा जानकारी के लिए नीचे की गाइड देखें।" }, tool: "exam-photo", guide: "photo-size-for-forms-guide" }
   ];
   var faqDocs = D.FAQ.map(function (f) { return { q: f.q, a: f.a, k: "" }; }).concat(FAQX).map(function (f) {
     return { toks: tokens(f.q.en + " " + f.q.en + " " + f.q.hi + " " + (f.k || "") + " " + (f.k || "") + " " + f.a.en), f: f };
@@ -301,7 +303,7 @@
     }
     /* number in words */
     if (/(in words|shabdon|shabdo|शब्दों)/.test(s) && (m = numsIn(s)[0]) && m.v < 1e12 && m.v === Math.floor(m.v)) {
-      return { title: T("In words", "शब्दों में", lang), rows: [[pl(m.v, 0), words(m.v) + (/(rupee|rs|₹|inr|rupaye|रुपये)/.test(s) ? " rupees only" : "")]], note: T("Indian system (lakh and crore).", "भारतीय प्रणाली (लाख और करोड़)।", lang), tool: "invoice-maker" };
+      return { title: T("In words", "शब्दों में", lang), rows: [[pl(m.v, 0), words(m.v) + (/(rupee|rs|₹|inr|rupaye|रुपये)/.test(s) ? " rupees only" : "")]], note: T("Indian system (lakh and crore).", "भारतीय प्रणाली (लाख और करोड़)।", lang), tool: "number-to-words" };
     }
     /* unit conversion */
     var us = s; for (var z = 0; z < 2; z++) us = us.replace(/\s+(me|mein|में|batao|bataiye|karo|kar do|kardo|kitne|kitna|kitni|hoga|hote hain|hota hai|hai)\s*[?.!]*$/, "");
