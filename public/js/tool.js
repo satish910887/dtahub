@@ -179,12 +179,51 @@
   var lb = $("langBtn"), tb = $("themeBtn"); if (lb) lb.onclick = setLang; if (tb) tb.onclick = setTheme;
 
   /* ---------- mobile nav ---------- */
-  var mb = $("menuBtn"), mn = $("mnav");
-  function menu(open) { if (!mb || !mn) return; mn.classList.toggle("open", open); mb.setAttribute("aria-expanded", open ? "true" : "false"); mb.innerHTML = D.icon(open ? "close" : "menu", 20); }
-  if (mb) { mb.onclick = function () { menu(!mn.classList.contains("open")); }; mn.addEventListener("click", function (e) { if (e.target.closest("a")) menu(false); }); }
-  document.querySelectorAll(".links a, .mnav a").forEach(function (a) {
-    var h = a.getAttribute("href"); if (h && h.charAt(0) === "/" && h.indexOf("#") < 0 && h !== "/" && location.pathname.indexOf(h) === 0) a.setAttribute("aria-current", "page");
+  var mb = $("menuBtn"), mn = $("mnav"), more = $("moreBtn"), sc = $("mscrim"), lastFocus = null;
+  var morePath = /^\/(settings|contact|privacy|terms|category)/.test(location.pathname);
+  if (more && morePath) more.classList.add("on");
+  function menu(open) {
+    if (!mn) return;
+    mn.classList.toggle("open", open); if (sc) sc.classList.toggle("open", open);
+    [mb, more].forEach(function (b) { if (b) b.setAttribute("aria-expanded", open ? "true" : "false"); });
+    if (mb) mb.innerHTML = D.icon(open ? "close" : "menu", 20);
+    if (more) { more.classList.toggle("on", open || morePath); more.innerHTML = D.icon(open ? "close" : "menu", 22) + '<span data-en="' + (open ? "Close" : "More") + '" data-hi="' + (open ? "बंद" : "और") + '">' + (open ? L("Close", "बंद") : L("More", "और")) + "</span>"; }
+    if (open) { lastFocus = document.activeElement; setTimeout(function () { var f = mn.querySelector("a:not([hidden])"); if (f && more && isOpen()) f.focus({ preventScroll: true }); }, 70); }
+    else if (lastFocus && document.contains(lastFocus)) { try { lastFocus.focus({ preventScroll: true }); } catch (e) {} lastFocus = null; }
+  }
+  var isOpen = function () { return mn && mn.classList.contains("open"); };
+  if (mb) mb.onclick = function () { menu(!isOpen()); };
+  if (more) more.onclick = function () { menu(!isOpen()); };
+  if (sc) sc.onclick = function () { menu(false); };
+  if (mn) mn.addEventListener("click", function (e) { if (e.target.closest("a")) menu(false); });
+  document.addEventListener("keydown", function (e) {
+    if (!isOpen()) return;
+    if (e.key === "Escape") { menu(false); return; }
+    if (e.key === "Tab" && more) {
+      var f = [].slice.call(mn.querySelectorAll("a:not([hidden])")).concat([more]); if (!f.length) return;
+      var i = f.indexOf(document.activeElement);
+      if (e.shiftKey && (i <= 0)) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && (i === f.length - 1)) { e.preventDefault(); f[0].focus(); }
+    }
   });
+  window.addEventListener("resize", function () { if (isOpen() && window.innerWidth >= 760) menu(false); });
+  (function () {
+    var pth = location.pathname.replace(/\.html$/, "");
+    document.querySelectorAll(".links a, .mnav a, .ddp a").forEach(function (a) {
+      var h = (a.getAttribute("href") || "").replace(/\.html$/, ""); if (h.charAt(0) !== "/") return;
+      var hit = h.indexOf("#") > -1 ? ((h === "/#tools" && pth.indexOf("/tools/") === 0) || (h === "/#categories" && pth.indexOf("/category/") === 0)) : (h !== "/" && pth.indexOf(h) === 0);
+      if (hit) a.setAttribute("aria-current", "page");
+    });
+  })();
+  if (window.innerWidth < 760) document.querySelectorAll(".fd").forEach(function (d) { d.removeAttribute("open"); });
+  /* back to top, only after a good scroll */
+  (function () {
+    var b = document.createElement("button"); b.type = "button"; b.className = "totop"; b.setAttribute("aria-label", L("Back to top", "ऊपर जाएं")); b.innerHTML = D.icon("up", 20);
+    document.body.appendChild(b); var t = 0;
+    function chk() { t = 0; b.classList.toggle("show", window.scrollY > 900); }
+    window.addEventListener("scroll", function () { if (!t) t = requestAnimationFrame(chk); }, { passive: true });
+    b.onclick = function () { var rm = matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.getAttribute("data-motion") === "off"; window.scrollTo({ top: 0, behavior: rm ? "auto" : "smooth" }); var m = document.getElementById("main"); if (m) { m.setAttribute("tabindex", "-1"); m.focus({ preventScroll: true }); } };
+    document.addEventListener("langchange", function () { b.setAttribute("aria-label", L("Back to top", "ऊपर जाएं")); });
+  })();
 
   /* ---------- share + reset ---------- */
   document.addEventListener("click", function (e) {

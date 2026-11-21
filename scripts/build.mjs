@@ -37,7 +37,7 @@ function header() {
   return `<a class="skip" href="#main">${bi("Skip to content", "मुख्य सामग्री पर जाएं")}</a>
 <header class="nav">
  <a class="logo" href="/" aria-label="DTAhub – Your Everyday Digital Toolkit">${logo(32)}<span>DTA<b>hub</b></span></a>
- <nav class="links" aria-label="Main"><a href="/#tools">${bi("Tools", "टूल्स")}</a><a href="/#categories">${bi("Categories", "श्रेणियां")}</a><a href="/blog/">${bi("Guides", "गाइड्स")}</a><a href="/contact.html">${bi("Contact", "संपर्क")}</a></nav>
+ <nav class="links" aria-label="Main"><a href="/#tools">${bi("Tools", "टूल्स")}</a><div class="dd"><a href="/#categories" aria-haspopup="true">${bi("Categories", "श्रेणियां")}<svg class="ddc" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></a><div class="ddp">${cats}</div></div><a href="/blog/">${bi("Guides", "गाइड्स")}</a><a href="/contact.html">${bi("Contact", "संपर्क")}</a></nav>
  <div class="actions">
   <button class="kbd-btn" type="button" data-open-palette aria-label="Search">${D.icon("search", 18)}${bi("Search tools…", "टूल खोजें…")}<kbd>Ctrl K</kbd></button>
   <button class="icon-btn s-btn" type="button" data-open-palette aria-label="Search">${D.icon("search", 19)}</button>
@@ -46,13 +46,14 @@ function header() {
   <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mnav">${D.icon("menu", 20)}</button>
  </div>
 </header>
-<nav class="mnav" id="mnav" aria-label="Mobile">
+<div class="mscrim" id="mscrim"></div>
+<nav class="mnav" id="mnav" aria-label="More">
  <a href="/">${D.icon("bolt", 20)}${bi("Home", "होम")}</a>
  <a href="/#tools">${D.icon("search", 20)}${bi("All tools", "सभी टूल्स")}</a>
  <a href="/blog/">${D.icon("text", 20)}${bi("Guides", "गाइड्स")}</a>
  <a href="/contact.html">${D.icon("plus", 20)}${bi("Contact and requests", "संपर्क और मांग")}</a>
  <a href="/settings.html">${D.icon("settings", 20)}${bi("Settings", "सेटिंग्स")}</a>
- <div class="sep"></div><small>${bi("Categories", "श्रेणियां")}</small>${cats}
+ <div class="sep"></div><small>${bi("Categories", "श्रेणियां")}</small><div class="mcats">${cats}</div>
  <div class="sep"></div><a href="#" data-install hidden>${D.icon("download", 20)}${bi("Install app", "ऐप इंस्टॉल करें")}</a>
 </nav>
 <nav class="bnav" aria-label="Quick">
@@ -60,7 +61,7 @@ function header() {
  <a href="/#tools" data-b="tools">${D.icon("calc", 22)}${bi("Tools", "टूल्स")}</a>
  <button type="button" data-open-palette>${D.icon("search", 22)}${bi("Search", "खोजें")}</button>
  <a href="/blog/" data-b="blog">${D.icon("text", 22)}${bi("Guides", "गाइड्स")}</a>
- <a href="/settings.html" data-b="settings">${D.icon("settings", 22)}${bi("Settings", "सेटिंग्स")}</a>
+ <button type="button" id="moreBtn" aria-haspopup="true" aria-expanded="false" aria-controls="mnav">${D.icon("menu", 22)}${bi("More", "और")}</button>
 </nav>`;
 }
 
@@ -70,7 +71,7 @@ function footer() {
  <div><a class="logo" href="/">${logo(28)}<span>DTA<b>hub</b></span></a><p class="blurb">${bi("DTAhub – Your Everyday Digital Toolkit. Free tools that run privately in your browser.", "DTAhub – आपका रोज़ का डिजिटल टूलकिट। मुफ्त टूल्स जो आपके ब्राउज़र में प्राइवेट तरीके से चलते हैं।")}</p><p><button class="btn" type="button" data-install hidden>${D.icon("download", 18)}${bi("Install app", "ऐप इंस्टॉल करें")}</button></p></div>
  <div><div class="fh">${bi("Categories", "श्रेणियां")}</div><ul>${D.CATS.map((c) => li(D.catUrl(c), bi(c.en, c.hi))).join("")}</ul></div>
  <div><div class="fh">${bi("Company", "कंपनी")}</div><ul>${li("/blog/", bi("Guides", "गाइड्स"))}${li("/contact.html", bi("Contact", "संपर्क"))}${li("/contact.html#request", bi("Request a tool", "टूल मांगें"))}${li("/settings.html", bi("Settings", "सेटिंग्स"))}${li("/privacy.html", bi("Privacy Policy", "प्राइवेसी पॉलिसी"))}${li("/terms.html", bi("Terms", "शर्तें"))}</ul></div>
- <div><div class="fh">${bi("All tools", "सभी टूल्स")}</div><ul class="two">${D.TOOLS.map((t) => li(D.toolUrl(t), bi(t.en, t.hi))).join("")}</ul></div>
+ <details class="fd" open><summary class="fh">${bi("All tools", "सभी टूल्स")} <span class="fdn">${D.TOOLS.length}</span></summary><ul class="two">${D.TOOLS.map((t) => li(D.toolUrl(t), bi(t.en, t.hi))).join("")}</ul></details>
 </div><div class="foot-bot"><span>© ${YEAR} DTAhub</span><span>${bi("Made with care in India.", "भारत में प्यार से बनाया गया।")}</span></div></footer>`;
 }
 
@@ -138,6 +139,8 @@ function toolActions(t) {
 function toolExtra(t) {
   const steps = D.KINDS[t.kind], p = PRIV[t.kind];
   const rel = (t.related || []).map(D.tool).filter(Boolean).map((r) => D.cardHTML(r)).join("");
+  const sib = D.TOOLS.filter((x) => x.cat === t.cat), ix = sib.findIndex((x) => x.id === t.id), pv = sib[ix - 1], nx = sib[ix + 1];
+  const pn = pv || nx ? `<nav class="pn" aria-label="${"More in this category"}">${pv ? `<a rel="prev" href="${D.toolUrl(pv)}"><small>${bi("Previous tool", "पिछला टूल")}</small><b>${bi(pv.en, pv.hi)}</b></a>` : "<span></span>"}${nx ? `<a rel="next" href="${D.toolUrl(nx)}"><small>${bi("Next tool", "अगला टूल")}</small><b>${bi(nx.en, nx.hi)}</b></a>` : "<span></span>"}</nav>` : "";
   return `<aside class="privacy-note">${D.icon("shield", 20)}${bi(p[0], p[1], "p")}</aside>
 <section class="seo-about">
  ${bi("About " + t.en, t.hi + " के बारे में", "h2")}
@@ -148,7 +151,7 @@ function toolExtra(t) {
  ${bi(t.tip.en, t.tip.hi, "p")}
  ${bi("Related tools", "मिलते-जुलते टूल्स", "h2")}
  <div class="grid sm">${rel}</div>
-</section>`;
+</section>${pn}`;
 }
 function buildTools() {
   for (const t of D.TOOLS) {
@@ -182,7 +185,8 @@ function catPage(c) {
 <div class="page-h"><!--DTA:CRUMBS--><!--/DTA:CRUMBS-->
  <h1><span class="ico" style="display:inline-grid;vertical-align:middle;margin-right:10px">${D.icon(c.icon, 24)}</span>${bi(c.en, c.hi)}</h1>
  ${bi(c.intro.en, c.intro.hi, "p", ' class="lead-l"')}
- <div class="cat-bar"><div class="field">${D.icon("search", 18)}<input id="catQ" type="search" autocomplete="off" aria-label="Search in ${e(c.en)}" data-ph-en="Search in ${e(c.en)}…" data-ph-hi="${e(c.hi)} में खोजें…" placeholder="Search in ${e(c.en)}…"></div>
+ <nav class="catrow" aria-label="${"Categories"}">${D.CATS.map((x) => `<a href="${D.catUrl(x)}"${x.id === c.id ? ' aria-current="page"' : ""}>${D.icon(x.icon, 16)}${bi(x.short ? x.short.en : x.en, x.short ? x.short.hi : x.hi)}</a>`).join("")}</nav>
+ <div class="cat-bar"><div class="field">${D.icon("search", 18)}<input id="catQ" type="search" autocomplete="off" aria-label="Search in ${e(c.en)}" data-ph-en="Search tools…" data-ph-hi="टूल खोजें…" placeholder="Search in ${e(c.en)}…"></div>
   <label class="sr" for="catSort">Sort</label><select id="catSort" class="sel"><option value="rec" data-en="Recommended" data-hi="सुझाए गए">Recommended</option><option value="az" data-en="A to Z" data-hi="A से Z">A to Z</option></select></div>
 </div>
 ${feat.length ? `<section class="sec"><div class="sec-h"><div>${bi("Top picks", "खास टूल्स", "h2")}</div></div><div class="grid">${feat.map((t) => D.cardHTML(t)).join("")}</div></section>` : ""}
