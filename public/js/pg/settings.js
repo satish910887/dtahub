@@ -23,5 +23,14 @@
   if(navigator.serviceWorker)p.push(navigator.serviceWorker.getRegistrations().then(function(r){return Promise.all(r.map(function(x){return x.unregister()}))}));
   Promise.all(p).then(function(){sync();toast(L("Offline copy cleared. It rebuilds as you browse.","ऑफलाइन कॉपी साफ हुई। ब्राउज़ करते हुए फिर बन जाएगी।"))}).catch(function(){toast(L("Could not clear","साफ नहीं हो सका"),"err")});
  };
+ var SWK=navigator.serviceWorker,lastPre=null;
+ function showPre(d){lastPre=d;var mb=(d.bytes/1048576).toFixed(1);$("n-pre").textContent=d.done>=d.total?L("All ready","सब तैयार")+" ("+d.total+")":d.done+" / "+d.total+" • "+mb+" MB";$("c-pre").disabled=d.done>=d.total||!!d.warming}
+ function askSW(t){if(!SWK)return Promise.resolve();return SWK.ready.then(function(r){if(r.active)r.active.postMessage({type:t})}).catch(function(){})}
+ if(SWK&&/^https?:$/.test(location.protocol)){
+  SWK.addEventListener("message",function(e){var d=e.data;if(!d||(d.type!=="warm"&&d.type!=="status"))return;showPre(d);if(d.finished)toast(d.failed?L("Some files could not be saved. Try again on a better connection.","कुछ फाइलें सेव नहीं हो सकीं। बेहतर कनेक्शन पर फिर कोशिश करें।"):L("Done. Every tool now works offline.","हो गया। अब हर टूल ऑफलाइन चलेगा।"))});
+  $("c-pre").onclick=function(){this.disabled=true;$("n-pre").textContent=L("Starting...","शुरू हो रहा है...");askSW("warm")};
+  askSW("status");
+ }else{$("n-pre").textContent=L("Not supported","सपोर्ट नहीं");$("c-pre").disabled=true}
+ document.addEventListener("langchange",function(){if(lastPre)showPre(lastPre)});
  document.addEventListener("langchange",sync);sync();
 })();

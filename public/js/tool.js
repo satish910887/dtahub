@@ -348,3 +348,16 @@
   function go() { if (window.__dtaAst) return; var s = document.createElement("script"); s.src = "/js/assistant.js"; s.defer = true; document.head.appendChild(s); }
   (window.requestIdleCallback || function (f) { setTimeout(f, 1500); })(go, { timeout: 3000 });
 })();
+
+/* Quietly finish the offline copy of every tool on a good connection (only missing files are fetched). The Settings page can also do this on request. */
+(function () {
+  if (!("serviceWorker" in navigator) || !/^https?:$/.test(location.protocol)) return;
+  var c = navigator.connection;
+  if (!c || c.saveData || c.effectiveType !== "4g") return;
+  setTimeout(function () {
+    navigator.serviceWorker.ready.then(function (r) {
+      if (!r.active) return;
+      r.active.postMessage({ type: "warm" });
+    }).catch(function () {});
+  }, 12000);
+})();
