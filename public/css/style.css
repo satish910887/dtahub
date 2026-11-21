@@ -720,3 +720,10 @@ html:not(.lg-seen) .nav .logo .lg-sh{animation:lgSh .95s 1s ease-in-out both}
 @media(min-width:761px){.fd summary{pointer-events:none}}
 .totop{left:auto;right:22px;bottom:78px}
 @media(max-width:760px){.totop{right:18px;bottom:152px;width:40px;height:40px}}
+
+/* About page */
+.abst-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:18px 0}
+@media(min-width:640px){.abst-row{grid-template-columns:repeat(4,1fr)}}
+.abst{background:var(--card,#fff);border:1px solid var(--line,#e5e7eb);border-radius:14px;padding:14px;text-align:center}
+.abst b{display:block;font-size:1.7rem;line-height:1.1;font-family:"Space Grotesk",system-ui,sans-serif}
+.abst span{font-size:.85rem;opacity:.75}

@@ -51,6 +51,7 @@ function header() {
  <a href="/">${D.icon("bolt", 20)}${bi("Home", "होम")}</a>
  <a href="/#tools">${D.icon("search", 20)}${bi("All tools", "सभी टूल्स")}</a>
  <a href="/blog/">${D.icon("text", 20)}${bi("Guides", "गाइड्स")}</a>
+ <a href="/about.html">${D.icon("shield", 20)}${bi("About", "हमारे बारे में")}</a>
  <a href="/contact.html">${D.icon("plus", 20)}${bi("Contact and requests", "संपर्क और मांग")}</a>
  <a href="/settings.html">${D.icon("settings", 20)}${bi("Settings", "सेटिंग्स")}</a>
  <div class="sep"></div><small>${bi("Categories", "श्रेणियां")}</small><div class="mcats">${cats}</div>
@@ -70,7 +71,7 @@ function footer() {
   return `<footer class="foot"><div class="foot-in">
  <div><a class="logo" href="/">${logo(28)}<span>DTA<b>hub</b></span></a><p class="blurb">${bi("DTAhub – Your Everyday Digital Toolkit. Free tools that run privately in your browser.", "DTAhub – आपका रोज़ का डिजिटल टूलकिट। मुफ्त टूल्स जो आपके ब्राउज़र में प्राइवेट तरीके से चलते हैं।")}</p><p><button class="btn" type="button" data-install hidden>${D.icon("download", 18)}${bi("Install app", "ऐप इंस्टॉल करें")}</button></p></div>
  <div><div class="fh">${bi("Categories", "श्रेणियां")}</div><ul>${D.CATS.map((c) => li(D.catUrl(c), bi(c.en, c.hi))).join("")}</ul></div>
- <div><div class="fh">${bi("Company", "कंपनी")}</div><ul>${li("/blog/", bi("Guides", "गाइड्स"))}${li("/contact.html", bi("Contact", "संपर्क"))}${li("/contact.html#request", bi("Request a tool", "टूल मांगें"))}${li("/settings.html", bi("Settings", "सेटिंग्स"))}${li("/privacy.html", bi("Privacy Policy", "प्राइवेसी पॉलिसी"))}${li("/terms.html", bi("Terms", "शर्तें"))}</ul></div>
+ <div><div class="fh">${bi("Company", "कंपनी")}</div><ul>${li("/blog/", bi("Guides", "गाइड्स"))}${li("/about.html", bi("About", "हमारे बारे में"))}${li("/contact.html", bi("Contact", "संपर्क"))}${li("/contact.html#request", bi("Request a tool", "टूल मांगें"))}${li("/settings.html", bi("Settings", "सेटिंग्स"))}${li("/privacy.html", bi("Privacy Policy", "प्राइवेसी पॉलिसी"))}${li("/terms.html", bi("Terms", "शर्तें"))}</ul></div>
  <details class="fd" open><summary class="fh">${bi("All tools", "सभी टूल्स")} <span class="fdn">${D.TOOLS.length}</span></summary><ul class="two">${D.TOOLS.map((t) => li(D.toolUrl(t), bi(t.en, t.hi))).join("")}</ul></details>
 </div><div class="foot-bot"><span>© ${YEAR} DTAhub</span><span>${bi("Made with care in India.", "भारत में प्यार से बनाया गया।")}</span></div></footer>`;
 }
@@ -107,6 +108,7 @@ function processPage(file, m, parts = {}) {
   h = h.replace(/<body[^>]*>/, () => `<body data-page="${m.type}"${m.toolId ? ` data-tool="${m.toolId}"` : ""}>`);
   h = block(h, "NAV", header(), (s, x) => s.replace(/<body[^>]*>/, (b) => b + "\n" + x));
   h = h.replace(/<main(?![^>]*\bid=)/, '<main id="main"');
+  h = h.replace(/<b data-n="(tools|cats)">\d+<\/b>/g, (_, k) => `<b data-n="${k}">${k === "tools" ? D.TOOLS.length : D.CATS.length}</b>`);
   if (parts.crumbs) h = block(h, "CRUMBS", crumbs(parts.crumbs), (s, x) => (/<a class="back"/.test(s) ? s.replace(/<a class="back"[^>]*>[\s\S]*?<\/a>/, () => x) : s.replace(/(<main[^>]*>)/, (y) => y + "\n" + x)));
   if (parts.actions) h = block(h, "ACTIONS", parts.actions, (s, x) => s.replace(/(<p class="lead"[^>]*>[\s\S]*?<\/p>)/, (y) => y + "\n" + x));
   if (parts.extra) h = block(h, "EXTRA", parts.extra, (s, x) => s.replace(lastMain, () => x + "\n</main>"));
@@ -244,7 +246,7 @@ function buildPages() {
       { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: D.FAQ.map((f) => ({ "@type": "Question", name: f.q.en, acceptedAnswer: { "@type": "Answer", text: f.a.en } })) }
     ]
   });
-  const st = [["contact.html", "/contact.html", { en: "Contact", hi: "संपर्क" }], ["privacy.html", "/privacy.html", { en: "Privacy Policy", hi: "प्राइवेसी पॉलिसी" }], ["terms.html", "/terms.html", { en: "Terms of Use", hi: "उपयोग की शर्तें" }]];
+  const st = [["contact.html", "/contact.html", { en: "Contact", hi: "संपर्क" }], ["privacy.html", "/privacy.html", { en: "Privacy Policy", hi: "प्राइवेसी पॉलिसी" }], ["terms.html", "/terms.html", { en: "Terms of Use", hi: "उपयोग की शर्तें" }], ["about.html", "/about.html", { en: "About", hi: "हमारे बारे में" }]];
   for (const [f, p, n] of st) { const cr = [H, { ...n, url: p }]; processPage(path.join(PUB, f), { type: "page", path: p, title: `${S[p].title} | DTAhub`, desc: S[p].desc, jsonld: [crumbLD(cr)] }, { crumbs: cr }); }
   processPage(path.join(PUB, "settings.html"), { type: "page", path: "/settings.html", noindex: true, title: "Settings | DTAhub", desc: S["/settings.html"].desc }, { crumbs: [H, { en: "Settings", hi: "सेटिंग्स", url: "/settings.html" }] });
   const bcr = [H, { en: "Guides", hi: "गाइड्स", url: "/blog/" }];
@@ -302,7 +304,7 @@ for (const f of walk(PUB).filter((x) => x.endsWith(".html"))) {
 }
 }
 function buildSite() {
-  const urls = ["/", ...D.CATS.map(D.catUrl), ...D.TOOLS.map(D.toolUrl), "/blog/", ...Object.keys(BLOG).map((s) => `/blog/${s}`), "/contact", "/privacy", "/terms"];
+  const urls = ["/", ...D.CATS.map(D.catUrl), ...D.TOOLS.map(D.toolUrl), "/blog/", ...Object.keys(BLOG).map((s) => `/blog/${s}`), "/about", "/contact", "/privacy", "/terms"];
   /* lastmod = date of the last git commit that touched the page's file (today if it is not committed yet) */
   const today = new Date().toISOString().slice(0, 10), memo = {};
   const fileOf = (u) => (u === "/" ? "index.html" : u.endsWith("/") ? u.slice(1) + "index.html" : u.slice(1) + ".html");
@@ -366,14 +368,14 @@ function buildSite() {
   // Precache only the small app shell. Tool/category/blog pages are cached the first time you open them,
   // so installing the worker never floods a slow phone connection.
   const pre = files.map((f) => "/" + path.relative(PUB, f).split(path.sep).join("/"))
-    .filter((u) => !u.startsWith("/js/vendor/") && !/^\/(tools|category|blog)\//.test(u) && !/\.(txt|xml)$/.test(u) && u !== "/og.png" && !/^\/(contact|privacy|terms|settings)\.html$/.test(u))
+    .filter((u) => !u.startsWith("/js/vendor/") && !/^\/(tools|category|blog)\//.test(u) && !/\.(txt|xml)$/.test(u) && u !== "/og.png" && !/^\/(about|contact|privacy|terms|settings)\.html$/.test(u))
     .map((u) => (u === "/index.html" ? "/" : u));
   /* "Download for offline": every page and library that was left out of the install-time shell, with a short hash and size,
      so the worker can fetch them in the background, keep unchanged files across updates, and report progress. */
   const MAN = {};
   for (const f of files) {
     const u = "/" + path.relative(PUB, f).split(path.sep).join("/");
-    if (!((/^\/(tools|category|blog)\/.+\.html$/.test(u)) || /^\/(contact|privacy|terms|settings)\.html$/.test(u) || u.startsWith("/js/vendor/"))) continue;
+    if (!((/^\/(tools|category|blog)\/.+\.html$/.test(u)) || /^\/(about|contact|privacy|terms|settings)\.html$/.test(u) || u.startsWith("/js/vendor/"))) continue;
     const key = u.endsWith("/index.html") ? u.slice(0, -10) : u.endsWith(".html") ? u.slice(0, -5) : u;
     const buf = fs.readFileSync(f);
     MAN[key] = [crypto.createHash("sha1").update(buf).digest("hex").slice(0, 8), buf.length];

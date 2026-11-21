@@ -355,6 +355,7 @@
     "/blog/": { title: "Guides and How-tos", desc: "Simple step-by-step guides for PDF, image and everyday online tools from DTAhub." },
     "/settings.html": { title: "Settings", desc: "Choose language, theme and animations, and clear the favourites and data DTAhub keeps on your device." },
     "/contact.html": { title: "Contact, Feedback and Tool Requests", desc: "Send feedback, report a problem or request a new free tool for DTAhub." },
+    "/about.html": { title: "About DTAhub", desc: "DTAhub is a free, private toolkit of everyday tools in Hindi and English. Files stay on your device." },
     "/privacy.html": { title: "Privacy Policy", desc: "How DTAhub handles your data: files are processed in your browser and are never uploaded." },
     "/terms.html": { title: "Terms of Use", desc: "Terms of use for DTAhub free online tools." }
   };
