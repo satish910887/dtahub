@@ -114,6 +114,7 @@ function processPage(file, m, parts = {}) {
   if (parts.extra) h = block(h, "EXTRA", parts.extra, (s, x) => s.replace(lastMain, () => x + "\n</main>"));
   h = block(h, "FOOT", footer(), (s, x) => s.replace(lastMain, () => "</main>\n" + x));
   h = h.replace(/<script src="\/js\/tools-data\.js"><\/script>\s*/g, "").replace('<script src="/js/tool.js"></script>', () => '<script src="/js/tools-data.js"></script>\n<script src="/js/tool.js"></script>');
+  if (/src="\/js\/tool\.js"/.test(h) && !h.includes('src="/js/dta-core.js"')) h = h.replace(/<script( defer)? src="\/js\/tools-data\.js"><\/script>|<script( defer)? src="\/js\/tool\.js"><\/script>/, (m) => `<script${m.includes(" defer") ? " defer" : ""} src="/js/dta-core.js"></script>\n` + m);
   if (!fs.existsSync(file) || fs.readFileSync(file, "utf8") !== h) fs.writeFileSync(file, h);
 }
 

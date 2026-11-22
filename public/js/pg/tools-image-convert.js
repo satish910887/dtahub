@@ -15,7 +15,7 @@ function enc(im,type,q,bg){
  x.imageSmoothingQuality="high";x.drawImage(im,0,0);wm(x,c.width,c.height);
  return new Promise(function(r){c.toBlob(r,type,q)});
 }
-function load(f){return new Promise(function(r){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){URL.revokeObjectURL(u);r({f:f,im:im})};im.onerror=function(){URL.revokeObjectURL(u);r({f:f,im:null})};im.src=u})}
+function load(f){return DTAcore.files.loadImage(f)}
 async function run(){
  if(!items.length)return;var my=++busy,t=$("fmt").value;
  $("qv").textContent=$("q").value;$("qbox").hidden=t==="image/png";$("bgbox").hidden=t!=="image/jpeg";

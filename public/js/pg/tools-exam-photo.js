@@ -12,7 +12,7 @@ function toPx(v){return unit==="px"?v:v/F[unit]*dpi()}
 function fromPx(v){return unit==="px"?Math.round(v):+(v*F[unit]/dpi()).toFixed(2)}
 function showErr(m){$("err").hidden=!m;$("err").textContent=m||""}
 function toBlob(c,q){return new Promise(function(r){c.toBlob(r,"image/jpeg",q)})}
-function load(f){return new Promise(function(r){var u=URL.createObjectURL(f),i=new Image();i.onload=function(){URL.revokeObjectURL(u);r(i)};i.onerror=function(){URL.revokeObjectURL(u);r(null)};i.src=u})}
+function load(f){return DTAcore.files.loadImage(f)}
 $("f").addEventListener("change",async function(){
  var f=this.files[0];if(!f)return;
  if(f.size>50*1024*1024){showErr(L("File is too large (max 50 MB).","फाइल बहुत बड़ी है (अधिकतम 50 MB)।"));return}

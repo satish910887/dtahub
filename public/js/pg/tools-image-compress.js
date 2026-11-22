@@ -11,7 +11,7 @@ async function fit(im,type,kb,mx){
   if(b.size<=kb*1024){best=b;lo=mid}else hi=mid}
  return best||await enc(im,type,.05,mx);
 }
-function load(f){return new Promise(function(r){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){URL.revokeObjectURL(u);r({f:f,im:im})};im.onerror=function(){URL.revokeObjectURL(u);r({f:f,im:null})}; im.src=u})}
+function load(f){return DTAcore.files.loadImage(f)}
 async function run(){
  if(!items.length)return;var my=++busy,type=$("fmt").value,byT=$("mt").classList.contains("on"),mx=+$("mx").value||0,kb=+$("tk").value||100;
  $("qv").textContent=$("q").value;$("err").hidden=true;

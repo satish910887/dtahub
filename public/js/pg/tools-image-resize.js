@@ -3,7 +3,7 @@ var F={px:null,cm:2.54,mm:25.4,in:1};
 function dpi(){return Math.min(1200,Math.max(30,+$("dpi").value||300))}
 function toPx(v){return unit==="px"?v:v/F[unit]*dpi()}
 function fromPx(v){return unit==="px"?Math.round(v):+(v*F[unit]/dpi()).toFixed(2)}
-function load(f){return new Promise(function(r){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){URL.revokeObjectURL(u);r({f:f,im:im})};im.onerror=function(){URL.revokeObjectURL(u);r({f:f,im:null})};im.src=u})}
+function load(f){return DTAcore.files.loadImage(f)}
 function first(){return items.find(function(i){return i.im})}
 $("f").addEventListener("change",async function(){
  var fs=[].slice.call($("f").files);if(!fs.length)return;

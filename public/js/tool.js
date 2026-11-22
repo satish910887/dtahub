@@ -1,38 +1,19 @@
 /* DTAhub shared shell: language, theme, toasts, favourites, recents, command palette,
    drag & drop, file validation, share, install prompt, offline. Loaded on every page. */
 (function () {
-  var D = window.DTA, root = document.documentElement;
-  function get(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }
-  function put(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
-  function getList(k) { try { var a = JSON.parse(localStorage.getItem(k)); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
-  var lang = get("lang", "en") === "hi" ? "hi" : "en", theme = get("theme", "light") === "dark" ? "dark" : "light", motion = get("motion", "on") === "off" ? "off" : "on", accent = get("accent", "gold");
+  var D = window.DTA, C = window.DTAcore, root = document.documentElement;
+  /* shared helpers now live in DTAcore (dta-core.js); the globals below stay as stable aliases for every page script */
+  var get = C.store.get, put = C.store.put, getList = C.store.list;
+  var lang = C.i18n.lang(), theme = get("theme", "light") === "dark" ? "dark" : "light", motion = get("motion", "on") === "off" ? "off" : "on", accent = get("accent", "gold");
   if (accent !== "emerald" && accent !== "rose") accent = "gold";
 
-  window.L = function (en, hi) { return lang === "hi" ? hi : en; };
-  window.fmt = function (n) { return Number(n).toLocaleString("en-IN", { maximumFractionDigits: 2 }); };
-  window.$ = function (i) { return document.getElementById(i); };
+  window.L = C.i18n.L;
+  window.fmt = function (n) { var s = C.num.fmtIN(n); return s === "" ? Number(n).toLocaleString("en-IN") : s; };
+  window.$ = C.dom.$;
   window.DTAlang = function () { return lang; };
-  window.DTAstore = { get: get, put: put, list: getList };
-
-  /* ---------- toast ---------- */
-  window.toast = function (msg, type) {
-    var c = document.querySelector(".toasts");
-    if (!c) { c = document.createElement("div"); c.className = "toasts"; c.setAttribute("aria-live", "polite"); document.body.appendChild(c); }
-    var t = document.createElement("div"); t.className = "toast " + (type || "ok");
-    t.innerHTML = D.icon(type === "err" ? "close" : "shield", 18) + "<span></span>";
-    t.lastChild.textContent = msg; c.appendChild(t);
-    while (c.children.length > 3) c.removeChild(c.firstChild);
-    setTimeout(function () { t.classList.add("out"); setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 260); }, 2600);
-  };
-
-  window.copyText = function (text, btn) {
-    function done() {
-      toast(L("Copied to clipboard", "कॉपी हो गया"));
-      if (btn) { var o = btn.textContent; btn.textContent = L("Copied", "कॉपी हो गया"); btn.classList.add("copied"); setTimeout(function () { btn.textContent = o; btn.classList.remove("copied"); }, 1400); }
-    }
-    function fb() { var a = document.createElement("textarea"); a.value = text; a.style.position = "fixed"; a.style.opacity = "0"; document.body.appendChild(a); a.select(); var ok = false; try { ok = document.execCommand("copy"); } catch (e) {} document.body.removeChild(a); if (ok) done(); else toast(L("Could not copy. Select the text and copy manually.", "कॉपी नहीं हुआ। टेक्स्ट चुनकर खुद कॉपी करें।"), "err"); }
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fb); else fb();
-  };
+  window.DTAstore = C.store;
+  window.toast = C.ui.toast;
+  window.copyText = C.ui.copy;
 
   /* ---------- scroll reveal + card spotlight ---------- */
   var io = "IntersectionObserver" in window ? new IntersectionObserver(function (es) {
@@ -167,10 +148,10 @@
     document.dispatchEvent(new Event("langchange"));
   }
   window.DTAapply = apply;
-  function setLang() { lang = lang === "en" ? "hi" : "en"; put("lang", lang); apply(); }
+  function setLang() { lang = C.i18n.toggle(); apply(); }
   function setTheme() { theme = theme === "dark" ? "light" : "dark"; put("theme", theme); apply(); }
   window.DTAsettings = {
-    setLang: function (l) { lang = l === "hi" ? "hi" : "en"; put("lang", lang); apply(); },
+    setLang: function (l) { lang = C.i18n.set(l); apply(); },
     setTheme: function (t) { theme = t === "light" ? "light" : "dark"; put("theme", theme); apply(); },
     setMotion: function (m) { motion = m === "off" ? "off" : "on"; put("motion", motion); apply(); },
     setAccent: function (a) { accent = a === "emerald" || a === "rose" ? a : "gold"; put("accent", accent); apply(); },
