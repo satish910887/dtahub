@@ -727,3 +727,8 @@ html:not(.lg-seen) .nav .logo .lg-sh{animation:lgSh .95s 1s ease-in-out both}
 .abst{background:var(--card,#fff);border:1px solid var(--line,#e5e7eb);border-radius:14px;padding:14px;text-align:center}
 .abst b{display:block;font-size:1.7rem;line-height:1.1;font-family:"Space Grotesk",system-ui,sans-serif}
 .abst span{font-size:.85rem;opacity:.75}
+
+/* Homepage polish */
+.hero2 .hero-stats{display:grid;grid-template-columns:auto auto;justify-content:start;gap:10px 30px}
+@media(max-width:559px){.cgrid.c7>.ccard:last-child:nth-child(odd){grid-column:1/-1}}
+@media(min-width:900px){.fd ul{grid-template-columns:1fr 1fr;column-gap:18px}.fd li a{min-height:28px;padding:3px 0;font-size:.9rem}.foot-in{grid-template-columns:1.4fr .8fr .8fr 1.6fr}}

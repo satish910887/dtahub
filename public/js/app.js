@@ -35,6 +35,7 @@
   function renderMine() {
     var fv = DTAfav.list().map(D.tool).filter(Boolean), rc = DTArecent().map(D.tool).filter(Boolean).slice(0, 6);
     $$("recSec").hidden = !rc.length;
+    $$("favSec").hidden = !fv.length;
     $$("favGrid").className = fv.length ? "grid sm" : "";
     $$("favGrid").innerHTML = fv.length ? cards(fv) : '<div class="empty-sm"><svg class="st" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m32 8 7.500 15.200 16.800 2.400-12.200 11.900 2.900 16.700L32 46.200 17 54.200l2.900-16.700L7.700 25.600l16.800-2.400z"/><path d="M32 22v14M25 29h14" stroke="#8b6cf6"/></svg><div><b data-en="No favourites yet" data-hi="अभी कोई पसंदीदा नहीं">No favourites yet</b><span data-en="Tap the star on any tool to keep it here." data-hi="किसी भी टूल का स्टार दबाएं, वो यहां रहेगा।">Tap the star on any tool to keep it here.</span></div></div>';
     $$("recGrid").innerHTML = cards(rc);
