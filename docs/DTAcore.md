@@ -22,3 +22,10 @@ kept as aliases of these functions so every tool script keeps working. New tool 
 
 Other original engines in the repo: `kruti-engine.js` (Kruti Dev and Unicode), `assistant-engine.js` (on-device assistant),
 `zip.js` (ZIP writer), `pdfw.js` (image to PDF writer), `imgfx.js` (image effects), `build.mjs` (static site generator).
+
+## DTAqr (own QR engine)
+
+`public/js/dta-qr.js`: ISO 18004 encoder, versions 1 to 40, levels L/M/Q/H, numeric, alphanumeric and byte (UTF-8) modes, all 8 masks.
+`DTAqr.create(text, {ec, mode, mask, minVersion, maxVersion})` returns `{size, version, mask, mode, isDark(r, c), matrix(), toSvg(opts)}`.
+Tests: `node scripts/qr-test.mjs` compares 240 matrices bit for bit with an independent implementation kept in `scripts/fixtures/` (test only,
+not shipped), and real QR decoders were used to scan the output. It replaced the third-party qrcode.js.

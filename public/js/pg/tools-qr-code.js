@@ -1,4 +1,3 @@
-if(qrcode.stringToBytesFuncs&&qrcode.stringToBytesFuncs["UTF-8"])qrcode.stringToBytes=qrcode.stringToBytesFuncs["UTF-8"];
 var logo=null,cur=null;
 function v(i){return($(i).value||"").trim()}
 function esc(x){return x.replace(/([\\;,:"])/g,"\\$1")}
@@ -25,8 +24,8 @@ function draw(){
  if(!t){$("res").hidden=true;return}
  try{
   var ec=logo?"H":$("ec").value;
-  var q=qrcode(0,ec);q.addData(t);q.make();
-  var n=q.getModuleCount(),mg=Math.max(0,Math.min(10,+$("mg").value||0)),tot=n+mg*2,size=+$("sz").value,k=Math.max(1,Math.floor(size/tot)),px=k*tot;
+  var q=DTAqr.create(t,{ec:ec});
+  var n=q.size,mg=Math.max(0,Math.min(10,+$("mg").value||0)),tot=n+mg*2,size=+$("sz").value,k=Math.max(1,Math.floor(size/tot)),px=k*tot;
   var fg=$("fg").value,bg=$("bg").value,st=$("st").value,c=$("cv"),g=c.getContext("2d");
   c.width=px;c.height=px;g.fillStyle=bg;g.fillRect(0,0,px,px);g.fillStyle=fg;
   var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+tot+' '+tot+'" width="'+size+'" height="'+size+'" shape-rendering="geometricPrecision"><rect width="'+tot+'" height="'+tot+'" fill="'+bg+'"/><g fill="'+fg+'">';

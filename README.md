@@ -34,4 +34,4 @@ After you buy a domain: `SITE_URL=https://yourdomain.com node scripts/build.mjs`
 Get a free access key at https://web3forms.com and paste it into `public/js/config.js`. Until then the form is disabled and shows a GitHub-issue fallback.
 
 ## Rules this project follows
-Original code and design, free and open-source only, no paid APIs, no tracking, files never uploaded. Third-party code: `qrcode-generator` (MIT), `pdf-lib` (MIT), both stored locally in `public/js/vendor/`.
+Original code and design, free and open-source only, no paid APIs, no tracking, files never uploaded. Own engines: DTAcore, DTAqr (QR encoder, cross-checked with a real decoder), Kruti Dev converter, ZIP and image-to-PDF writers. Third-party code, all stored locally in `public/js/vendor/`: `pdf-lib` (MIT) and PDF.js (Apache-2.0). Fonts: Space Grotesk, Noto Sans Devanagari (OFL).
