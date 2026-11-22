@@ -139,6 +139,7 @@
     "csv-json": "csv json convert excel spreadsheet comma separated table data export import",
     "timestamp-converter": "unix timestamp epoch time date convert seconds milliseconds timezone ist utc",
     "jwt-decoder": "jwt json web token decode bearer header payload expiry exp",
+    "hindi-font-converter": "hindi font converter kruti dev unicode krutidev 010 legacy font convert mangal chanakya devlys yunikod",
     "url-encoder": "url encode decode percent encoding link query parameter encodeuricomponent",
     "pdf-to-image": "pdf to image jpg png webp page picture convert photo whatsapp pdf ko photo",
     "exam-photo": "exam photo signature form upload kb size passport pixels jpg application sarkari naukri 20kb 50kb photo signature resize",
