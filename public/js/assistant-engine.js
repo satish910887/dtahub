@@ -544,7 +544,7 @@
 
     /* honest fallback */
     P("I am not sure I understood. I can find a tool, explain how it works, or calculate things like EMI, GST and unit conversion. Try describing the job, for example \"reduce photo size\" or \"merge two PDFs\".", "मुझे पूरी तरह समझ नहीं आया। मैं टूल ढूंढ सकता हूं, उसे चलाना समझा सकता हूं, या EMI, GST और यूनिट जैसे हिसाब कर सकता हूं। काम बताकर देखें, जैसे \"फोटो का साइज़ कम करना है\" या \"दो PDF जोड़नी हैं\"।");
-    B.push({ t: "links", items: [{ href: "/#tools", label: t("Browse all tools", "सभी टूल देखें") }, { href: "/contact#request", label: t("Request a tool", "नया टूल मांगें") }] });
+    B.push({ t: "links", items: [{ href: "/tools/", label: t("Browse all tools", "सभी टूल देखें") }, { href: "/contact#request", label: t("Request a tool", "नया टूल मांगें") }] });
     starter(); return ret();
   }
 

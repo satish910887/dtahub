@@ -37,7 +37,7 @@ function header() {
   return `<a class="skip" href="#main">${bi("Skip to content", "मुख्य सामग्री पर जाएं")}</a>
 <header class="nav">
  <a class="logo" href="/" aria-label="DTAhub – Your Everyday Digital Toolkit">${logo(32)}<span>DTA<b>hub</b></span></a>
- <nav class="links" aria-label="Main"><a href="/#tools">${bi("Tools", "टूल्स")}</a><div class="dd"><a href="/#categories" aria-haspopup="true">${bi("Categories", "श्रेणियां")}<svg class="ddc" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></a><div class="ddp">${cats}</div></div><a href="/blog/">${bi("Guides", "गाइड्स")}</a><a href="/contact.html">${bi("Contact", "संपर्क")}</a></nav>
+ <nav class="links" aria-label="Main"><a href="/tools/">${bi("Tools", "टूल्स")}</a><div class="dd"><a href="/#categories" aria-haspopup="true">${bi("Categories", "श्रेणियां")}<svg class="ddc" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></a><div class="ddp">${cats}</div></div><a href="/blog/">${bi("Guides", "गाइड्स")}</a><a href="/contact.html">${bi("Contact", "संपर्क")}</a></nav>
  <div class="actions">
   <button class="kbd-btn" type="button" data-open-palette aria-label="Search">${D.icon("search", 18)}${bi("Search tools…", "टूल खोजें…")}<kbd>Ctrl K</kbd></button>
   <button class="icon-btn s-btn" type="button" data-open-palette aria-label="Search">${D.icon("search", 19)}</button>
@@ -49,7 +49,7 @@ function header() {
 <div class="mscrim" id="mscrim"></div>
 <nav class="mnav" id="mnav" aria-label="More">
  <a href="/">${D.icon("bolt", 20)}${bi("Home", "होम")}</a>
- <a href="/#tools">${D.icon("search", 20)}${bi("All tools", "सभी टूल्स")}</a>
+ <a href="/tools/">${D.icon("search", 20)}${bi("All tools", "सभी टूल्स")}</a>
  <a href="/blog/">${D.icon("text", 20)}${bi("Guides", "गाइड्स")}</a>
  <a href="/about.html">${D.icon("shield", 20)}${bi("About", "हमारे बारे में")}</a>
  <a href="/contact.html">${D.icon("plus", 20)}${bi("Contact and requests", "संपर्क और मांग")}</a>
@@ -59,7 +59,7 @@ function header() {
 </nav>
 <nav class="bnav" aria-label="Quick">
  <a href="/" data-b="home">${D.icon("bolt", 22)}${bi("Home", "होम")}</a>
- <a href="/#tools" data-b="tools">${D.icon("calc", 22)}${bi("Tools", "टूल्स")}</a>
+ <a href="/tools/" data-b="tools">${D.icon("calc", 22)}${bi("Tools", "टूल्स")}</a>
  <button type="button" data-open-palette>${D.icon("search", 22)}${bi("Search", "खोजें")}</button>
  <a href="/blog/" data-b="blog">${D.icon("text", 22)}${bi("Guides", "गाइड्स")}</a>
  <button type="button" id="moreBtn" aria-haspopup="true" aria-expanded="false" aria-controls="mnav">${D.icon("menu", 22)}${bi("More", "और")}</button>
@@ -70,7 +70,7 @@ function footer() {
   const li = (h, i) => `<li><a href="${h}">${i}</a></li>`;
   return `<footer class="foot"><div class="foot-in">
  <div><a class="logo" href="/">${logo(28)}<span>DTA<b>hub</b></span></a><p class="blurb">${bi("DTAhub – Your Everyday Digital Toolkit. Free tools that run privately in your browser.", "DTAhub – आपका रोज़ का डिजिटल टूलकिट। मुफ्त टूल्स जो आपके ब्राउज़र में प्राइवेट तरीके से चलते हैं।")}</p><p><button class="btn" type="button" data-install hidden>${D.icon("download", 18)}${bi("Install app", "ऐप इंस्टॉल करें")}</button></p></div>
- <div><div class="fh">${bi("Categories", "श्रेणियां")}</div><ul>${D.CATS.map((c) => li(D.catUrl(c), bi(c.en, c.hi))).join("")}</ul></div>
+ <div><div class="fh">${bi("Categories", "श्रेणियां")}</div><ul>${li("/tools/", bi("All tools", "सभी टूल्स"))}${D.CATS.map((c) => li(D.catUrl(c), bi(c.en, c.hi))).join("")}</ul></div>
  <div><div class="fh">${bi("Company", "कंपनी")}</div><ul>${li("/blog/", bi("Guides", "गाइड्स"))}${li("/about.html", bi("About", "हमारे बारे में"))}${li("/contact.html", bi("Contact", "संपर्क"))}${li("/contact.html#request", bi("Request a tool", "टूल मांगें"))}${li("/settings.html", bi("Settings", "सेटिंग्स"))}${li("/privacy.html", bi("Privacy Policy", "प्राइवेसी पॉलिसी"))}${li("/terms.html", bi("Terms", "शर्तें"))}</ul></div>
  <details class="fd" open><summary class="fh">${bi("All tools", "सभी टूल्स")} <span class="fdn">${D.TOOLS.length}</span></summary><ul class="two">${D.TOOLS.map((t) => li(D.toolUrl(t), bi(t.en, t.hi))).join("")}</ul></details>
 </div><div class="foot-bot"><span>© ${YEAR} DTAhub</span><span>${bi("Made with care in India.", "भारत में प्यार से बनाया गया।")}</span></div></footer>`;
@@ -167,11 +167,43 @@ function buildTools() {
       jsonld: [{ "@context": "https://schema.org", "@type": "WebApplication", name: t.en, url: abs(p), description: desc, applicationCategory: "UtilitiesApplication", operatingSystem: "Any (web browser)", browserRequirements: "Requires JavaScript", inLanguage: ["en", "hi"], isAccessibleForFree: true, offers: { "@type": "Offer", price: "0", priceCurrency: "INR" }, publisher: { "@type": "Organization", name: "DTAhub", url: SITE + "/" } }, crumbLD(cr)]
     }, { crumbs: cr, actions: toolActions(t), extra: toolExtra(t) });
   }
-  const known = new Set(D.TOOLS.map((t) => t.id + ".html"));
+  const known = new Set([...D.TOOLS.map((t) => t.id + ".html"), "index.html"]);
   for (const f of fs.readdirSync(path.join(PUB, "tools"))) if (!known.has(f)) console.warn("WARNING: tools/" + f + " is not in the registry (not in sitemap/directory).");
 }
 
 /* ---------- category pages ---------- */
+function toolsPage() {
+  const dir = path.join(PUB, "tools"), file = path.join(dir, "index.html"), p = "/tools/";
+  const cr = [{ en: "Home", hi: "होम", url: "/" }, { en: "All tools", hi: "सभी टूल्स", url: p }];
+  const chip = (id, en, hi, n, on) => `<button type="button" class="chip${on ? " on" : ""}" data-cat="${id}" aria-pressed="${on ? "true" : "false"}">${bi(en, hi, "span")} <small>${n}</small></button>`;
+  const html = `<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><script>try{sessionStorage.getItem("dta_lg")?document.documentElement.classList.add("lg-seen"):sessionStorage.setItem("dta_lg","1")}catch(e){}</script><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/tool.css"></head>
+<body><div class="bg-glow"></div>
+<main id="main" class="wrap">
+<div class="page-h"><!--DTA:CRUMBS--><!--/DTA:CRUMBS-->
+ <h1>${bi("All tools", "सभी टूल्स")}</h1>
+ ${bi("Every free DTAhub tool in one place. Search, pick a category, and open it. No sign-up needed.", "DTAhub के सारे मुफ्त टूल एक जगह। खोजें, श्रेणी चुनें और खोलें। साइन-अप की ज़रूरत नहीं।", "p", ' class="lead-l"')}
+ <div class="cat-bar"><div class="field">${D.icon("search", 18)}<input id="tiQ" type="search" autocomplete="off" aria-label="Search all tools" data-ph-en="Search all ${D.TOOLS.length} tools…" data-ph-hi="सभी ${D.TOOLS.length} टूल्स में खोजें…" placeholder="Search all ${D.TOOLS.length} tools…"></div>
+  <label class="sr" for="tiSort">Sort</label><select id="tiSort" class="sel"><option value="rec" data-en="Recommended" data-hi="सुझाए गए">Recommended</option><option value="az" data-en="A to Z" data-hi="A से Z">A to Z</option><option value="new" data-en="Newest" data-hi="सबसे नए">Newest</option></select></div>
+ <div class="chips" id="tiChips" role="group" aria-label="Categories">${chip("all", "All", "सभी", D.TOOLS.length, true)}${D.CATS.map((c) => chip(c.id, c.short ? c.short.en : c.en, c.short ? c.short.hi : c.hi, D.TOOLS.filter((x) => x.cat === c.id).length, false)).join("")}</div>
+ <p id="tiCount" class="count" aria-live="polite"></p>
+</div>
+<section class="sec"><div id="tiGrid" class="grid">${D.TOOLS.map((t) => D.cardHTML(t)).join("")}</div>
+ <div id="tiEmpty" class="empty" hidden><b data-en="No tool found" data-hi="कोई टूल नहीं मिला">No tool found</b><span data-en="Try a different word, or ask us to build it." data-hi="कोई और शब्द आज़माएं, या हमसे बनवाने को कहें।">Try a different word, or ask us to build it.</span><br><br><a class="btn gold" href="/contact.html#request" data-en="Request a tool" data-hi="टूल मांगें">Request a tool</a></div>
+</section>
+</main>
+<script src="/js/tools-data.js"></script>
+<script src="/js/tool.js"></script>
+<script src="/js/pg/tools-index.js"></script>
+</body></html>`;
+  fs.writeFileSync(file, html);
+  const items = D.TOOLS.map((t, i) => ({ "@type": "ListItem", position: i + 1, url: abs(D.toolUrl(t)), name: t.en }));
+  processPage(file, {
+    type: "category", path: p, title: "All Free Online Tools | DTAhub", desc: `Browse all ${D.TOOLS.length} free DTAhub tools for PDF, images, text, calculators, developers and careers. No sign-up, works in Hindi and English.`,
+    jsonld: [{ "@context": "https://schema.org", "@type": "CollectionPage", name: "All tools", url: abs(p), mainEntity: { "@type": "ItemList", itemListElement: items } }, crumbLD(cr)]
+  }, { crumbs: cr });
+}
 function catPage(c) {
   const tools = D.TOOLS.filter((t) => t.cat === c.id), feat = tools.filter((t) => t.featured);
   const rel = (c.related || []).map(D.cat).filter(Boolean);
@@ -304,7 +336,7 @@ for (const f of walk(PUB).filter((x) => x.endsWith(".html"))) {
 }
 }
 function buildSite() {
-  const urls = ["/", ...D.CATS.map(D.catUrl), ...D.TOOLS.map(D.toolUrl), "/blog/", ...Object.keys(BLOG).map((s) => `/blog/${s}`), "/about", "/contact", "/privacy", "/terms"];
+  const urls = ["/", "/tools/", ...D.CATS.map(D.catUrl), ...D.TOOLS.map(D.toolUrl), "/blog/", ...Object.keys(BLOG).map((s) => `/blog/${s}`), "/about", "/contact", "/privacy", "/terms"];
   /* lastmod = date of the last git commit that touched the page's file (today if it is not committed yet) */
   const today = new Date().toISOString().slice(0, 10), memo = {};
   const fileOf = (u) => (u === "/" ? "index.html" : u.endsWith("/") ? u.slice(1) + "index.html" : u.slice(1) + ".html");
@@ -315,7 +347,7 @@ function buildSite() {
   for (const c of D.CATS) lm[D.catUrl(c)] = newest([lm[D.catUrl(c)], ...D.TOOLS.filter((t) => t.cat === c.id).map((t) => lm[D.toolUrl(t)])]);
   lm["/blog/"] = newest(["/blog/", ...Object.keys(BLOG).map((s) => `/blog/${s}`)].map((u) => lm[u]));
   lm["/"] = newest(Object.values(lm));
-  const meta = (u) => (u === "/" ? ["daily", "1.0"] : u.startsWith("/category/") ? ["weekly", "0.8"] : u.startsWith("/tools/") ? ["monthly", D.TOOLS.find((t) => D.toolUrl(t) === u).featured ? "0.9" : "0.7"] : u.startsWith("/blog/") ? ["monthly", u === "/blog/" ? "0.6" : "0.5"] : ["yearly", "0.3"]);
+  const meta = (u) => (u === "/" ? ["daily", "1.0"] : u === "/tools/" ? ["weekly", "0.9"] : u.startsWith("/category/") ? ["weekly", "0.8"] : u.startsWith("/tools/") ? ["monthly", D.TOOLS.find((t) => D.toolUrl(t) === u).featured ? "0.9" : "0.7"] : u.startsWith("/blog/") ? ["monthly", u === "/blog/" ? "0.6" : "0.5"] : ["yearly", "0.3"]);
   fs.writeFileSync(path.join(PUB, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => { const [cf, pr] = meta(u); return `<url><loc>${abs(u)}</loc><lastmod>${lm[u]}</lastmod><changefreq>${cf}</changefreq><priority>${pr}</priority></url>`; }).join("\n")}\n</urlset>\n`);
   fs.writeFileSync(path.join(PUB, "js", "kb-blog.js"), `/* generated by scripts/build.mjs: guide list for the assistant */\n(function(r){var k={blog:${JSON.stringify(Object.entries(BLOG).map(([slug, b]) => ({ slug, en: b.en, hi: b.hi, desc: b.desc })))}};if(typeof module!=="undefined")module.exports=k;else r.DTAKB=k})(typeof window!=="undefined"?window:globalThis);\n`);
   fs.writeFileSync(path.join(PUB, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /404\n\nSitemap: ${SITE}/sitemap.xml\n`);
@@ -464,6 +496,7 @@ self.addEventListener("fetch", (e) => {
 
 buildTools();
 D.CATS.forEach(catPage);
+toolsPage();
 buildPages();
 finalizePages();
 buildSite();

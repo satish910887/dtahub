@@ -210,7 +210,7 @@
     var pth = location.pathname.replace(/\.html$/, "");
     document.querySelectorAll(".links a, .mnav a, .ddp a").forEach(function (a) {
       var h = (a.getAttribute("href") || "").replace(/\.html$/, ""); if (h.charAt(0) !== "/") return;
-      var hit = h.indexOf("#") > -1 ? ((h === "/#tools" && pth.indexOf("/tools/") === 0) || (h === "/#categories" && pth.indexOf("/category/") === 0)) : (h !== "/" && pth.indexOf(h) === 0);
+      var hit = h.indexOf("#") > -1 ? ((h === "/#categories" && pth.indexOf("/category/") === 0)) : (h !== "/" && pth.indexOf(h) === 0);
       if (hit) a.setAttribute("aria-current", "page");
     });
   })();
