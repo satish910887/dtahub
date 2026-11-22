@@ -11,6 +11,7 @@ function diff(d1,d2){ // d1<=d2
  return[y,m,d];
 }
 function fmtA(a){return a[0]+L(" yrs ", " साल ")+a[1]+L(" mo ", " माह ")+a[2]+L(" days"," दिन")}
+var last="";
 function calc(){
  var a=$("dob").value,b=$("to").value,err=$("err");
  err.hidden=true;
@@ -32,6 +33,7 @@ function calc(){
  $("o-nb").textContent=left===0?L("Today! 🎉","आज! 🎉"):left+L(" days"," दिन");
  $("o-wd").textContent=wd(d1);$("o-nw").textContent=wd(nb);$("o-z").textContent=zod(bm+1,bd);
  $("o-f").hidden=!leap;
+ last=L("Age on ","उम्र ")+b+": "+fmtA(A)+" ("+fmt(days)+L(" days"," दिन")+")  |  "+L("Next birthday in ","अगला जन्मदिन ")+(left===0?L("today","आज"):left+L(" days"," दिन"))+" ("+wd(nb)+")";
  var o=$("dob2").value;
  if(o){var e1=new Date(o+"T00:00:00"),lo=d1<=e1?d1:e1,hi=d1<=e1?e1:d1,D=diff(lo,hi),dd=Math.round((hi-lo)/864e5);
   $("o-c").textContent=(d1<=e1?L("You are older by ","आप बड़े हैं: "):L("The other person is older by ","दूसरा व्यक्ति बड़ा है: "))+fmtA(D)+" ("+fmt(dd)+L(" days)"," दिन)")}
@@ -40,3 +42,4 @@ function calc(){
 document.querySelectorAll("input").forEach(function(i){i.addEventListener("input",calc)});
 document.addEventListener("langchange",calc);
 calc();
+$("cpa").onclick=function(){if(last)copyText(last)};

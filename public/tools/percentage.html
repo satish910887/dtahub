@@ -114,6 +114,12 @@
  <div class="two"><input id="a6" type="number" inputmode="decimal" placeholder="X" aria-label="X"><input id="b6" type="number" inputmode="decimal" placeholder="Y" aria-label="Y"></div>
  <p class="line" id="r6"></p><p class="hint" id="w6"></p>
 </div>
+<div class="panel">
+ <label data-en="7. Discount: price after discount" data-hi="7. डिस्काउंट: छूट के बाद कीमत">7. Discount: price after discount</label>
+ <div class="two"><input id="a7" type="number" inputmode="decimal" min="0" placeholder="Price ₹" aria-label="Price"><input id="b7" type="number" inputmode="decimal" min="0" placeholder="Discount %" aria-label="Discount percent"></div>
+ <input id="c7" type="number" inputmode="decimal" min="0" placeholder="Extra discount % (optional)" aria-label="Extra discount percent" style="margin-top:8px">
+ <p class="line" id="r7"></p><p class="hint" id="w7"></p>
+</div>
 <div class="panel" id="hp" hidden><h2 style="font-size:1.05rem;margin:0 0 6px" data-en="Recent calculations" data-hi="हाल की गणनाएं">Recent calculations</h2><div id="hl"></div><button class="btn" type="button" id="hc" data-en="Clear history" data-hi="हिस्ट्री साफ करें">Clear history</button></div>
 <style>#hl div{padding:6px 2px;border-bottom:1px solid var(--line);font-size:.9rem}</style>
 <script type="module" src="/js/pg/tools-percentage.js"></script>

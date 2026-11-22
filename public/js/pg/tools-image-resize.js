@@ -31,7 +31,7 @@ function draw(im,W,H,type,fit,bg){
  var iw=im.naturalWidth,ih=im.naturalHeight;
  if(fit==="stretch")x.drawImage(im,0,0,W,H);
  else{var k=fit==="cover"?Math.max(W/iw,H/ih):Math.min(W/iw,H/ih),dw=iw*k,dh=ih*k;x.drawImage(im,(W-dw)/2,(H-dh)/2,dw,dh)}
- return new Promise(function(r){c.toBlob(r,type,0.92)});
+ return new Promise(function(r){c.toBlob(r,type,Math.min(1,Math.max(.5,(+$("q").value||92)/100)))});
 }
 $("go").onclick=async function(){
  var w=Math.round(toPx(+$("w").value)),h=Math.round(toPx(+$("h").value)),lock=$("lock").checked;
@@ -51,3 +51,5 @@ $("go").onclick=async function(){
 function nm(i){return baseName(i.f)+"-"+i.W+"x"+i.H+"."+extOf(i.out.type)}
 $("dl").onclick=function(){var i=items.find(function(x){return x.out});if(i)saveBlob(i.out,nm(i))};
 $("dz").onclick=async function(){var fl=[];for(var i of items){if(i.out)fl.push({name:nm(i),data:new Uint8Array(await i.out.arrayBuffer())})}saveBlob(DTAzip.build(fl),"dtahub-resized.zip")};
+function qsync(){$("qv").textContent=$("q").value;var png=$("fmt").value==="image/png";$("q").disabled=png;$("ql").style.opacity=png?".5":"1"}
+$("q").addEventListener("input",qsync);$("fmt").addEventListener("change",qsync);qsync();

@@ -87,6 +87,8 @@
   </div>
   <label for="fmt" data-en="Output format" data-hi="आउटपुट फॉर्मेट">Output format</label>
   <select id="fmt"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select>
+  <label for="q" id="ql"><span data-en="Quality (JPG and WebP)" data-hi="क्वालिटी (JPG और WebP)">Quality (JPG and WebP)</span> <b id="qv">92</b>%</label>
+  <input id="q" type="range" min="50" max="100" step="1" value="92">
   <div class="seg"><button class="btn gold" id="go" type="button" data-en="Resize" data-hi="रीसाइज़ करें">Resize</button></div>
  </div>
  <div class="err" id="err" hidden></div>

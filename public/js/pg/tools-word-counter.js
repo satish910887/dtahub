@@ -26,5 +26,10 @@ function calc(){
 }
 $("t").addEventListener("input",calc);$("lim").onchange=calc;
 $("clr").onclick=function(){$("t").value="";calc()};
+$("cln").onclick=function(){var v=$("t").value,n=v.replace(/\r\n?/g,"\n").split("\n").map(function(l){return l.replace(/[ \t\u00a0]+/g," ").trim()}).join("\n").replace(/\n{3,}/g,"\n\n").trim();
+ if(n===v){toast(L("Nothing to clean","साफ करने को कुछ नहीं"));return}$("t").value=n;calc();toast(L("Extra spaces removed ✓","फालतू स्पेस हट गए ✓"))};
+$("cpt").onclick=function(){if($("t").value)copyText($("t").value)};
+$("cps").onclick=function(){if(!$("t").value.trim())return;
+ copyText([[L("Words","शब्द"),"o-w"],[L("Characters","अक्षर"),"o-c"],[L("No spaces","बिना स्पेस"),"o-n"],[L("Sentences","वाक्य"),"o-s"],[L("Paragraphs","पैराग्राफ"),"o-p"],[L("Reading time","पढ़ने का समय"),"o-r"],[L("Speaking time","बोलने का समय"),"o-k"]].map(function(x){return x[0]+": "+$(x[1]).textContent}).join("\n"))};
 document.addEventListener("langchange",calc);
 calc();
