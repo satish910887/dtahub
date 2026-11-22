@@ -23,7 +23,6 @@
     $$("marq").innerHTML = D.TOOLS.map(function (t) { return pill(t, false); }).join("") + D.TOOLS.map(function (t) { return pill(t, true); }).join("");
   }
   function renderCats() { $$("catGrid").innerHTML = D.CATS.map(D.catCardHTML).join(""); }
-  function renderTop() { $$("topGrid").innerHTML = cards(D.TOOLS.filter(function (t) { return t.featured; }).slice(0, 6)); }
   var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   function renderNew() {
     var l = D.TOOLS.map(function (t, i) { return { t: t, i: i }; }).sort(function (a, b) { return Date.parse(b.t.added) - Date.parse(a.t.added) || b.i - a.i; }).slice(0, 6).map(function (x) { return x.t; });
@@ -99,6 +98,6 @@
   document.addEventListener("favchange", function () { renderMine(); done(); });
   document.addEventListener("langchange", function () { if (sugItems.length || si.value) suggest(); });
 
-  stats(); visuals(); renderCats(); renderTop(); renderNew(); renderMine(); renderChips(); renderGrid();
+  stats(); visuals(); renderCats(); renderNew(); renderMine(); renderChips(); renderGrid();
   if (location.hash === "#tools" || location.hash === "#categories") setTimeout(function () { var el = document.querySelector(location.hash); if (el) el.scrollIntoView(); }, 50);
 })();

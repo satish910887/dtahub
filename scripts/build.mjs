@@ -205,7 +205,7 @@ function toolsPage() {
   }, { crumbs: cr });
 }
 function catPage(c) {
-  const tools = D.TOOLS.filter((t) => t.cat === c.id), feat = tools.filter((t) => t.featured);
+  const tools = D.TOOLS.filter((t) => t.cat === c.id);
   const rel = (c.related || []).map(D.cat).filter(Boolean);
   const p = D.catUrl(c);
   const cr = [{ en: "Home", hi: "होम", url: "/" }, { en: c.en, hi: c.hi, url: p }];
@@ -223,7 +223,6 @@ function catPage(c) {
  <div class="cat-bar"><div class="field">${D.icon("search", 18)}<input id="catQ" type="search" autocomplete="off" aria-label="Search in ${e(c.en)}" data-ph-en="Search tools…" data-ph-hi="टूल खोजें…" placeholder="Search in ${e(c.en)}…"></div>
   <label class="sr" for="catSort">Sort</label><select id="catSort" class="sel"><option value="rec" data-en="Recommended" data-hi="सुझाए गए">Recommended</option><option value="az" data-en="A to Z" data-hi="A से Z">A to Z</option></select></div>
 </div>
-${feat.length ? `<section class="sec"><div class="sec-h"><div>${bi("Top picks", "खास टूल्स", "h2")}</div></div><div class="grid">${feat.map((t) => D.cardHTML(t)).join("")}</div></section>` : ""}
 <section class="sec"><div class="sec-h"><div>${bi("All " + c.en, "सभी " + c.hi, "h2")}</div></div>
  <div id="allGrid" class="grid">${tools.map((t) => D.cardHTML(t)).join("")}</div>
  <div id="catEmpty" class="empty" hidden><b data-en="No tool found" data-hi="कोई टूल नहीं मिला">No tool found</b><a class="btn gold" href="/contact.html#request" data-en="Request a tool" data-hi="टूल मांगें">Request a tool</a></div>
@@ -322,7 +321,6 @@ function finalizePages() {
       const put = (k, inner) => { h = h.replace(new RegExp("<!--DTA:" + k + "-->[\\s\\S]*?<!--/DTA:" + k + "-->"), () => "<!--DTA:" + k + "-->" + inner + "<!--/DTA:" + k + "-->"); };
       const feat = D.TOOLS.map((t, i) => ({ t, i })).sort((a, b) => (b.t.featured ? 1 : 0) - (a.t.featured ? 1 : 0) || a.i - b.i).map((x) => x.t);
       put("GRID", feat.map((t) => D.cardHTML(t, false)).join(""));
-      put("TOP", D.TOOLS.filter((t) => t.featured).slice(0, 6).map((t) => D.cardHTML(t, false)).join(""));
       put("CATS", D.CATS.map(D.catCardHTML).join(""));
       fs.writeFileSync(f, h);
     }
