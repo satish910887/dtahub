@@ -24,7 +24,7 @@ $("f").addEventListener("change",async function(){
   $("ctl").hidden=false;$("dt").textContent=f.name;
   $("info").textContent=doc.numPages+L(" page(s)"," पन्ने")+(doc.numPages>200?L(" (first 200 shown, edits still apply to the first 200)"," (पहले 200 दिख रहे हैं)"):"")+" • "+sizeOf(f.size);
   hasForm=false;$("ffi").hidden=true;
-  try{var tmp=await PDFLib.PDFDocument.load(bytes.slice(),{ignoreEncryption:true}),nf=tmp.getForm().getFields().length;if(nf){hasForm=true;$("ffi").hidden=false;$("ffi").textContent=L("This PDF has "+nf+" fillable fields. Tap the blue boxes on the pages to fill them.","इस PDF में "+nf+" भरने वाले फील्ड हैं। पन्नों पर नीले बॉक्स पर टैप करके भरें।")}}catch(e){}
+  try{var tmp=DTApdf.Doc.load(bytes.slice()),nf=tmp.getForm().getFields().length;if(nf){hasForm=true;$("ffi").hidden=false;$("ffi").textContent=L("This PDF has "+nf+" fillable fields. Tap the blue boxes on the pages to fill them.","इस PDF में "+nf+" भरने वाले फील्ड हैं। पन्नों पर नीले बॉक्स पर टैप करके भरें।")}}catch(e){}
   $("xrdw").hidden=true;commit(true);setTool(null);sync();
  }catch(e){
   $("ctl").hidden=true;$("dt").textContent=L("Tap to choose a PDF","PDF चुनने के लिए टैप करें");
@@ -277,14 +277,14 @@ $("sedit").onclick=function(){$("sigp").hidden=false};
 $("sforget").onclick=function(){try{localStorage.removeItem(SK)}catch(e){}sigData=null;delete IM.sig;$("ssaved").hidden=true;toast(L("Saved signature removed.","सेव किया हस्ताक्षर हटाया।"))};
 try{var sv=JSON.parse(localStorage.getItem(SK)||"null");if(sv&&sv.url&&/^data:image\/png;base64,/.test(sv.url)){sigData=sv;IM.sig=sv;$("ssaved").hidden=false}}catch(e){}
 /* ---------- export ---------- */
-function rgb(h){return PDFLib.rgb(parseInt(h.slice(1,3),16)/255,parseInt(h.slice(3,5),16)/255,parseInt(h.slice(5,7),16)/255)}
-function geom(pg){var cb=pg.getCropBox?pg.getCropBox():pg.getMediaBox(),r=((pg.getRotation().angle%360)+360)%360;return{x0:cb.x,y0:cb.y,W:cb.width,H:cb.height,r:r,vw:r%180?cb.height:cb.width,vh:r%180?cb.width:cb.height}}
+function rgb(h){return DTApdf.rgb(parseInt(h.slice(1,3),16)/255,parseInt(h.slice(3,5),16)/255,parseInt(h.slice(5,7),16)/255)}
+function geom(pg){var cb=pg.getCropRect(),r=((pg.getRotation().angle%360)+360)%360;return{x0:cb.x,y0:cb.y,W:cb.width,H:cb.height,r:r,vw:r%180?cb.height:cb.width,vh:r%180?cb.width:cb.height}}
 function PT(g,x,y){switch(g.r){case 90:return[g.x0+y,g.y0+x];case 180:return[g.x0+g.W-x,g.y0+y];case 270:return[g.x0+g.W-y,g.y0+g.H-x];default:return[g.x0+x,g.y0+g.H-y]}}
-function pathOf(g,pts,close){return pts.map(function(p,i){var q=PT(g,p[0],p[1]);return(i?"L":"M")+q[0].toFixed(2)+" "+(-q[1]).toFixed(2)}).join(" ")+(close?" Z":"")}
+function ptsOf(g,pts){return pts.map(function(p){return PT(g,p[0],p[1])})}
 function ellipsePts(x,y,w,h){var o=[],n=48,i;for(i=0;i<n;i++){var a=i/n*2*Math.PI;o.push([x+w/2+Math.cos(a)*w/2,y+h/2+Math.sin(a)*h/2])}return o}
-function needsRaster(fnt,lines,size){try{lines.forEach(function(l){fnt.widthOfTextAtSize(l,size)});return false}catch(e){return true}}
+function needsRaster(fnt,lines,size){return !fnt.canEncode(lines.join(""))}
 async function drawItem(pdf,pg,g,it,fonts){
- var col=rgb(it.ink||"#111111"),T=it.type,O=PDFLib;
+ var col=rgb(it.ink||"#111111"),T=it.type,O=DTApdf;
  async function fnt(){var n=stdName(it);if(!fonts[n])fonts[n]=await pdf.embedFont(O.StandardFonts[n]);return fonts[n]}
  if(TXT[T]){
   var lines=(it.text||"").split("\n");if(!lines.join("").trim())return;
@@ -292,7 +292,7 @@ async function drawItem(pdf,pg,g,it,fonts){
   if(!raster){
    lines.forEach(function(l,j){var q=PT(g,it.x+(it.box?8:0),it.y+(it.box?2:0)+.945*sz+j*1.2*sz);pg.drawText(l,{x:q[0],y:q[1],size:sz,font:font,color:col,rotate:O.degrees(g.r)})});
    if(it.box){var wd=0;lines.forEach(function(l){wd=Math.max(wd,font.widthOfTextAtSize(l,sz))});var bw=wd+16,bh=lines.length*1.2*sz+4;
-    pg.drawSvgPath(pathOf(g,[[it.x,it.y],[it.x+bw,it.y],[it.x+bw,it.y+bh],[it.x,it.y+bh]],true),{x:0,y:0,borderColor:col,borderWidth:1.6})}
+    pg.drawPolygon(ptsOf(g,[[it.x,it.y],[it.x+bw,it.y],[it.x+bw,it.y+bh],[it.x,it.y+bh]]),{borderColor:col,borderWidth:1.6})}
   }else{
    var K=4,c=document.createElement("canvas"),c2=c.getContext("2d"),ff=(it.i?"italic ":"")+(it.b?"bold ":"")+sz*K+'px "Noto Sans Devanagari",'+CSSF[it.f||"h"];c2.font=ff;
    var wd2=0;lines.forEach(function(l){wd2=Math.max(wd2,c2.measureText(l).width)});
@@ -301,7 +301,7 @@ async function drawItem(pdf,pg,g,it,fonts){
    var png=await pdf.embedPng(c.toDataURL("image/png")),q2=PT(g,it.x,it.y+c.height/K);pg.drawImage(png,{x:q2[0],y:q2[1],width:c.width/K,height:c.height/K,rotate:O.degrees(g.r)});
   }
  }else if(T==="tick"||T==="cross"){
-  var S=it.size,P=function(px,py){var q=PT(g,it.x+px*S,it.y+py*S);return{x:q[0],y:q[1]}},o={thickness:S*.13,color:col,lineCap:O.LineCapStyle.Round};
+  var S=it.size,P=function(px,py){var q=PT(g,it.x+px*S,it.y+py*S);return{x:q[0],y:q[1]}},o={thickness:S*.13,color:col,cap:"round"};
   if(T==="tick"){pg.drawLine(Object.assign({start:P(.12,.55),end:P(.38,.82)},o));pg.drawLine(Object.assign({start:P(.38,.82),end:P(.88,.18)},o))}
   else{pg.drawLine(Object.assign({start:P(.2,.2),end:P(.8,.8)},o));pg.drawLine(Object.assign({start:P(.8,.2),end:P(.2,.8)},o))}
  }else if(T==="sig"||T==="img"){
@@ -309,17 +309,17 @@ async function drawItem(pdf,pg,g,it,fonts){
   pg.drawImage(im,{x:q3[0],y:q3[1],width:it.w,height:it.h,rotate:O.degrees(g.r)});
  }else if(SHAPE[T]){
   var rect=[[it.x,it.y],[it.x+it.w,it.y],[it.x+it.w,it.y+it.h],[it.x,it.y+it.h]];
-  if(T==="hl"){var oo={x:0,y:0,color:col,opacity:.4};try{oo.blendMode=O.BlendMode.Multiply}catch(e){}pg.drawSvgPath(pathOf(g,rect,true),oo)}
-  else if(T==="white")pg.drawSvgPath(pathOf(g,rect,true),{x:0,y:0,color:O.rgb(1,1,1)});
-  else if(T==="redact")pg.drawSvgPath(pathOf(g,rect,true),{x:0,y:0,color:O.rgb(0,0,0)});
-  else if(T==="box")pg.drawSvgPath(pathOf(g,rect,true),{x:0,y:0,borderColor:col,borderWidth:it.lw});
-  else pg.drawSvgPath(pathOf(g,ellipsePts(it.x,it.y,it.w,it.h),true),{x:0,y:0,borderColor:col,borderWidth:it.lw});
+  if(T==="hl")pg.drawPolygon(ptsOf(g,rect),{color:col,opacity:.4,blendMode:"Multiply"});
+  else if(T==="white")pg.drawPolygon(ptsOf(g,rect),{color:O.rgb(1,1,1)});
+  else if(T==="redact")pg.drawPolygon(ptsOf(g,rect),{color:O.rgb(0,0,0)});
+  else if(T==="box")pg.drawPolygon(ptsOf(g,rect),{borderColor:col,borderWidth:it.lw});
+  else pg.drawPolygon(ptsOf(g,ellipsePts(it.x,it.y,it.w,it.h)),{borderColor:col,borderWidth:it.lw});
  }else if(T==="pen"){
-  pg.drawSvgPath(pathOf(g,it.pts,false),{x:0,y:0,borderColor:col,borderWidth:it.lw,borderLineCap:O.LineCapStyle.Round});
+  pg.drawPolygon(ptsOf(g,it.pts),{borderColor:col,borderWidth:it.lw,round:true,close:false});
  }else if(T==="line"||T==="arrow"){
   var a=PT(g,it.x,it.y),b=PT(g,it.x2,it.y2);
-  pg.drawLine({start:{x:a[0],y:a[1]},end:{x:b[0],y:b[1]},thickness:it.lw,color:col,lineCap:O.LineCapStyle.Round});
-  if(T==="arrow"){var an=Math.atan2(it.y2-it.y,it.x2-it.x),hl=Math.max(8,it.lw*5),tri=[[it.x2,it.y2],[it.x2-hl*Math.cos(an-.45),it.y2-hl*Math.sin(an-.45)],[it.x2-hl*Math.cos(an+.45),it.y2-hl*Math.sin(an+.45)]];pg.drawSvgPath(pathOf(g,tri,true),{x:0,y:0,color:col})}
+  pg.drawLine({start:{x:a[0],y:a[1]},end:{x:b[0],y:b[1]},thickness:it.lw,color:col,cap:"round"});
+  if(T==="arrow"){var an=Math.atan2(it.y2-it.y,it.x2-it.x),hl=Math.max(8,it.lw*5),tri=[[it.x2,it.y2],[it.x2-hl*Math.cos(an-.45),it.y2-hl*Math.sin(an-.45)],[it.x2-hl*Math.cos(an+.45),it.y2-hl*Math.sin(an+.45)]];pg.drawPolygon(ptsOf(g,tri),{color:col})}
  }
 }
 $("go").onclick=async function(){
@@ -328,7 +328,7 @@ $("go").onclick=async function(){
  if(!items.length&&!nFill&&!wm&&!pn&&!ti&&!au){msg("err",L("Add something to the PDF first.","पहले PDF में कुछ जोड़ें।"));return}
  b.disabled=true;b.textContent=L("Working...","काम हो रहा है...");
  try{
-  var O=PDFLib,pdf=await O.PDFDocument.load(bytes.slice(),{ignoreEncryption:true}),fonts={},skipped=0,flatten=$("xfl").checked;
+  var O=DTApdf,pdf=DTApdf.Doc.load(bytes.slice()),fonts={},skipped=0,flatten=$("xfl").checked;
   var redactPages={};items.forEach(function(it){if(it.type==="redact")redactPages[it.page]=1});
   var raster=$("xrd").checked&&Object.keys(redactPages).length>0;
   if(nFill||(raster&&hasForm)){
@@ -336,10 +336,11 @@ $("go").onclick=async function(){
     var form=pdf.getForm();
     Object.keys(FD).forEach(function(nm){
      try{var f=form.getField(nm),v=FV[nm];
-      if(f instanceof O.PDFTextField)f.setText(String(v));
-      else if(f instanceof O.PDFCheckBox){v?f.check():f.uncheck()}
-      else if(f instanceof O.PDFRadioGroup){if(v)f.select(v)}
-      else if(f instanceof O.PDFDropdown||f instanceof O.PDFOptionList){f.select(v)}
+      var kd=f.kind();
+      if(kd==="text")f.setText(String(v));
+      else if(kd==="checkbox"){v?f.check():f.uncheck()}
+      else if(kd==="radio"){if(v)f.select(v)}
+      else if(kd==="dropdown"||kd==="list"){f.select(v)}
       else skipped++;
      }catch(e){skipped++}
     });
@@ -367,7 +368,7 @@ $("go").onclick=async function(){
   var out=await pdf.save();
   if(raster){
    b.textContent=L("Removing hidden text...","छुपा टेक्स्ट हटा रहे हैं...");
-   var P=await lib(),rd=await P.getDocument({isEvalSupported:false,data:out.slice()}).promise,src=await O.PDFDocument.load(out),fin=await O.PDFDocument.create();
+   var P=await lib(),rd=await P.getDocument({isEvalSupported:false,data:out.slice()}).promise,src=DTApdf.Doc.load(out),fin=DTApdf.Doc.create();
    for(var i2=0;i2<src.getPageCount();i2++){
     if(redactPages[i2]){
      var rp=await rd.getPage(i2+1),v1=rp.getViewport({scale:1}),sc=Math.min(2.4,3200/Math.max(v1.width,v1.height)),v2=rp.getViewport({scale:sc}),cv=document.createElement("canvas");
@@ -382,7 +383,7 @@ $("go").onclick=async function(){
   }
   saveBlob(new Blob([out],{type:"application/pdf"}),baseName(file)+"-edited.pdf");
   msg("ok",L("Done ✓ ","हो गया ✓ ")+items.length+L(" item(s) and "," चीज़ें और ")+nFill+L(" form field(s)"," फॉर्म फील्ड")+(skipped?L(" ("+skipped+" field(s) could not be filled, for example Hindi text in a form field)"," ("+skipped+" फील्ड नहीं भरे जा सके, जैसे फॉर्म फील्ड में हिंदी)"):"")+" • "+sizeOf(out.length));
- }catch(e){console.error(e);msg("err",L("Could not save the PDF.","PDF सेव नहीं हो पाई।"))}
+ }catch(e){console.error(e);msg("err",e&&e.code==="encrypted"?L("This PDF is password protected, so it cannot be edited here.","यह PDF पासवर्ड वाली है, यहाँ एडिट नहीं हो सकती।"):L("Could not save the PDF.","PDF सेव नहीं हो पाई।"))}
  b.disabled=false;b.textContent=old;
 };
 setTool(null);

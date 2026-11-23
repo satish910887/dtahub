@@ -718,9 +718,214 @@
   var _syncTree = Doc.prototype.syncTree;
   Doc.prototype.syncTree = function () { this._pages.forEach(function (p) { p._flush(); }); _syncTree.call(this); };
 
+  /* ================= phase 3: data URLs, paths, blend modes, AcroForm fill + flatten ================= */
+  function dataUrlBytes(s) {
+    var m = /^data:[^,]*?(;base64)?,(.*)$/s.exec(s); if (!m) throw PdfError("image", "bad data URL");
+    if (m[1]) { var bin = (root.atob || function (x) { return Buffer.from(x, "base64").toString("binary"); })(m[2]), o = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) o[i] = bin.charCodeAt(i); return o; }
+    return te(decodeURIComponent(m[2]));
+  }
+  ["embedJpg", "embedPng"].forEach(function (k) { var orig = Doc.prototype[k]; Doc.prototype[k] = function (b) { return orig.call(this, typeof b === "string" ? dataUrlBytes(b) : b); }; });
+  var StandardFonts = { Helvetica: "Helvetica", HelveticaBold: "Helvetica-Bold", HelveticaOblique: "Helvetica-Oblique", HelveticaBoldOblique: "Helvetica-BoldOblique",
+    TimesRoman: "Times-Roman", TimesRomanBold: "Times-Bold", TimesRomanItalic: "Times-Italic", TimesRomanBoldItalic: "Times-BoldItalic",
+    Courier: "Courier", CourierBold: "Courier-Bold", CourierOblique: "Courier-Oblique", CourierBoldOblique: "Courier-BoldOblique" };
+  function canEncode(s) { s = String(s); for (var i = 0; i < s.length; i++) { var c = s.charCodeAt(i); if (!((c >= 32 && c < 256 && !(c >= 127 && c < 160)) || CP1252[c] || c === 9)) return false; } return true; }
+  var _embedFont = Doc.prototype.embedFont;
+  Doc.prototype.embedFont = function (n) { var f = _embedFont.call(this, StandardFonts[n] || n); f.canEncode = canEncode; return f; };
+
+  Page.prototype.getCropRect = function () {
+    var cb = this.attr("CropBox"), v = Array.isArray(cb) ? cb.map(function (x) { return this.doc.get(x); }, this) : null;
+    if (!v || v.length < 4 || v.some(function (x) { return typeof x !== "number"; })) v = this.getMediaBox();
+    var x0 = Math.min(v[0], v[2]), y0 = Math.min(v[1], v[3]); return { x: x0, y: y0, width: Math.abs(v[2] - v[0]), height: Math.abs(v[3] - v[1]) };
+  };
+  Page.prototype.getMediaRect = function () { var m = this.getMediaBox(); return { x: m[0], y: m[1], width: m[2] - m[0], height: m[3] - m[1] }; };
+  var _gs0 = Page.prototype._gs;
+  Page.prototype._gs = function (op, blend) {
+    if (!blend) return _gs0.call(this, op);
+    var o = op === undefined ? 1 : Math.max(0, Math.min(1, op)), g = this.doc.add(mkDict({ Type: N("ExtGState"), ca: o, CA: o, BM: N(blend) })); return "/" + this._name("ExtGState", "DTAG", g) + " gs ";
+  };
+  /* points are in PDF user space. opts: color (fill), borderColor, borderWidth, close, opacity, blendMode ("Multiply"), round (round caps and joins) */
+  Page.prototype.drawPolygon = function (pts, o) {
+    o = o || {}; if (!pts.length) return; var c = o.color, b = o.borderColor, s = "q " + this._gs(o.opacity, o.blendMode);
+    if (c) s += f(c.r) + " " + f(c.g) + " " + f(c.b) + " rg "; if (b) s += f(b.r) + " " + f(b.g) + " " + f(b.b) + " RG " + f(o.borderWidth || 1) + " w ";
+    if (o.round) s += "1 J 1 j ";
+    pts.forEach(function (p, i) { s += f(p[0]) + " " + f(p[1]) + (i ? " l " : " m "); });
+    var close = o.close !== false && pts.length > 2;
+    if (close) s += "h "; s += (c && b && close ? "B" : c && close ? "f" : "S") + " Q"; this._push(s);
+  };
+
+  /* ---------- AcroForm ---------- */
+  function Field(doc, ref, d, name, type, ff, widgets) { this.doc = doc; this.ref = ref; this.d = d; this.name = name; this.ft = type; this.ff = ff; this.widgetRefs = widgets; }
+  Field.prototype.attr = function (k) { var d = this.d, n = 0; while (d && n++ < 32) { if (d.has(k)) return this.doc.get(d.get(k)); d = dictOf(this.doc.get(d.get("Parent"))); } return undefined; };
+  Field.prototype.getName = function () { return this.name; };
+  Field.prototype.kind = function () {
+    if (this.ft === "Tx") return "text";
+    if (this.ft === "Sig") return "signature";
+    if (this.ft === "Btn") return this.ff & 65536 ? "button" : this.ff & 32768 ? "radio" : "checkbox";
+    if (this.ft === "Ch") return this.ff & 131072 ? "dropdown" : "list";
+    return "unknown";
+  };
+  Field.prototype.widgets = function () { return this.widgetRefs.map(function (r) { return { ref: r, d: dictOf(this.doc.get(r)) }; }, this).filter(function (w) { return w.d; }); };
+  Field.prototype.options = function () {
+    var o = this.attr("Opt"), doc = this.doc; if (!Array.isArray(o)) return [];
+    return o.map(function (x) { x = doc.get(x); if (Array.isArray(x)) return { value: strText(doc.get(x[0])), label: strText(doc.get(x[1])) }; var t = x instanceof Str ? strText(x) : ""; return { value: t, label: t }; });
+  };
+  function onState(doc, w) {
+    var ap = dictOf(doc.get(w.d.get("AP"))), n = ap && doc.get(ap.get("N")); if (n instanceof Dict) { var ks = n.keys().filter(function (k) { return k !== "Off"; }); if (ks.length) return ks[0]; }
+    return null;
+  }
+  function parseDA(doc, field) {
+    var da = field.attr("DA"); if (!(da instanceof Str)) { var af = dictOf(doc.get(dictOf(doc.get(doc.root())).get("AcroForm"))); da = af && doc.get(af.get("DA")); }
+    var s = da instanceof Str ? strText(da) : "", t = s.split(/\s+/), r = { font: "Helv", size: 0, color: rgb(0, 0, 0) };
+    for (var i = 0; i < t.length; i++) {
+      if (t[i] === "Tf" && i >= 2) { r.font = t[i - 2].replace(/^\//, ""); r.size = parseFloat(t[i - 1]) || 0; }
+      else if (t[i] === "g" && i >= 1) { var g = parseFloat(t[i - 1]) || 0; r.color = rgb(g, g, g); }
+      else if (t[i] === "rg" && i >= 3) r.color = rgb(+t[i - 3], +t[i - 2], +t[i - 1]);
+      else if (t[i] === "k" && i >= 4) { var c = +t[i - 4], m = +t[i - 3], y = +t[i - 2], k = +t[i - 1]; r.color = rgb((1 - c) * (1 - k), (1 - m) * (1 - k), (1 - y) * (1 - k)); }
+    }
+    return r;
+  }
+  function baseFontOf(doc, field, fname) {
+    var af = dictOf(doc.get(dictOf(doc.get(doc.root())).get("AcroForm"))), dr = dictOf(doc.get(field.attr("DR"))) || (af && dictOf(doc.get(af.get("DR")))), fd = dr && dictOf(doc.get(dr.get("Font"))), fo = fd && dictOf(doc.get(fd.get(fname))), bf = fo && doc.get(fo.get("BaseFont")), n = bf instanceof Name ? bf.n : "";
+    n = n.replace(/^[A-Z]{6}\+/, ""); if (FONTS[n]) return n;
+    var low = n.toLowerCase(), bold = /bold/.test(low), it = /italic|oblique/.test(low);
+    if (/times|serif/.test(low) && !/sans/.test(low)) return bold && it ? "Times-BoldItalic" : bold ? "Times-Bold" : it ? "Times-Italic" : "Times-Roman";
+    if (/courier|mono/.test(low)) return "Courier" + (bold || it ? "-" + (bold ? "Bold" : "") + (it ? "Oblique" : "") : "");
+    return bold ? "Helvetica-Bold" : "Helvetica";
+  }
+  function wrapLines(text, font, size, maxW) {
+    var out = []; String(text).split(/\r\n|\r|\n/).forEach(function (para) {
+      var words = para.split(" "), cur = "";
+      words.forEach(function (w) { var t = cur ? cur + " " + w : w; if (cur && font.widthOfTextAtSize(t, size) > maxW) { out.push(cur); cur = w; } else cur = t; }); out.push(cur);
+    }); return out;
+  }
+  function pdfHex(text) { var b = winAnsi(text), h = ""; for (var i = 0; i < b.length; i++) h += (b[i] < 16 ? "0" : "") + b[i].toString(16); return "<" + h + ">"; }
+  function rectOf(doc, d) { var r = doc.get(d.get("Rect")); r = Array.isArray(r) ? r.map(function (x) { return doc.get(x); }) : [0, 0, 0, 0]; return [Math.min(r[0], r[2]), Math.min(r[1], r[3]), Math.max(r[0], r[2]), Math.max(r[1], r[3])]; }
+  function mkAP(doc, w, h, rot, content, res) {
+    var d = mkDict({ Type: N("XObject"), Subtype: N("Form"), BBox: [0, 0, rot % 180 ? h : w, rot % 180 ? w : h], Resources: res || new Dict() });
+    if (rot === 90) d.set("Matrix", [0, 1, -1, 0, w, 0]); else if (rot === 180) d.set("Matrix", [-1, 0, 0, -1, w, h]); else if (rot === 270) d.set("Matrix", [0, -1, 1, 0, 0, h]);
+    return new Stream(d, te(content));
+  }
+  function mkColor(a) { return Array.isArray(a) && a.length === 1 ? f(a[0]) + " " + f(a[0]) + " " + f(a[0]) : Array.isArray(a) && a.length === 3 ? a.map(f).join(" ") : null; }
+  function mkBox(doc, w, d, W, H) {
+    var mk = dictOf(doc.get(d.get("MK"))), s = "", bg = mk && mkColor(doc.get(mk.get("BG")) && doc.get(mk.get("BG")).map && doc.get(mk.get("BG")).map(function (x) { return doc.get(x); })), bc = mk && mkColor(doc.get(mk.get("BC")) && doc.get(mk.get("BC")).map && doc.get(mk.get("BC")).map(function (x) { return doc.get(x); }));
+    var bs = dictOf(doc.get(d.get("BS"))), bw = bs && typeof doc.get(bs.get("W")) === "number" ? doc.get(bs.get("W")) : 1;
+    if (bg) s += "q " + bg + " rg 0 0 " + f(W) + " " + f(H) + " re f Q\n";
+    if (bc && bw > 0) s += "q " + bc + " RG " + f(bw) + " w " + f(bw / 2) + " " + f(bw / 2) + " " + f(W - bw) + " " + f(H - bw) + " re S Q\n";
+    return { s: s, bw: bg || bc ? bw : 0 };
+  }
+  Field.prototype.refresh = function () {
+    var doc = this.doc, kind = this.kind(), v = this.attr("V"), text = "";
+    if (kind === "text") text = v instanceof Str ? strText(v) : "";
+    else if (kind === "dropdown" || kind === "list") {
+      var val = Array.isArray(v) ? v[0] : v; val = val instanceof Str ? strText(doc.get(val)) : ""; var op = this.options().filter(function (o) { return o.value === val; })[0]; text = op ? op.label : val;
+    } else return;
+    var da = parseDA(doc, this), fname = baseFontOf(doc, this, da.font), font = doc.embedFont(fname), multi = kind === "text" && (this.ff & 4096), comb = kind === "text" && (this.ff & 16777216) && this.attr("MaxLen"), q = this.attr("Q") || 0;
+    var self = this;
+    this.widgets().forEach(function (w) {
+      var r = rectOf(doc, w.d), W = r[2] - r[0], H = r[3] - r[1], mk = dictOf(doc.get(w.d.get("MK"))), rot = mk && typeof doc.get(mk.get("R")) === "number" ? ((doc.get(mk.get("R")) % 360) + 360) % 360 : 0;
+      var cw = rot % 180 ? H : W, ch = rot % 180 ? W : H, box = mkBox(doc, w, w.d, cw, ch), bw = box.bw + 1, s = box.s + "/Tx BMC q " + bw + " " + bw + " " + f(cw - 2 * bw) + " " + f(ch - 2 * bw) + " re W n\nBT " + f(da.color.r) + " " + f(da.color.g) + " " + f(da.color.b) + " rg\n";
+      var size = da.size, pad = bw + 1;
+      if (text) {
+        if (multi) {
+          size = size || 12; var lines = wrapLines(text, font, size, cw - 2 * pad), lh = size * 1.15, y0 = ch - pad - size * 0.9;
+          s += "/Helv " + f(size) + " Tf\n"; var px = 0, py = 0;
+          lines.forEach(function (ln, i) { var tw = font.widthOfTextAtSize(ln, size), x = q === 1 ? (cw - tw) / 2 : q === 2 ? cw - pad - tw : pad, y = y0 - i * lh; s += f(x - px) + " " + f(y - py) + " Td " + pdfHex(ln) + " Tj\n"; px = x; py = y; });
+        } else if (comb) {
+          size = size || Math.min(12, (ch - 2 * bw) * 0.75); var cell = cw / comb, px2 = 0, py2 = 0; s += "/Helv " + f(size) + " Tf\n";
+          Array.from(text).slice(0, comb).forEach(function (chr, i) { var x = cell * i + (cell - font.widthOfTextAtSize(chr, size)) / 2, y = ch / 2 - size * 0.35; s += f(x - px2) + " " + f(y - py2) + " Td " + pdfHex(chr) + " Tj\n"; px2 = x; py2 = y; });
+        } else {
+          size = size || Math.min(12, (ch - 2 * bw) * 0.75); var tw0 = font.widthOfTextAtSize(text, size); if (tw0 > cw - 2 * pad) size = Math.max(4, size * (cw - 2 * pad) / tw0);
+          var tw1 = font.widthOfTextAtSize(text, size), x1 = q === 1 ? (cw - tw1) / 2 : q === 2 ? cw - pad - tw1 : pad, y1 = ch / 2 - size * 0.35;
+          s += "/Helv " + f(size) + " Tf\n" + f(x1) + " " + f(y1) + " Td " + pdfHex(text) + " Tj\n";
+        }
+      }
+      s += "ET Q EMC";
+      var res = mkDict({ Font: mkDict({ Helv: font.ref }) }), st = mkAP(doc, W, H, rot, s, res);
+      w.d.set("AP", mkDict({ N: doc.add(st) }));
+    });
+  };
+  Field.prototype.setText = function (t) {
+    if (this.kind() !== "text") throw PdfError("form", "not a text field"); t = String(t);
+    if (!canEncode(t.replace(/[\r\n]/g, " "))) throw PdfError("encoding", "text has characters this font cannot show");
+    var ml = this.attr("MaxLen"); if (typeof ml === "number" && t.length > ml) t = t.slice(0, ml);
+    this.d.set("V", textString(t)); this.d.del("RV"); this.refresh();
+  };
+  Field.prototype.select = function (v) {
+    var kind = this.kind(), doc = this.doc;
+    if (kind === "radio") {
+      var ws = this.widgets(), hit = ws.some(function (w) { return onState(doc, w) === v; });
+      if (!hit) throw PdfError("form", "no such radio option " + v);
+      this.d.set("V", N(v)); ws.forEach(function (w) { w.d.set("AS", N(onState(doc, w) === v ? v : "Off")); });
+    } else if (kind === "dropdown" || kind === "list") {
+      v = String(v); if (!canEncode(v)) throw PdfError("encoding", "unsupported characters"); this.d.set("V", textString(v)); this.refresh();
+    } else throw PdfError("form", "cannot select on this field");
+  };
+  Field.prototype.check = function (on) {
+    if (this.kind() !== "checkbox") throw PdfError("form", "not a checkbox"); on = on !== false; var doc = this.doc, ws = this.widgets(), st = "Off";
+    if (on) { st = null; ws.forEach(function (w) { st = st || onState(doc, w); }); st = st || "Yes"; }
+    ws.forEach(function (w) {
+      var r = rectOf(doc, w.d), W = r[2] - r[0], H = r[3] - r[1], ap = dictOf(doc.get(w.d.get("AP"))), nn = ap && doc.get(ap.get("N"));
+      if (on && !(nn instanceof Dict && nn.has(st))) { /* no appearance supplied: draw a vector check mark */
+        var box = mkBox(doc, w, w.d, W, H), mark = box.s + "q 0 g " + f(Math.max(1, Math.min(W, H) * .13)) + " w 1 J 1 j " + f(W * .2) + " " + f(H * .55) + " m " + f(W * .42) + " " + f(H * .25) + " l " + f(W * .8) + " " + f(H * .8) + " l S Q",
+          nd = new Dict(); nd.set(st, doc.add(mkAP(doc, W, H, 0, mark))); nd.set("Off", doc.add(mkAP(doc, W, H, 0, box.s))); w.d.set("AP", mkDict({ N: nd }));
+      }
+      w.d.set("AS", N(on ? st : "Off"));
+    });
+    this.d.set("V", N(on ? st : "Off"));
+  };
+  Field.prototype.uncheck = function () { this.check(false); };
+
+  function Form(doc) { this.doc = doc; var rd = dictOf(doc.get(doc.root())); this.af = rd && dictOf(doc.get(rd.get("AcroForm"))); this._f = null; }
+  Form.prototype.getFields = function () {
+    if (this._f) return this._f; var doc = this.doc, out = [], seen = new Set(); this._f = out; if (!this.af) return out;
+    function walk(ref, pname) {
+      var d = dictOf(doc.get(ref)); if (!d) return; if (ref instanceof Ref) { if (seen.has(ref.num)) return; seen.add(ref.num); }
+      var t = doc.get(d.get("T")), name = t instanceof Str ? (pname ? pname + "." : "") + strText(t) : pname, kids = doc.get(d.get("Kids")), sub = Array.isArray(kids) && kids.some(function (k) { var kd = dictOf(doc.get(k)); return kd && kd.has("T"); });
+      if (sub) { kids.forEach(function (k) { walk(k, name); }); return; }
+      var fld = new Field(doc, ref, d, name, null, 0, Array.isArray(kids) ? kids : [ref]); var ft = fld.attr("FT"), ff = fld.attr("Ff");
+      fld.ft = ft instanceof Name ? ft.n : null; fld.ff = typeof ff === "number" ? ff : 0; if (fld.ft) out.push(fld);
+    }
+    var fl = doc.get(this.af.get("Fields")); if (Array.isArray(fl)) fl.forEach(function (r) { walk(r, ""); }); return out;
+  };
+  Form.prototype.getField = function (name) { var r = this.getFields().filter(function (x) { return x.name === name; })[0]; if (!r) throw PdfError("form", "no field named " + name); return r; };
+  Form.prototype.updateFieldAppearances = function () {
+    var need = this.af && this.doc.get(this.af.get("NeedAppearances")) === true;
+    this.getFields().forEach(function (fl) {
+      var k = fl.kind(); if (k !== "text" && k !== "dropdown" && k !== "list") return;
+      var doc = fl.doc, missing = fl.widgets().some(function (w) { var ap = dictOf(doc.get(w.d.get("AP"))); return !ap || !doc.get(ap.get("N")); });
+      if (missing || need) { try { fl.refresh(); } catch (e) { /* leave it */ } }
+    });
+    if (this.af && need) this.af.set("NeedAppearances", false);
+  };
+  /* bake every field's appearance into the page and remove the interactive fields */
+  Form.prototype.flatten = function () {
+    var doc = this.doc, fields = this.getFields(), self = this; if (!this.af) return; this.updateFieldAppearances();
+    var wset = new Map(); fields.forEach(function (fl) { fl.widgets().forEach(function (w) { if (w.ref instanceof Ref) wset.set(w.ref.num, w); }); });
+    doc.loadPages().forEach(function (pg) {
+      var d = pg.dict(), an = doc.get(d.get("Annots")); if (!Array.isArray(an)) return; var keep = [];
+      an.forEach(function (a) {
+        var w = a instanceof Ref && wset.get(a.num); if (!w) { keep.push(a); return; }
+        var fl = typeof doc.get(w.d.get("F")) === "number" ? doc.get(w.d.get("F")) : 0, ap = dictOf(doc.get(w.d.get("AP"))), n = ap && doc.get(ap.get("N")), ref = null;
+        if (n instanceof Dict) { var as = doc.get(w.d.get("AS")); if (as instanceof Name && n.has(as.n)) ref = n.get(as.n); } else if (ap) ref = ap.get("N");
+        var st = ref && doc.get(ref);
+        if (!(fl & 2) && !(fl & 32) && st instanceof Stream) {
+          var bb = doc.get(st.dict.get("BBox")), mx = doc.get(st.dict.get("Matrix")); bb = Array.isArray(bb) ? bb.map(function (x) { return doc.get(x); }) : [0, 0, 1, 1]; mx = Array.isArray(mx) ? mx.map(function (x) { return doc.get(x); }) : [1, 0, 0, 1, 0, 0];
+          var cs = [[bb[0], bb[1]], [bb[2], bb[1]], [bb[2], bb[3]], [bb[0], bb[3]]].map(function (p) { return [mx[0] * p[0] + mx[2] * p[1] + mx[4], mx[1] * p[0] + mx[3] * p[1] + mx[5]]; }),
+            xs = cs.map(function (p) { return p[0]; }), ys = cs.map(function (p) { return p[1]; }), tx0 = Math.min.apply(null, xs), tx1 = Math.max.apply(null, xs), ty0 = Math.min.apply(null, ys), ty1 = Math.max.apply(null, ys), r = rectOf(doc, w.d),
+            sx = tx1 - tx0 ? (r[2] - r[0]) / (tx1 - tx0) : 1, sy = ty1 - ty0 ? (r[3] - r[1]) / (ty1 - ty0) : 1, nm = pg._name("XObject", "DTAX", ref);
+          pg._push("q " + f(sx) + " 0 0 " + f(sy) + " " + f(r[0] - tx0 * sx) + " " + f(r[1] - ty0 * sy) + " cm /" + nm + " Do Q");
+        }
+      });
+      d.set("Annots", keep);
+    });
+    this.af.set("Fields", []); this.af.del("NeedAppearances");
+  };
+  Doc.prototype.getForm = function () { return new Form(this); };
+  Doc.prototype.getCatalog = function () { return dictOf(this.get(this.root())); };
+
   return {
     Doc: Doc, Page: Page, Name: Name, Ref: Ref, Str: Str, Dict: Dict, Stream: Stream, PdfError: PdfError,
-    rgb: rgb, degrees: degrees,
+    rgb: rgb, degrees: degrees, StandardFonts: StandardFonts, Form: Form,
     util: { inflate: zlibInflate, deflate: zlibDeflate, mkDict: mkDict, N: N, dictOf: dictOf, serialize: serialize, textString: textString, Parser: Parser, te: te, strText: strText }
   };
 });

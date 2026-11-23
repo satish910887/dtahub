@@ -66,4 +66,36 @@ print(px(40,40)); print(px(90,40)); print(px(150,35)); print(px(210,130)); print
   const base = P.Doc.load(rd("a.pdf")); const bp = base.getPage(0); bp.drawText("STAMP", { x: 100, y: 500, size: 30 });
   const b3 = await base.save(); check(b3, 3, "Doc a page 1"); fs.writeFileSync(tmp, b3); ok(execFileSync("pdftotext", [tmp, "-"]).toString().includes("STAMP"), "stamp text");
 }
+
+// ---- forms ----
+{
+  const d = P.Doc.load(rd("f.pdf")), form = d.getForm(), fl = form.getFields();
+  ok(fl.length === 5, "field count " + fl.length);
+  ok(form.getField("g").kind() === "radio" && form.getField("city").kind() === "dropdown" && form.getField("agree").kind() === "checkbox", "kinds");
+  form.getField("name").setText("Satish Kumar");
+  form.getField("note").setText("line one of a long note that must wrap across lines\nsecond para");
+  form.getField("agree").check(); form.getField("g").select("B"); form.getField("city").select("Goa");
+  let threw = false; try { form.getField("name").setText("हिंदी"); } catch (e) { threw = e.code === "encoding"; } ok(threw, "hindi refused");
+  const filled = await d.save(); check(filled, 1, "Satish Kumar");
+  const py = execFileSync("python3", ["-c", `
+from pypdf import PdfReader
+r=PdfReader("${tmp}"); 
+import sys
+fs=r.get_fields(); print(fs["name"].get("/V"),"|",fs["agree"].get("/V"),"|",fs["g"].get("/V"),"|",fs["city"].get("/V"))`]).toString();
+  fs.writeFileSync(tmp, filled);
+  const py2 = execFileSync("python3", ["-c", `
+from pypdf import PdfReader
+r=PdfReader("${tmp}"); fs=r.get_fields(); print(fs["name"].get("/V"),"|",fs["agree"].get("/V"),"|",fs["g"].get("/V"),"|",fs["city"].get("/V"))`]).toString().trim();
+  ok(py2 === "Satish Kumar | /Yes | /B | Goa", "pypdf values: " + py2);
+  // flatten
+  const d2 = P.Doc.load(filled), f2 = d2.getForm(); f2.flatten();
+  const flat = await d2.save(); check(flat, 1, "Satish Kumar");
+  fs.writeFileSync(tmp, flat);
+  const py3 = execFileSync("python3", ["-c", `
+from pypdf import PdfReader
+r=PdfReader("${tmp}"); print(len(r.get_fields() or {}), len(r.pages[0].get("/Annots") or []))`]).toString().trim();
+  ok(py3 === "0 0", "flatten removed fields " + py3);
+  const txt = execFileSync("pdftotext", [tmp, "-"]).toString(); ok(/wrap/.test(txt) && /Goa/.test(txt) && /second para/.test(txt), "flatten text " + txt.replace(/\n/g, "|"));
+  execFileSync("pdftoppm", ["-r", "72", "-png", "-singlefile", tmp, dir + "/_fl"]);
+}
 console.log(`${pass} passed, ${fail} failed`); process.exit(fail ? 1 : 0);
