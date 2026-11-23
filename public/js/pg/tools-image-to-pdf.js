@@ -51,7 +51,7 @@ $("go").onclick=async function(){
  if(!files.length){err.hidden=false;err.textContent=L("Add at least 1 photo.","कम से कम 1 फोटो जोड़ें।");return}
  var btn=$("go"),old=btn.textContent;btn.disabled=true;btn.textContent=L("Working...","काम हो रहा है...");
  try{
-  var doc=await PDFLib.PDFDocument.create(),fit=$("ps").value==="fit",mg=+$("mg").value,fill=$("fm").value==="fill",q=+$("qq").value;
+  var doc=await DTApdf.Doc.create(),fit=$("ps").value==="fit",mg=+$("mg").value,fill=$("fm").value==="fill",q=+$("qq").value;
   for(var i=0;i<files.length;i++){
    var d=await toJpg(files[i],q),img=await doc.embedJpg(d.bytes),page;
    if(fit){page=doc.addPage([d.w,d.h]);page.drawImage(img,{x:0,y:0,width:d.w,height:d.h})}
@@ -60,11 +60,7 @@ $("go").onclick=async function(){
     if(land){var t=PW;PW=PH;PH=t}
     var aw=PW-2*mg,ah=PH-2*mg,s=fill?Math.max(aw/d.w,ah/d.h):Math.min(aw/d.w,ah/d.h),w=d.w*s,h=d.h*s;
     page=doc.addPage([PW,PH]);
-    if(fill){ // draw clipped to the margin box by cropping via a clipping path
-     page.pushOperators(PDFLib.pushGraphicsState(),PDFLib.moveTo(mg,mg),PDFLib.lineTo(PW-mg,mg),PDFLib.lineTo(PW-mg,PH-mg),PDFLib.lineTo(mg,PH-mg),PDFLib.closePath(),PDFLib.clip(),PDFLib.endPath());
-     page.drawImage(img,{x:(PW-w)/2,y:(PH-h)/2,width:w,height:h});
-     page.pushOperators(PDFLib.popGraphicsState());
-    }else page.drawImage(img,{x:(PW-w)/2,y:(PH-h)/2,width:w,height:h});
+    page.drawImage(img,{x:(PW-w)/2,y:(PH-h)/2,width:w,height:h,clip:fill?[mg,mg,PW-2*mg,PH-2*mg]:undefined});
    }
   }
   var bytes=await doc.save(),nm=($("on").value.trim().replace(/[\\/:*?"<>|]+/g,"")||"dtahub-images").replace(/\.pdf$/i,"");

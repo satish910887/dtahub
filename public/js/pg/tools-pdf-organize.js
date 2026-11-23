@@ -5,7 +5,7 @@ function say(el,t){$("err").hidden=el!=="err";$("ok").hidden=el!=="ok";if(el){$(
 $("f").addEventListener("change",async function(){
  var f=this.files[0];if(!f)return;say(null);
  try{
-  src=await PDFLib.PDFDocument.load(await f.arrayBuffer());file=f;
+  src=await DTApdf.Doc.load(await f.arrayBuffer());file=f;
   var n=src.getPageCount();ents=[];for(var i=0;i<n;i++)ents.push({s:i,r:0});orig=JSON.stringify(ents);hist=[];$("undo").disabled=true;cache={};
   $("ctl").hidden=false;$("dt").textContent=f.name;
   $("ti").value=src.getTitle()||"";$("au").value=src.getAuthor()||"";
@@ -75,22 +75,22 @@ async function wmPng(text,size){
  var b=await new Promise(function(r){c.toBlob(r,"image/png")});return{bytes:new Uint8Array(await b.arrayBuffer()),w:c.width,h:c.height};
 }
 async function build(){
- var out=await PDFLib.PDFDocument.create(),n=ents.length,first=src.getPage(0).getSize();
+ var out=await DTApdf.Doc.create(),n=ents.length,first=src.getPage(0).getSize();
  for(var i=0;i<n;i++){
   var e=ents[i],pg;
   if(e.s<0){var ref=null;for(var k=i-1;k>=0&&!ref;k--)if(ents[k].s>=0)ref=ents[k];for(var k2=i+1;k2<n&&!ref;k2++)if(ents[k2].s>=0)ref=ents[k2];
    var sz=ref?src.getPage(ref.s).getSize():first;pg=out.addPage([sz.width,sz.height]);
   }else{pg=(await out.copyPages(src,[e.s]))[0];out.addPage(pg)}
-  var base=e.s>=0?pg.getRotation().angle:0;pg.setRotation(PDFLib.degrees(((base+e.r)%360+360)%360));
+  var base=e.s>=0?pg.getRotation().angle:0;pg.setRotation(((base+e.r)%360+360)%360);
  }
  var pages=out.getPages();
  if($("pn").checked){
-  var font=await out.embedFont(PDFLib.StandardFonts.Helvetica),st=Math.floor(+$("pns").value)||1,pos=$("pnpos").value,fm=$("pnfmt").value;
+  var font=await out.embedFont("Helvetica"),st=Math.floor(+$("pns").value)||1,pos=$("pnpos").value,fm=$("pnfmt").value;
   pages.forEach(function(pg,i){
    var sz=pg.getSize(),w=sz.width,h=sz.height,R=pg.getRotation().angle%360,VW=R%180?h:w,VH=R%180?w:h,num=st+i,last=st+n-1;
    var t=fm==="n"?""+num:fm==="p"?"Page "+num:"Page "+num+" of "+last,fs=Math.max(9,Math.min(VW,VH)*.022),tw=font.widthOfTextAtSize(t,fs),mg=Math.min(VW,VH)*.04;
    var vx=pos[1]==="c"?(VW-tw)/2:pos[1]==="r"?VW-mg-tw:mg,vy=pos[0]==="b"?mg:VH-mg-fs;
-   var q=mapper(R,w,h)(vx,vy);pg.drawText(t,{x:q[0],y:q[1],size:fs,font:font,color:PDFLib.rgb(.25,.25,.25),rotate:PDFLib.degrees(R)});
+   var q=mapper(R,w,h)(vx,vy);pg.drawText(t,{x:q[0],y:q[1],size:fs,font:font,color:DTApdf.rgb(.25,.25,.25),rotate:DTApdf.degrees(R)});
   });
  }
  var wt=$("wm").value.trim();
@@ -100,7 +100,7 @@ async function build(){
    var sz=pg.getSize(),w=sz.width,h=sz.height,R=pg.getRotation().angle%360,VW=R%180?h:w,VH=R%180?w:h;
    var iw=Math.min(VW,VH)*1.2*sc*(im.w/im.h>4?.75:1),ih=iw*im.h/im.w;if(iw>VW*.95){var k=VW*.95/iw;iw*=k;ih*=k}
    var a=Math.PI/4,cx=VW/2,cy=VH/2,ox=cx+(-iw/2)*Math.cos(a)-(-ih/2)*Math.sin(a),oy=cy+(-iw/2)*Math.sin(a)+(-ih/2)*Math.cos(a);
-   var q=mapper(R,w,h)(ox,oy);pg.drawImage(img,{x:q[0],y:q[1],width:iw,height:ih,rotate:PDFLib.degrees(R+45),opacity:op});
+   var q=mapper(R,w,h)(ox,oy);pg.drawImage(img,{x:q[0],y:q[1],width:iw,height:ih,rotate:DTApdf.degrees(R+45),opacity:op});
   });
  }
  var ti=$("ti").value.trim(),au=$("au").value.trim();if(ti)out.setTitle(ti);if(au)out.setAuthor(au);out.setProducer("DTAhub");

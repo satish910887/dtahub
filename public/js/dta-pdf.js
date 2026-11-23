@@ -513,7 +513,7 @@
     return d;
   };
   ["Title", "Author", "Subject", "Keywords", "Creator", "Producer"].forEach(function (k) { Doc.prototype["set" + k] = function (v) { this.info().set(k, textString(v)); return this; }; });
-  Doc.prototype.getTitle = function () { var s = this.get(this.info().get("Title")); return s instanceof Str ? strText(s) : undefined; };
+  ["Title", "Author", "Subject", "Keywords", "Creator", "Producer"].forEach(function (k) { Doc.prototype["get" + k] = function () { var d = dictOf(this.get(this.trailer.get("Info"))), s = d && this.get(d.get(k)); return s instanceof Str ? strText(s) : undefined; }; });
   function strText(s) { var b = s.b; if (b[0] === 0xfe && b[1] === 0xff) { var o = ""; for (var i = 2; i + 1 < b.length; i += 2) o += String.fromCharCode((b[i] << 8) | b[i + 1]); return o; } return String.fromCharCode.apply(null, b); }
 
   /* ================= writer ================= */
@@ -588,8 +588,139 @@
   };
   function pdfDate(d) { var p = function (n) { return String(n).padStart(2, "0"); }; return "D:" + d.getUTCFullYear() + p(d.getUTCMonth() + 1) + p(d.getUTCDate()) + p(d.getUTCHours()) + p(d.getUTCMinutes()) + p(d.getUTCSeconds()) + "Z"; }
 
+  /* ================= drawing: fonts, images, text, opacity, clip ================= */
+  var AFM = {"H":[278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584,761,556,761,222,556,333,1000,556,556,333,1000,667,333,1000,761,611,761,761,222,222,333,333,350,556,1000,333,1000,500,333,944,761,500,667,278,333,556,556,556,556,260,556,333,737,370,556,584,333,737,333,400,584,333,333,333,556,537,278,333,333,365,556,834,834,834,611,667,667,667,667,667,667,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,500,556,556,556,556,278,278,278,278,556,556,556,556,556,556,556,584,611,556,556,556,556,500,556,500],"HB":[278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584,761,556,761,278,556,500,1000,556,556,333,1000,667,333,1000,761,611,761,761,278,278,500,500,350,556,1000,333,1000,556,333,944,761,500,667,278,333,556,556,556,556,280,556,333,737,370,556,584,333,737,333,400,584,333,333,333,611,556,278,333,333,365,556,834,834,834,611,722,722,722,722,722,722,1000,722,667,667,667,667,278,278,278,278,722,722,778,778,778,778,778,584,778,722,722,722,722,667,667,611,556,556,556,556,556,556,889,556,556,556,556,556,278,278,278,278,611,611,611,611,611,611,611,584,611,611,611,611,611,556,611,556],"T":[250,333,408,500,500,833,778,180,333,333,500,564,250,333,250,278,500,500,500,500,500,500,500,500,500,500,278,278,564,564,564,444,921,722,667,667,722,611,556,722,722,333,389,722,611,889,722,722,556,722,667,556,611,722,722,944,722,722,611,333,278,333,469,500,333,444,500,444,500,444,333,500,500,278,278,500,278,778,500,500,500,500,333,389,278,500,500,722,500,500,444,480,200,480,541,761,500,761,333,500,444,1000,500,500,333,1000,556,333,889,761,611,761,761,333,333,444,444,350,500,1000,333,980,389,333,722,761,444,722,250,333,500,500,500,500,200,500,333,760,276,500,564,333,760,333,400,564,300,300,333,500,453,250,333,300,310,500,750,750,750,444,722,722,722,722,722,722,889,667,611,611,611,611,333,333,333,333,722,722,722,722,722,722,722,564,722,722,722,722,722,722,556,500,444,444,444,444,444,444,667,444,444,444,444,444,278,278,278,278,500,500,500,500,500,500,500,564,500,500,500,500,500,500,500,500],"TB":[250,333,555,500,500,1000,833,278,333,333,500,570,250,333,250,278,500,500,500,500,500,500,500,500,500,500,333,333,570,570,570,500,930,722,667,722,722,667,611,778,778,389,500,778,667,944,722,778,611,778,722,556,667,722,722,1000,722,722,667,333,278,333,581,500,333,500,556,444,556,444,333,500,556,278,333,556,278,833,556,500,556,556,444,389,333,556,500,722,500,500,444,394,220,394,520,761,500,761,333,500,500,1000,500,500,333,1000,556,333,1000,761,667,761,761,333,333,500,500,350,500,1000,333,1000,389,333,722,761,444,722,250,333,500,500,500,500,220,500,333,747,300,500,570,333,747,333,400,570,300,300,333,556,540,250,333,300,330,500,750,750,750,500,722,722,722,722,722,722,1000,722,667,667,667,667,389,389,389,389,722,722,778,778,778,778,778,570,778,722,722,722,722,722,611,556,500,500,500,500,500,500,722,444,444,444,444,444,278,278,278,278,500,556,500,500,500,500,500,570,500,556,556,556,556,500,556,500],"TI":[250,333,420,500,500,833,778,214,333,333,500,675,250,333,250,278,500,500,500,500,500,500,500,500,500,500,333,333,675,675,675,500,920,611,611,667,722,611,611,722,722,333,444,667,556,833,667,722,611,722,611,500,556,722,611,833,611,556,556,389,278,389,422,500,333,500,500,444,500,444,278,500,500,278,278,444,278,722,500,500,500,500,389,389,278,500,444,667,444,444,389,400,275,400,541,761,500,761,333,500,556,889,500,500,333,1000,500,333,944,761,556,761,761,333,333,556,556,350,500,889,333,980,389,333,667,761,389,556,250,389,500,500,500,500,275,500,333,760,276,500,675,333,760,333,400,675,300,300,333,500,523,250,333,300,310,500,750,750,750,500,611,611,611,611,611,611,889,667,611,611,611,611,333,333,333,333,722,667,722,722,722,722,722,675,722,722,722,722,722,556,611,500,500,500,500,500,500,500,667,444,444,444,444,444,278,278,278,278,500,500,500,500,500,500,500,675,500,500,500,500,500,444,500,444],"TBI":[250,389,555,500,500,833,778,278,333,333,500,570,250,333,250,278,500,500,500,500,500,500,500,500,500,500,333,333,570,570,570,500,832,667,667,667,722,667,667,722,778,389,500,667,611,889,722,722,611,722,667,556,611,722,667,889,667,611,611,333,278,333,570,500,333,500,500,444,500,444,333,500,556,278,278,500,278,778,556,500,500,500,389,389,278,556,444,667,500,444,389,348,220,348,570,761,500,761,333,500,500,1000,500,500,333,1000,556,333,944,761,611,761,761,333,333,500,500,350,500,1000,333,1000,389,333,722,761,389,611,250,389,500,500,500,500,220,500,333,747,266,500,606,333,747,333,400,570,300,300,333,576,500,250,333,300,300,500,750,750,750,500,667,667,667,667,667,667,944,667,667,667,667,667,389,389,389,389,722,722,722,722,722,722,722,570,722,722,722,722,722,611,611,500,500,500,500,500,500,500,722,444,444,444,444,444,278,278,278,278,500,556,500,500,500,500,500,570,500,556,556,556,556,444,500,444]};
+  var CP1252 = { 8364: 128, 8218: 130, 402: 131, 8222: 132, 8230: 133, 8224: 134, 8225: 135, 710: 136, 8240: 137, 352: 138, 8249: 139, 338: 140, 381: 142, 8216: 145, 8217: 146, 8220: 147, 8221: 148, 8226: 149, 8211: 150, 8212: 151, 732: 152, 8482: 153, 353: 154, 8250: 155, 339: 156, 382: 158, 376: 159 };
+  function winAnsi(s) {
+    var o = []; for (var i = 0; i < s.length; i++) { var c = s.charCodeAt(i); if (c < 256 && (c >= 32 || c === 9)) o.push(c < 32 ? 32 : c); else if (CP1252[c]) o.push(CP1252[c]); else o.push(63); } return o;
+  }
+  var FONTS = { Helvetica: ["Helvetica", "H"], "Helvetica-Bold": ["Helvetica-Bold", "HB"], "Helvetica-Oblique": ["Helvetica-Oblique", "H"], "Helvetica-BoldOblique": ["Helvetica-BoldOblique", "HB"],
+    "Times-Roman": ["Times-Roman", "T"], "Times-Bold": ["Times-Bold", "TB"], "Times-Italic": ["Times-Italic", "TI"], "Times-BoldItalic": ["Times-BoldItalic", "TBI"],
+    Courier: ["Courier", null], "Courier-Bold": ["Courier-Bold", null], "Courier-Oblique": ["Courier-Oblique", null], "Courier-BoldOblique": ["Courier-BoldOblique", null] };
+  Doc.prototype.embedFont = function (name) {
+    var f = FONTS[name || "Helvetica"]; if (!f) throw PdfError("font", "unknown standard font " + name);
+    this._fonts = this._fonts || {};
+    if (!this._fonts[name]) {
+      var tbl = f[1] ? AFM[f[1]] : null, ref = this.add(mkDict({ Type: N("Font"), Subtype: N("Type1"), BaseFont: N(f[0]), Encoding: N("WinAnsiEncoding") }));
+      this._fonts[name] = {
+        ref: ref, name: f[0],
+        widthOfTextAtSize: function (t, size) { var w = 0, b = winAnsi(String(t)); for (var i = 0; i < b.length; i++) w += tbl ? (tbl[b[i] - 32] || 0) : 600; return w * size / 1000; },
+        heightAtSize: function (size) { return size * 0.75; }
+      };
+    }
+    return this._fonts[name];
+  };
+  function jpegInfo(b) {
+    if (b[0] !== 0xff || b[1] !== 0xd8) throw PdfError("image", "not a JPEG file");
+    var p = 2, adobe = false, info = null;
+    while (p + 4 <= b.length) {
+      if (b[p] !== 0xff) { p++; continue; } var m = b[p + 1]; if (m === 0xff) { p++; continue; }
+      if (m === 0xd8 || (m >= 0xd0 && m <= 0xd7) || m === 0x01) { p += 2; continue; }
+      var L = (b[p + 2] << 8) | b[p + 3];
+      if (m === 0xee && L >= 12 && b[p + 4] === 0x41 && b[p + 5] === 0x64) adobe = true;
+      if ((m >= 0xc0 && m <= 0xcf) && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) { info = { bpc: b[p + 4], h: (b[p + 5] << 8) | b[p + 6], w: (b[p + 7] << 8) | b[p + 8], n: b[p + 9] }; break; }
+      p += 2 + L;
+    }
+    if (!info) throw PdfError("image", "damaged JPEG file"); info.adobe = adobe; return info;
+  }
+  Doc.prototype.embedJpg = function (bytes) {
+    bytes = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    var i = jpegInfo(bytes), d = mkDict({ Type: N("XObject"), Subtype: N("Image"), Width: i.w, Height: i.h, BitsPerComponent: i.bpc, ColorSpace: N(i.n === 1 ? "DeviceGray" : i.n === 4 ? "DeviceCMYK" : "DeviceRGB"), Filter: N("DCTDecode") });
+    if (i.n === 4 && i.adobe) d.set("Decode", [1, 0, 1, 0, 1, 0, 1, 0]);
+    var st = new Stream(d, bytes); return Promise.resolve({ ref: this.add(st), width: i.w, height: i.h, scale: function (k) { return { width: i.w * k, height: i.h * k }; } });
+  };
+  Doc.prototype.embedPng = function (bytes) {
+    bytes = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    var sig = [137, 80, 78, 71, 13, 10, 26, 10]; for (var s = 0; s < 8; s++) if (bytes[s] !== sig[s]) throw PdfError("image", "not a PNG file");
+    var p = 8, ih = null, plte = null, trns = null, idat = [], tot = 0;
+    while (p + 8 <= bytes.length) {
+      var len = ((bytes[p] << 24) | (bytes[p + 1] << 16) | (bytes[p + 2] << 8) | bytes[p + 3]) >>> 0, ty = String.fromCharCode(bytes[p + 4], bytes[p + 5], bytes[p + 6], bytes[p + 7]), dt = bytes.subarray(p + 8, p + 8 + len);
+      if (ty === "IHDR") ih = { w: ((dt[0] << 24) | (dt[1] << 16) | (dt[2] << 8) | dt[3]) >>> 0, h: ((dt[4] << 24) | (dt[5] << 16) | (dt[6] << 8) | dt[7]) >>> 0, bd: dt[8], ct: dt[9], il: dt[12] };
+      else if (ty === "PLTE") plte = dt; else if (ty === "tRNS") trns = dt; else if (ty === "IDAT") { idat.push(dt); tot += dt.length; } else if (ty === "IEND") break;
+      p += 12 + len;
+    }
+    if (!ih || !idat.length) throw PdfError("image", "damaged PNG file");
+    if (ih.il) throw PdfError("unsupported", "interlaced PNG");
+    var data = new Uint8Array(tot), q = 0; idat.forEach(function (c) { data.set(c, q); q += c.length; });
+    var ch = { 0: 1, 2: 3, 3: 1, 4: 2, 6: 4 }[ih.ct]; if (!ch) throw PdfError("image", "unknown PNG type");
+    var self = this, w = ih.w, h = ih.h, d = mkDict({ Type: N("XObject"), Subtype: N("Image"), Width: w, Height: h });
+    var cs = ih.ct === 0 || ih.ct === 4 ? N("DeviceGray") : ih.ct === 3 ? [N("Indexed"), N("DeviceRGB"), plte.length / 3 - 1, new Str(plte.slice(), true)] : N("DeviceRGB");
+    var res = { ref: null, width: w, height: h };
+    if ((ih.ct === 0 || ih.ct === 2 || ih.ct === 3) && !trns && ih.bd <= 8) { /* pass the compressed data straight through */
+      d.set("ColorSpace", cs); d.set("BitsPerComponent", ih.bd); d.set("Filter", N("FlateDecode"));
+      d.set("DecodeParms", mkDict({ Predictor: 15, Colors: ch, BitsPerComponent: ih.bd, Columns: w }));
+      res.ref = this.add(new Stream(d, data)); return Promise.resolve(res);
+    }
+    var raw = unpredict(zlibInflate(data), mkDict({ Predictor: 15, Colors: ch, BitsPerComponent: ih.bd, Columns: w })), bps = ih.bd === 16 ? 2 : 1;
+    if (ih.bd < 8 && (ih.ct === 3 || ih.ct === 0)) throw PdfError("unsupported", "low bit depth PNG with transparency");
+    var cc = ih.ct === 4 ? 1 : ih.ct === 6 ? 3 : ch, color = new Uint8Array(w * h * cc), alpha = null, n = w * h, i, k;
+    if (ih.ct === 4 || ih.ct === 6) {
+      alpha = new Uint8Array(n); var stride = ch * bps;
+      for (i = 0; i < n; i++) { for (k = 0; k < cc; k++) color[i * cc + k] = raw[i * stride + k * bps]; alpha[i] = raw[i * stride + cc * bps]; }
+    } else if (ih.ct === 3) { color = raw; alpha = new Uint8Array(n); for (i = 0; i < n; i++) alpha[i] = trns && raw[i] < trns.length ? trns[raw[i]] : 255; }
+    else { for (i = 0; i < n * cc; i++) color[i] = raw[i * bps]; if (trns && trns.length >= 2) { /* colour-key transparency */ alpha = new Uint8Array(n).fill(255); var key = []; for (k = 0; k < cc; k++) key.push(bps === 2 ? ((trns[k * 2] << 8) | trns[k * 2 + 1]) >> 8 : trns[k * 2 + 1]); for (i = 0; i < n; i++) { var all = true; for (k = 0; k < cc; k++) if (color[i * cc + k] !== key[k]) { all = false; break; } if (all) alpha[i] = 0; } } }
+    d.set("ColorSpace", ih.ct === 3 ? cs : cc === 1 ? N("DeviceGray") : N("DeviceRGB")); d.set("BitsPerComponent", 8);
+    var st = new Stream(d, color); st.compress = true;
+    if (alpha) { var ad = mkDict({ Type: N("XObject"), Subtype: N("Image"), Width: w, Height: h, ColorSpace: N("DeviceGray"), BitsPerComponent: 8 }), as = new Stream(ad, alpha); as.compress = true; d.set("SMask", this.add(as)); }
+    res.ref = this.add(st); return Promise.resolve(res);
+  };
+  function rgb(r, g, b) { return { r: r, g: g, b: b }; }
+  function degrees(a) { return { type: "degrees", angle: a }; }
+  function f(n) { return fmtNum(Math.round(n * 10000) / 10000); }
+  Page.prototype._res = function (kind) {
+    var d = this.dict();
+    if (!this._ownRes) {
+      var old = this.doc.get(d.has("Resources") ? d.get("Resources") : this.inh.Resources), nr = new Dict();
+      if (old instanceof Dict) old.m.forEach(function (v, k) { nr.set(k, v); });
+      d.set("Resources", nr); this._ownRes = nr;
+    }
+    var sub = this.doc.get(this._ownRes.get(kind)), nd = new Dict();
+    if (!(this._ownSub && this._ownSub[kind])) { if (sub instanceof Dict) sub.m.forEach(function (v, k) { nd.set(k, v); }); this._ownRes.set(kind, nd); (this._ownSub = this._ownSub || {})[kind] = nd; }
+    return this._ownSub[kind];
+  };
+  Page.prototype._name = function (kind, prefix, ref) {
+    var sub = this._res(kind); this._names = this._names || {}; var key = kind + ref.num;
+    if (!this._names[key]) { var i = 1; while (sub.has(prefix + i)) i++; this._names[key] = prefix + i; sub.set(prefix + i, ref); }
+    return this._names[key];
+  };
+  Page.prototype._gs = function (op) {
+    if (op === undefined || op >= 1) return "";
+    var o = Math.max(0, op), g = this.doc.add(mkDict({ Type: N("ExtGState"), ca: o, CA: o })); return "/" + this._name("ExtGState", "DTAG", g) + " gs ";
+  };
+  Page.prototype._push = function (s) { (this._ops = this._ops || []).push(s); };
+  Page.prototype._flush = function () {
+    if (!this._ops || !this._ops.length) return;
+    var d = this.dict(), c = this.doc.get(d.get("Contents")), parts = [];
+    if (c instanceof Stream) parts = [d.get("Contents")]; else if (Array.isArray(c)) parts = c.slice();
+    var mk = function (s) { return this.doc.add(new Stream(new Dict(), te(s))); }.bind(this), body = mk(this._ops.join("\n"));
+    if (parts.length) { var st = mk("q"), en = mk("Q"); parts = [st].concat(parts, [en, body]); } else parts = [body];
+    d.set("Contents", parts); this._ops = [];
+  };
+  Page.prototype.drawText = function (text, o) {
+    o = o || {}; var font = o.font || this.doc.embedFont("Helvetica"), size = o.size || 12, c = o.color || rgb(0, 0, 0), a = ((o.rotate && o.rotate.angle) || 0) * Math.PI / 180, cs = Math.cos(a), sn = Math.sin(a);
+    var fn = this._name("Font", "DTAF", font.ref), bytes = winAnsi(String(text)), hex = ""; for (var i = 0; i < bytes.length; i++) hex += (bytes[i] < 16 ? "0" : "") + bytes[i].toString(16);
+    this._push("q " + this._gs(o.opacity) + f(c.r) + " " + f(c.g) + " " + f(c.b) + " rg BT /" + fn + " " + f(size) + " Tf " + f(cs) + " " + f(sn) + " " + f(-sn) + " " + f(cs) + " " + f(o.x || 0) + " " + f(o.y || 0) + " Tm <" + hex + "> Tj ET Q");
+  };
+  Page.prototype.drawImage = function (img, o) {
+    o = o || {}; var w = o.width === undefined ? img.width : o.width, h = o.height === undefined ? img.height : o.height, a = ((o.rotate && o.rotate.angle) || 0) * Math.PI / 180, cs = Math.cos(a), sn = Math.sin(a);
+    var nm = this._name("XObject", "DTAI", img.ref), clip = o.clip ? f(o.clip[0]) + " " + f(o.clip[1]) + " " + f(o.clip[2]) + " " + f(o.clip[3]) + " re W n " : "";
+    this._push("q " + this._gs(o.opacity) + clip + f(w * cs) + " " + f(w * sn) + " " + f(-h * sn) + " " + f(h * cs) + " " + f(o.x || 0) + " " + f(o.y || 0) + " cm /" + nm + " Do Q");
+  };
+  Page.prototype.drawRect = function (o) {
+    var c = o.color, b = o.borderColor, ops = "q " + this._gs(o.opacity);
+    if (c) ops += f(c.r) + " " + f(c.g) + " " + f(c.b) + " rg "; if (b) ops += f(b.r) + " " + f(b.g) + " " + f(b.b) + " RG " + f(o.borderWidth || 1) + " w ";
+    ops += f(o.x) + " " + f(o.y) + " " + f(o.width) + " " + f(o.height) + " re " + (c && b ? "B" : c ? "f" : "S") + " Q"; this._push(ops);
+  };
+  Page.prototype.drawLine = function (o) {
+    var c = o.color || rgb(0, 0, 0); this._push("q " + this._gs(o.opacity) + f(c.r) + " " + f(c.g) + " " + f(c.b) + " RG " + f(o.thickness || 1) + " w " + (o.cap === "round" ? "1 J " : "") + f(o.start.x) + " " + f(o.start.y) + " m " + f(o.end.x) + " " + f(o.end.y) + " l S Q");
+  };
+  Page.prototype.drawOps = function (s) { this._push(s); };
+  var _syncTree = Doc.prototype.syncTree;
+  Doc.prototype.syncTree = function () { this._pages.forEach(function (p) { p._flush(); }); _syncTree.call(this); };
+
   return {
     Doc: Doc, Page: Page, Name: Name, Ref: Ref, Str: Str, Dict: Dict, Stream: Stream, PdfError: PdfError,
+    rgb: rgb, degrees: degrees,
     util: { inflate: zlibInflate, deflate: zlibDeflate, mkDict: mkDict, N: N, dictOf: dictOf, serialize: serialize, textString: textString, Parser: Parser, te: te, strText: strText }
   };
 });

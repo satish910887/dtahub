@@ -36,4 +36,34 @@ try { P.Doc.load(new Uint8Array([1, 2, 3])); ok(false, "not pdf"); } catch (e) {
 // deflate roundtrip
 const raw = new Uint8Array(5000).map((_, i) => i * 7 % 251); const z = await P.util.deflate(raw); const u = P.util.inflate(z);
 ok(u.length === raw.length && u.every((v, k) => v === raw[k]), "deflate roundtrip");
+
+// ---- drawing ----
+{
+  const d = P.Doc.create(), pg = d.addPage([300, 200]), font = d.embedFont("Helvetica");
+  ok(Math.abs(font.widthOfTextAtSize("A", 1000) - 667) < 1, "AFM width");
+  pg.drawRect({ x: 0, y: 0, width: 300, height: 200, color: P.rgb(1, 1, 1) });
+  pg.drawText("Hello DTA", { x: 20, y: 150, size: 20, font, color: P.rgb(0, 0, 0) });
+  pg.drawText("Rot", { x: 250, y: 20, size: 14, font, rotate: P.degrees(90) });
+  const png = await d.embedPng(rd("rgba.png")); pg.drawImage(png, { x: 20, y: 20, width: 80, height: 40 });
+  const jp = await d.embedJpg(rd("b.jpg")); pg.drawImage(jp, { x: 120, y: 20, width: 64, height: 32, opacity: 0.5 });
+  const g = await d.embedPng(rd("rgb.png")); pg.drawImage(g, { x: 200, y: 100, width: 60, height: 60, clip: [200, 100, 30, 60] });
+  for (const f of ["pal.png", "gray.png"]) { const im = await d.embedPng(rd(f)); pg.drawImage(im, { x: 5, y: 5, width: 5, height: 5 }); }
+  pg.drawLine({ start: { x: 0, y: 190 }, end: { x: 300, y: 190 }, thickness: 2, cap: "round", color: P.rgb(1, 0, 0) });
+  const b = await d.save(); check(b, 1, "Hello DTA");
+  fs.writeFileSync(tmp, b); execFileSync("pdftoppm", ["-r", "72", "-png", "-singlefile", tmp, dir + "/_r"]);
+  const py = execFileSync("python3", ["-c", `
+from PIL import Image
+im=Image.open("${dir}/_r.png").convert("RGB"); W,H=im.size; print(W,H)
+def px(x,y): return im.getpixel((x,H-1-y))
+print(px(40,40)); print(px(90,40)); print(px(150,35)); print(px(210,130)); print(px(245,130))`]).toString().trim().split("\n");
+  ok(py[0] === "300 200", "render size " + py[0]);
+  ok(py[1] === "(255, 0, 0)", "png opaque red " + py[1]);
+  ok(py[2] === "(255, 255, 255)", "png alpha transparent " + py[2]);
+  const o = eval(py[3].replace("(", "[").replace(")", "]")); ok(o[0] > 120 && o[0] < 135 && o[2] > 240, "jpeg 50% opacity " + py[3]);
+  ok(py[4] === "(0, 200, 0)" || /^\(0, 19\d, 0\)$/.test(py[4]), "clip inside " + py[4]);
+  ok(py[5] === "(255, 255, 255)", "clip outside " + py[5]);
+  // existing page + draw keeps old content
+  const base = P.Doc.load(rd("a.pdf")); const bp = base.getPage(0); bp.drawText("STAMP", { x: 100, y: 500, size: 30 });
+  const b3 = await base.save(); check(b3, 3, "Doc a page 1"); fs.writeFileSync(tmp, b3); ok(execFileSync("pdftotext", [tmp, "-"]).toString().includes("STAMP"), "stamp text");
+}
 console.log(`${pass} passed, ${fail} failed`); process.exit(fail ? 1 : 0);
