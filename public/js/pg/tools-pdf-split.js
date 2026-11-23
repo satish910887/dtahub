@@ -3,7 +3,7 @@ $("f").addEventListener("change",async function(){
  var f=this.files[0];if(!f)return;
  $("err").hidden=true;$("ok").hidden=true;
  try{
-  src=await PDFLib.PDFDocument.load(await f.arrayBuffer());
+  src=await DTApdf.Doc.load(await f.arrayBuffer());
   file=f;total=src.getPageCount();
   $("ctl").hidden=false;$("dt").textContent=f.name;
   $("info").textContent=L("Total pages: ","कुल पेज: ")+total+" • "+sizeOf(f.size);
@@ -56,7 +56,7 @@ function parts(str){
  return out.length?out:null;
 }
 $("md").onchange=function(){var v=$("md").value;paint();$("rgw").hidden=!(v==="pick"||v==="ranges");$("nw").hidden=v!=="n";$("rh").hidden=v!=="ranges";$("ok").hidden=true};
-async function mk(idx){var o=await PDFLib.PDFDocument.create();(await o.copyPages(src,idx)).forEach(function(p){o.addPage(p)});return o.save()}
+async function mk(idx){var o=await DTApdf.Doc.create();(await o.copyPages(src,idx)).forEach(function(p){o.addPage(p)});return o.save()}
 $("go").onclick=async function(){
  var err=$("err"),ok=$("ok");err.hidden=true;ok.hidden=true;
  var v=$("md").value,jobs=[],all=[];for(var i=0;i<total;i++)all.push(i);

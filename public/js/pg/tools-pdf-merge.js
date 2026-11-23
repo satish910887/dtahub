@@ -28,7 +28,7 @@ $("list").addEventListener("dragend",function(){dragI=-1});
 $("f").addEventListener("change",async function(){
  var added=[];for(var i=0;i<this.files.length;i++){var o={file:this.files[i],n:null,range:"",err:false};files.push(o);added.push(o)}
  this.value="";render();$("err").hidden=true;$("ok").hidden=true;
- for(var o of added){try{o.n=(await PDFLib.PDFDocument.load(await o.file.arrayBuffer())).getPageCount()}catch(e){o.err=true}render()}
+ for(var o of added){try{o.n=(await DTApdf.Doc.load(await o.file.arrayBuffer())).getPageCount()}catch(e){o.err=true}render()}
 });
 $("sn").onchange=function(){var v=$("sn").value;if(!v)return;
  files.sort(function(a,b){return v==="s"?a.file.size-b.file.size:(v==="z"?-1:1)*a.file.name.localeCompare(b.file.name,undefined,{numeric:true})});$("sn").value="";render()};
@@ -40,9 +40,9 @@ $("go").onclick=async function(){
  if(bad){err.hidden=false;err.textContent=bad.file.name+": "+L("cannot be opened (damaged or password protected). Remove it and try again.","नहीं खुल सकी (खराब या पासवर्ड वाली)। इसे हटाकर दोबारा कोशिश करें।");return}
  var btn=$("go"),old=btn.textContent;btn.disabled=true;btn.textContent=L("Working...","काम हो रहा है...");
  try{
-  var out=await PDFLib.PDFDocument.create();
+  var out=await DTApdf.Doc.create();
   for(var i=0;i<files.length;i++){
-   var f=files[i],src=await PDFLib.PDFDocument.load(await f.file.arrayBuffer());
+   var f=files[i],src=await DTApdf.Doc.load(await f.file.arrayBuffer());
    var idx=parse(f.range,src.getPageCount());
    if(idx===false){err.hidden=false;err.textContent=f.file.name+": "+L("invalid page range. Use numbers between 1 and ","पेज रेंज गलत है। 1 से इतने के बीच: ")+src.getPageCount();btn.disabled=false;btn.textContent=old;return}
    var pages=await out.copyPages(src,idx||src.getPageIndices());
