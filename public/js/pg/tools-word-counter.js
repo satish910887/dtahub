@@ -1,6 +1,8 @@
 var STOP=new Set("a an the and or but if of to in on at by for with from as is are was were be been it its this that these those i you he she we they me my your his her our their not no so do does did have has had will would can could should than then there here also very just about into over out up down more most some any all".split(" ").concat("है हैं था थी थे हो हूं हूँ और या का की के को में से पर ने भी तो यह वह ये वो एक कि जो इस उस कर करना कुछ नहीं हुआ हुई हुए अपने लिए साथ बहुत तक रहा रही रहे गया गई गए जा सकता सकती".split(" ")));
 var seg=window.Intl&&Intl.Segmenter?new Intl.Segmenter(undefined,{granularity:"grapheme"}):null;
-function glen(t){if(!seg)return Array.from(t).length;var n=0;for(var x of seg.segment(t))n++;return n}
+var PLAIN=/[\u0300-\u036f\u0900-\u0dff\u1ab0-\u1aff\u200c\u200d\u20d0-\u20ff\ufe00-\ufe0f\ud800-\udfff]/;
+function glen(t){if(!PLAIN.test(t)){var c=0,i=t.indexOf("\r\n");while(i>=0){c++;i=t.indexOf("\r\n",i+2)}return t.length-c}
+ if(!seg)return Array.from(t).length;var n=0;for(var x of seg.segment(t))n++;return n}
 function calc(){
  var t=$("t").value,s=t.trim();
  var ws=s?s.split(/\s+/):[];var words=ws.length;
@@ -9,8 +11,8 @@ function calc(){
  var chars=glen(t),ns=glen(t.replace(/\s/g,""));
  function tm(w,wpm){var m=w/wpm;return w===0?"0":(m<1?L("< 1 min","< 1 मिनट"):Math.ceil(m)+L(" min"," मिनट"))}
  var clean=ws.map(function(w){return w.replace(/^[^\p{L}\p{N}\p{M}]+|[^\p{L}\p{N}\p{M}]+$/gu,"")}).filter(Boolean);
- var freq={},uniq={},tot=0,longest="";
- clean.forEach(function(w){var k=w.toLowerCase();uniq[k]=1;tot+=glen(w);if(glen(w)>glen(longest))longest=w;if(!STOP.has(k)&&glen(w)>1)freq[k]=(freq[k]||0)+1});
+ var freq=Object.create(null),uniq=Object.create(null),tot=0,longest="";
+ var gl=Object.create(null),ll=0;clean.forEach(function(w){var k=w.toLowerCase(),n=gl[w];if(n===undefined)n=gl[w]=glen(w);uniq[k]=1;tot+=n;if(n>ll){ll=n;longest=w}if(n>1&&!STOP.has(k))freq[k]=(freq[k]||0)+1});
  $("o-w").textContent=fmt(words);$("o-c").textContent=fmt(chars);$("o-n").textContent=fmt(ns);
  $("o-s").textContent=fmt(sent);$("o-p").textContent=fmt(para);
  $("o-r").textContent=tm(words,200);$("o-k").textContent=tm(words,130);
@@ -24,7 +26,7 @@ function calc(){
   m.style.width=Math.min(100,cur/max*100)+"%";m.style.background=over?"#ef4444":cur/max>.9?"#f59e0b":"#22c55e";
   $("lt").textContent=fmt(cur)+" / "+fmt(max)+(a[0]==="c"?L(" characters"," अक्षर"):L(" words"," शब्द"))+(over?" — "+fmt(cur-max)+L(" over"," ज़्यादा"):" — "+fmt(max-cur)+L(" left"," बाकी"))}
 }
-$("t").addEventListener("input",calc);$("lim").onchange=calc;
+var tm_=0;$("t").addEventListener("input",function(){clearTimeout(tm_);if($("t").value.length>200000)tm_=setTimeout(calc,250);else calc()});$("lim").onchange=calc;
 $("clr").onclick=function(){$("t").value="";calc()};
 $("cln").onclick=function(){var v=$("t").value,n=v.replace(/\r\n?/g,"\n").split("\n").map(function(l){return l.replace(/[ \t\u00a0]+/g," ").trim()}).join("\n").replace(/\n{3,}/g,"\n\n").trim();
  if(n===v){toast(L("Nothing to clean","साफ करने को कुछ नहीं"));return}$("t").value=n;calc();toast(L("Extra spaces removed ✓","फालतू स्पेस हट गए ✓"))};

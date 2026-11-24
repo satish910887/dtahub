@@ -5,12 +5,45 @@ document.querySelectorAll("[data-m]").forEach(function(b){b.onclick=function(){m
 function norm(s){if(opt.ic)s=s.toLowerCase();if(opt.iw)s=s.replace(/\s+/g," ").trim();return s}
 function tok(t){if(mode==="line"){var a=t.replace(/\r\n?/g,"\n").split("\n");return opt.ib?a.filter(function(l){return l.trim()!==""}):a}return t.split(/(\s+)/).filter(function(x){return x!==""})}
 function wops(a,b){return diff(a.split(/(\s+)/).filter(Boolean),b.split(/(\s+)/).filter(Boolean))}
+/* Myers O(ND) diff for long inputs with few changes. returns [op,index] where index points into a (for = and -) or b (for +); null when too many differences */
+function myers(a,b){
+ var n=a.length,m=b.length,ids=new Map(),x,y,A=new Int32Array(n),B=new Int32Array(m),i;
+ for(i=0;i<n;i++){var v=ids.get(a[i]);if(v===undefined){v=ids.size;ids.set(a[i],v)}A[i]=v}
+ for(i=0;i<m;i++){var w=ids.get(b[i]);if(w===undefined){w=ids.size;ids.set(b[i],w)}B[i]=w}
+ var MAXD=Math.min(n+m,3000),off=MAXD+1,V=new Int32Array(2*MAXD+3),trace=[],d,k;
+ V[off+1]=0;
+ for(d=0;d<=MAXD;d++){
+  trace.push(V.slice(off-d-1,off+d+2));
+  for(k=-d;k<=d;k+=2){
+   if(k===-d||(k!==d&&V[off+k-1]<V[off+k+1]))x=V[off+k+1];else x=V[off+k-1]+1;
+   y=x-k;
+   while(x<n&&y<m&&A[x]===B[y]){x++;y++}
+   V[off+k]=x;
+   if(x>=n&&y>=m){
+    var ops=[],cx=n,cy=m,dd,kk,vv;
+    for(dd=d;dd>0;dd--){
+     vv=trace[dd];kk=cx-cy;var base=dd+1; /* vv index = k+base-... see slice start off-dd-1 */
+     var get=function(q){return vv[q+dd+1]};
+     var pk=(kk===-dd||(kk!==dd&&get(kk-1)<get(kk+1)))?kk+1:kk-1,px=get(pk),py=px-pk;
+     while(cx>px&&cy>py){cx--;cy--;ops.push(["=",cx])}
+     if(cx===px){cy--;ops.push(["+",cy])}else{cx--;ops.push(["-",cx])}
+    }
+    while(cx>0&&cy>0){cx--;cy--;ops.push(["=",cx])}
+    return ops.reverse();
+   }
+  }
+ }
+ return null;
+}
 function diff(A,B){
  var na=A.map(norm),nb=B.map(norm),p=0,s=0;
  while(p<na.length&&p<nb.length&&na[p]===nb[p])p++;
  while(s<na.length-p&&s<nb.length-p&&na[na.length-1-s]===nb[nb.length-1-s])s++;
  var a=na.slice(p,na.length-s),b=nb.slice(p,nb.length-s),n=a.length,m=b.length;
- if(n*m>9000000)return null;
+ if(n*m>9000000){var mo=myers(a,b);if(!mo)return null;var o2=[],k2;
+  for(k2=0;k2<p;k2++)o2.push(["=",A[k2]]);
+  mo.forEach(function(o){o2.push([o[0],o[0]==="+"?B[p+o[1]]:A[p+o[1]]])});
+  for(k2=0;k2<s;k2++)o2.push(["=",A[A.length-s+k2]]);return o2}
  var W=m+1,T=new Uint32Array((n+1)*W),i,j;
  for(i=n-1;i>=0;i--)for(j=m-1;j>=0;j--)T[i*W+j]=a[i]===b[j]?T[(i+1)*W+j+1]+1:Math.max(T[(i+1)*W+j],T[i*W+j+1]);
  var ops=[],k;
@@ -51,7 +84,7 @@ function run(){
     if(ops[i][0]==="="){
      var st=i;while(i<ops.length&&ops[i][0]==="=")i++;
      var run=ops.slice(st,i);same+=run.length;
-     if(opt.co&&run.length>2*CT+1){
+     if((opt.co||ops.length>4000)&&run.length>2*CT+1){
       var first=st===0,lastr=i===ops.length;
       var head=first?0:CT,tail=lastr?0:CT;
       if(run.length>head+tail+1){run.slice(0,head).forEach(function(o){line(o[1],"","  ")});gap(run.length-head-tail);run.slice(run.length-tail).forEach(function(o){line(o[1],"","  ")});continue}

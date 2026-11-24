@@ -15,13 +15,18 @@ function load(f){return DTAcore.files.loadImage(f)}
 async function run(){
  if(!items.length)return;var my=++busy,type=$("fmt").value,byT=$("mt").classList.contains("on"),mx=+$("mx").value||0,kb=+$("tk").value||100;
  $("qv").textContent=$("q").value;$("err").hidden=true;
- for(var it of items){if(!it.im)continue;
+ var cached=0;
+ for(var it of items){
+  if(!it.im&&!it.bad){var r=await load(it.f);if(my!==busy)return;if(r.im)it.im=r.im;else it.bad=true}
+  if(!it.im)continue;
   it.out=byT?await fit(it.im,type,kb,mx):await enc(it.im,type,+$("q").value/100,mx);
-  if(my!==busy)return}
+  if(my!==busy)return;
+  cached+=it.im.naturalWidth*it.im.naturalHeight;
+  if(items.length>1&&cached>6e7)it.im=null}
  show();
 }
 function show(){
- var ok=items.filter(function(i){return i.out}),bad=items.length-items.filter(function(i){return i.im}).length;
+ var ok=items.filter(function(i){return i.out}),bad=items.filter(function(i){return i.bad}).length;
  if(!ok.length){$("err").hidden=false;$("err").textContent=L("Could not open this image.","यह इमेज नहीं खुल सकी।");return}
  var so=0,sn=0;ok.forEach(function(i){so+=i.f.size;sn+=i.out.size});
  var sv=(1-sn/so)*100;
@@ -38,7 +43,7 @@ function show(){
 $("f").addEventListener("change",async function(){
  var fs=[].slice.call($("f").files);if(!fs.length)return;
  $("dt").textContent=fs.length>1?fs.length+L(" photos selected"," फोटो चुनी गईं"):fs[0].name;
- items=await Promise.all(fs.map(load));$("ctl").hidden=false;run();
+ items=fs.map(function(f){return{f:f}});$("ctl").hidden=false;run();
 });
 $("q").addEventListener("input",function(){$("qv").textContent=$("q").value;clearTimeout(tm);tm=setTimeout(run,200)});
 ["fmt","mx","tk"].forEach(function(i){$(i).addEventListener("input",function(){clearTimeout(tm);tm=setTimeout(run,300)})});

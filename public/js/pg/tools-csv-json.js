@@ -1,16 +1,17 @@
-var MAXC=5e6;
+var MAXC=5e6,FULL="",PREV=200000;
+function showOut(o){FULL=o;$("out").value=o.length>PREV?o.slice(0,PREV)+"\n…":o}
 function showErr(m){$("err").hidden=!m;$("err").textContent=m||""}
 function detect(t){var l=t.split(/\r?\n/)[0]||"",c={",":0,";":0,"\t":0,"|":0},q=0;for(var i=0;i<l.length;i++){var ch=l[i];if(ch==='"')q^=1;else if(!q&&c[ch]!==undefined)c[ch]++}var b=",",m=0;for(var k in c)if(c[k]>m){m=c[k];b=k}return b}
 function parseCSV(t,d){
- var rows=[],row=[],f="",q=false,i=0,n=t.length;
+ var rows=[],row=[],f="",i=0,n=t.length,re=new RegExp("[^"+d.replace(/[\\\]\^-]/g,"\\$&")+"\\r\\n]*","y");
  if(t.charCodeAt(0)===0xFEFF)i=1;
- for(;i<n;i++){var ch=t[i];
-  if(q){if(ch==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=ch}
-  else if(ch==='"'&&f==="")q=true;
-  else if(ch===d){row.push(f);f=""}
-  else if(ch==="\n"||ch==="\r"){if(ch==="\r"&&t[i+1]==="\n")i++;row.push(f);rows.push(row);row=[];f=""}
-  else f+=ch}
- if(q)throw new Error(L("A quote is not closed in your CSV.","आपके CSV में एक कोट बंद नहीं है।"));
+ while(i<n){var ch=t[i];
+  if(ch==='"'&&f===""){i++;
+   for(;;){var j=t.indexOf('"',i);if(j<0)throw new Error(L("A quote is not closed in your CSV.","आपके CSV में एक कोट बंद नहीं है।"));
+    f+=t.slice(i,j);if(t[j+1]==='"'){f+='"';i=j+2}else{i=j+1;break}}}
+  else if(ch===d){row.push(f);f="";i++}
+  else if(ch==="\n"||ch==="\r"){if(ch==="\r"&&t[i+1]==="\n")i++;row.push(f);rows.push(row);row=[];f="";i++}
+  else{re.lastIndex=i;re.exec(t);f+=t.slice(i,re.lastIndex);i=re.lastIndex}}
  if(f!==""||row.length){row.push(f);rows.push(row)}
  while(rows.length&&rows[rows.length-1].length===1&&rows[rows.length-1][0]==="")rows.pop();
  return rows;
@@ -39,15 +40,15 @@ function jsonToCsv(t){
  return lines.join("\r\n");
 }
 function run(){
- var t=$("in").value;showErr("");$("out").value="";$("act").hidden=true;
+ var t=$("in").value;showErr("");FULL="";$("out").value="";$("act").hidden=true;
  if(!t.trim())return;
  if(t.length>MAXC){showErr(L("Text is too large (over 5 MB).","टेक्स्ट बहुत बड़ा है (5 MB से ज़्यादा)।"));return}
- try{var o=$("md").value==="c2j"?csvToJson(t):jsonToCsv(t);$("out").value=o;$("act").hidden=false;$("st").textContent=o.split(/\r?\n/).length+L(" lines • ",L(" lines • "," पंक्तियाँ • "))+sizeOf(new Blob([o]).size)}
+ try{var o=$("md").value==="c2j"?csvToJson(t):jsonToCsv(t);showOut(o);$("act").hidden=false;$("st").textContent=(o.match(/\n/g)||[]).length+1+L(" lines • "," पंक्तियाँ • ")+sizeOf(new Blob([o]).size)+(o.length>PREV?L(" • showing the first part only; Copy and Save give the full result"," • सिर्फ़ शुरुआत दिख रही है; कॉपी और सेव में पूरा नतीजा मिलेगा"):"")}
  catch(e){showErr(e.message||L("Could not convert this text.","यह टेक्स्ट बदल नहीं सका।"))}
 }
 ["in","md","dl","hd","ty"].forEach(function(id){$(id).addEventListener(id==="in"?"input":"change",run)});
 $("md").addEventListener("change",function(){var c=$("md").value==="c2j";$("hdw").hidden=!c;$("tyw").hidden=!c});
-$("cp").onclick=function(){var ok=function(){toast(L("Copied","कॉपी हो गया"))},no=function(){toast(L("Could not copy","कॉपी नहीं हो सका"),"err")};try{navigator.clipboard.writeText($("out").value).then(ok,no)}catch(e){no()}};
-$("sv").onclick=function(){var j=$("md").value==="c2j";saveBlob(new Blob([$("out").value],{type:j?"application/json":"text/csv"}),"converted."+(j?"json":"csv"))};
+$("cp").onclick=function(){var ok=function(){toast(L("Copied","कॉपी हो गया"))},no=function(){toast(L("Could not copy","कॉपी नहीं हो सका"),"err")};try{navigator.clipboard.writeText(FULL).then(ok,no)}catch(e){no()}};
+$("sv").onclick=function(){var j=$("md").value==="c2j";saveBlob(new Blob([FULL],{type:j?"application/json":"text/csv"}),"converted."+(j?"json":"csv"))};
 $("ld").addEventListener("change",async function(){var f=this.files[0];if(!f)return;if(f.size>MAXC){showErr(L("File is too large (over 5 MB).","फाइल बहुत बड़ी है (5 MB से ज़्यादा)।"));return}$("in").value=await f.text();this.value="";run()});
 var rb=document.querySelector("[data-reset]");if(rb)rb.addEventListener("click",function(){$("in").value="";run()});
