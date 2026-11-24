@@ -5,7 +5,7 @@ function parse(s){
  for(var i=0;i<parts.length;i++){var p=parts[i];if(!p)continue;var m=p.match(/^(\d+)(?:-(\d+))?$/);if(!m)return null;var a=+m[1],b=m[2]?+m[2]:a;if(a<1||b<a||b>total)return null;for(var k=a;k<=b;k++)idx.push(k)}
  var seen={};return idx.filter(function(x){return seen[x]?0:(seen[x]=1)});
 }
-async function engine(){if(!pj){pj=await import("/js/vendor/pdfjs/pdf.min.mjs");pj.GlobalWorkerOptions.workerSrc="/js/vendor/pdfjs/pdf.worker.min.mjs"}return pj}
+async function engine(){if(!pj){pj=DTApdfView}return pj}
 $("f").addEventListener("change",async function(){
  var f=this.files[0];if(!f)return;showErr("");
  if(f.size>150*1024*1024){showErr(L("This PDF is larger than 150 MB. Please split it first.","यह PDF 150 MB से बड़ी है। पहले इसे अलग-अलग करें।"));return}

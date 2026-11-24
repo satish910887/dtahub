@@ -33,7 +33,7 @@ function toRanges(m){var out=[],i=0;while(i<total){if(m[i]){var j=i;while(m[j+1]
 async function thumbs(f){
  var tok=++thTok;$("th").innerHTML="";$("thh").hidden=true;
  try{
-  if(!pj){pj=await import("/js/vendor/pdfjs/pdf.min.mjs");pj.GlobalWorkerOptions.workerSrc="/js/vendor/pdfjs/pdf.worker.min.mjs"}
+  if(!pj){pj=DTApdfView}
   var doc=await pj.getDocument({isEvalSupported:false,data:new Uint8Array(await f.arrayBuffer())}).promise,n=Math.min(doc.numPages,120);
   $("thh").hidden=false;
   for(var i=1;i<=n;i++){

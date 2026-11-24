@@ -7,7 +7,7 @@
    Pure and DOM-free: unit tested in Node (scripts/pdf-test.mjs) against qpdf, pdfinfo, pdftotext and rendered pixels. */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) module.exports = factory(root);
-  else { var api = factory(root); var old = root.DTApdf || {}; for (var k in api) old[k] = api[k]; root.DTApdf = old; }
+  else if (!(root.DTApdf && root.DTApdf.Doc && root.DTApdf.Ref)) { var api = factory(root); var old = root.DTApdf || {}; for (var k in api) old[k] = api[k]; root.DTApdf = old; }
 })(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function (root) {
   "use strict";
 
@@ -273,11 +273,17 @@
     var ok = false;
     try { ok = d.readXrefChain(); if (ok) d.root(); } catch (e) { if (e.code === "encrypted") throw e; ok = false; }
     if (!ok) { d.cache.clear(); d.rebuild(); }
-    if (d.trailer.has("Encrypt") && !opt.ignoreEncryption) throw PdfError("encrypted", "This PDF is password protected.");
+    if (d.trailer.has("Encrypt") && !opt.ignoreEncryption) d.setupCrypt();
     var rt; try { rt = d.root(); } catch (e) { rt = null; }
     if (!rt || !dictOf(rt)) { d.cache.clear(); d.rebuild(); rt = d.root(); if (!rt) throw PdfError("damaged", "This PDF is damaged and cannot be read."); }
     d.nextNum = (d.maxNum || 0) + 1;
     return d;
+  };
+  Doc.prototype.setupCrypt = function () {
+    var er = this.trailer.get("Encrypt"), ed = dictOf(this.get(er)); if (!ed) throw PdfError("encrypted", "This PDF is password protected.");
+    var ids = this.get(this.trailer.get("ID")), id0 = Array.isArray(ids) && this.get(ids[0]) instanceof Str ? this.get(ids[0]).b : new Uint8Array(0);
+    if (er instanceof Ref) this.encNum = er.num;
+    this.crypt = makeCrypt(this, ed, id0); this.cache.clear();
   };
   Doc.prototype.root = function () { return this.get(this.trailer.get("Root")); };
 
@@ -380,7 +386,7 @@
         for (var i = 0; i < b.length; i += 32768) s += String.fromCharCode.apply(null, b.subarray(i, Math.min(b.length, i + 32768)));
         var mm = hdr.exec(s); r = mm ? this.parseIndirectAt(mm.index + mm[0].indexOf(String(num))) : null;
       }
-      v = r ? r.v : null;
+      v = r ? r.v : null; if (v && this.crypt && num !== this.encNum) v = this.crypt.obj(v, num, r.gen);
     } else if (e.t === 2) {
       var stm = this.getRaw(new Ref(e.stm, 0)); if (!(stm instanceof Stream)) return null;
       var key = "os" + e.stm, os = this.cache.get(key);
@@ -923,9 +929,154 @@
   Doc.prototype.getForm = function () { return new Form(this); };
   Doc.prototype.getCatalog = function () { return dictOf(this.get(this.root())); };
 
+  /* ================= standard security handler (empty user password): RC4-40/128, AES-128, AES-256 ================= */
+  var PAD = new Uint8Array([0x28, 0xBF, 0x4E, 0x5E, 0x4E, 0x75, 0x8A, 0x41, 0x64, 0x00, 0x4E, 0x56, 0xFF, 0xFA, 0x01, 0x08, 0x2E, 0x2E, 0x00, 0xB6, 0xD0, 0x68, 0x3E, 0x80, 0x2F, 0x0C, 0xA9, 0xFE, 0x64, 0x53, 0x69, 0x7A]);
+  function cat() { var n = 0, i; for (i = 0; i < arguments.length; i++) n += arguments[i].length; var o = new Uint8Array(n), p = 0; for (i = 0; i < arguments.length; i++) { o.set(arguments[i], p); p += arguments[i].length; } return o; }
+  var MD5_S = [7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21], MD5_K = null;
+  function md5(msg) {
+    if (!MD5_K) { MD5_K = []; for (var i = 0; i < 64; i++) MD5_K.push(Math.floor(Math.abs(Math.sin(i + 1)) * 4294967296) >>> 0); }
+    var n = msg.length, tot = ((n + 8) >> 6) * 64 + 64, b = new Uint8Array(tot); b.set(msg); b[n] = 0x80; var dv = new DataView(b.buffer); dv.setUint32(tot - 8, (n * 8) >>> 0, true); dv.setUint32(tot - 4, Math.floor(n / 536870912), true);
+    var a0 = 0x67452301, b0 = 0xefcdab89, c0 = 0x98badcfe, d0 = 0x10325476;
+    for (var off = 0; off < tot; off += 64) {
+      var M = []; for (var j = 0; j < 16; j++) M.push(dv.getUint32(off + j * 4, true)); var A = a0, B = b0, C = c0, D = d0;
+      for (var k = 0; k < 64; k++) { var F, g; if (k < 16) { F = (B & C) | (~B & D); g = k; } else if (k < 32) { F = (D & B) | (~D & C); g = (5 * k + 1) % 16; } else if (k < 48) { F = B ^ C ^ D; g = (3 * k + 5) % 16; } else { F = C ^ (B | ~D); g = (7 * k) % 16; }
+        F = (F + A + MD5_K[k] + M[g]) >>> 0; A = D; D = C; C = B; B = (B + ((F << MD5_S[k]) | (F >>> (32 - MD5_S[k])))) >>> 0; }
+      a0 = (a0 + A) >>> 0; b0 = (b0 + B) >>> 0; c0 = (c0 + C) >>> 0; d0 = (d0 + D) >>> 0;
+    }
+    var o = new Uint8Array(16), od = new DataView(o.buffer); od.setUint32(0, a0, true); od.setUint32(4, b0, true); od.setUint32(8, c0, true); od.setUint32(12, d0, true); return o;
+  }
+  function rc4(key, data) {
+    var s = new Uint8Array(256), i, j = 0, t; for (i = 0; i < 256; i++) s[i] = i; for (i = 0; i < 256; i++) { j = (j + s[i] + key[i % key.length]) & 255; t = s[i]; s[i] = s[j]; s[j] = t; }
+    var o = new Uint8Array(data.length); i = 0; j = 0; for (var k = 0; k < data.length; k++) { i = (i + 1) & 255; j = (j + s[i]) & 255; t = s[i]; s[i] = s[j]; s[j] = t; o[k] = data[k] ^ s[(s[i] + s[j]) & 255]; } return o;
+  }
+  var K256 = null;
+  function sha256(msg) {
+    if (!K256) { K256 = []; var pr = [], n = 2; while (pr.length < 64) { var ok = true; for (var d = 2; d * d <= n; d++) if (n % d === 0) { ok = false; break; } if (ok) pr.push(n); n++; } K256 = pr.map(function (p) { return Math.floor((Math.pow(p, 1 / 3) % 1) * 4294967296) >>> 0; }); }
+    var h = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19], len = msg.length, tot = ((len + 8) >> 6) * 64 + 64, b = new Uint8Array(tot); b.set(msg); b[len] = 0x80; var dv = new DataView(b.buffer); dv.setUint32(tot - 4, (len * 8) >>> 0); dv.setUint32(tot - 8, Math.floor(len / 536870912));
+    var w = new Uint32Array(64), rr = function (x, n) { return (x >>> n) | (x << (32 - n)); };
+    for (var off = 0; off < tot; off += 64) {
+      var i; for (i = 0; i < 16; i++) w[i] = dv.getUint32(off + i * 4); for (i = 16; i < 64; i++) { var s0 = rr(w[i - 15], 7) ^ rr(w[i - 15], 18) ^ (w[i - 15] >>> 3), s1 = rr(w[i - 2], 17) ^ rr(w[i - 2], 19) ^ (w[i - 2] >>> 10); w[i] = (w[i - 16] + s0 + w[i - 7] + s1) >>> 0; }
+      var a = h[0], bb = h[1], c = h[2], d2 = h[3], e = h[4], f = h[5], g = h[6], hh = h[7];
+      for (i = 0; i < 64; i++) { var S1 = rr(e, 6) ^ rr(e, 11) ^ rr(e, 25), ch = (e & f) ^ (~e & g), t1 = (hh + S1 + ch + K256[i] + w[i]) >>> 0, S0 = rr(a, 2) ^ rr(a, 13) ^ rr(a, 22), mj = (a & bb) ^ (a & c) ^ (bb & c), t2 = (S0 + mj) >>> 0; hh = g; g = f; f = e; e = (d2 + t1) >>> 0; d2 = c; c = bb; bb = a; a = (t1 + t2) >>> 0; }
+      h[0] = (h[0] + a) >>> 0; h[1] = (h[1] + bb) >>> 0; h[2] = (h[2] + c) >>> 0; h[3] = (h[3] + d2) >>> 0; h[4] = (h[4] + e) >>> 0; h[5] = (h[5] + f) >>> 0; h[6] = (h[6] + g) >>> 0; h[7] = (h[7] + hh) >>> 0;
+    }
+    var o = new Uint8Array(32), od = new DataView(o.buffer); for (var q = 0; q < 8; q++) od.setUint32(q * 4, h[q]); return o;
+  }
+  var K512 = null;
+  function sha512(msg, is384) {
+    var M = (1n << 64n) - 1n;
+    if (!K512) { K512 = []; var pr = [], n = 2; while (pr.length < 80) { var ok = true; for (var d = 2; d * d <= n; d++) if (n % d === 0) { ok = false; break; } if (ok) pr.push(n); n++; }
+      var icbrt = function (x) { /* floor(frac(cbrt(x)) * 2^64) with BigInt */ var X = BigInt(x) << 192n, lo = 0n, hi = 1n << 75n; while (lo < hi) { var mid = (lo + hi + 1n) >> 1n; if (mid * mid * mid <= X) lo = mid; else hi = mid - 1n; } return lo & M; };
+      K512 = pr.map(icbrt); }
+    var isqrtFrac = function (x) { var X = BigInt(x) << 128n, lo = 0n, hi = 1n << 72n; while (lo < hi) { var mid = (lo + hi + 1n) >> 1n; if (mid * mid <= X) lo = mid; else hi = mid - 1n; } return lo & M; };
+    var h = is384 ? [8, 9, 10, 11, 12, 13, 14, 15].map(function (i) { return isqrtFrac([2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71][i + 0]); }) : [2, 3, 5, 7, 11, 13, 17, 19].map(isqrtFrac);
+    if (is384) { /* SHA-384 uses the square roots of the 9th..16th primes */ var pp = [23, 29, 31, 37, 41, 43, 47, 53]; h = pp.map(isqrtFrac); }
+    var len = msg.length, tot = ((len + 16) >> 7) * 128 + 128, b = new Uint8Array(tot); b.set(msg); b[len] = 0x80; var dv = new DataView(b.buffer); dv.setUint32(tot - 4, (len * 8) >>> 0); dv.setUint32(tot - 8, Math.floor(len / 536870912));
+    var rr = function (x, n) { return ((x >> BigInt(n)) | (x << BigInt(64 - n))) & M; }, w = new Array(80);
+    for (var off = 0; off < tot; off += 128) {
+      var i; for (i = 0; i < 16; i++) w[i] = (BigInt(dv.getUint32(off + i * 8)) << 32n) | BigInt(dv.getUint32(off + i * 8 + 4));
+      for (i = 16; i < 80; i++) { var s0 = rr(w[i - 15], 1) ^ rr(w[i - 15], 8) ^ (w[i - 15] >> 7n), s1 = rr(w[i - 2], 19) ^ rr(w[i - 2], 61) ^ (w[i - 2] >> 6n); w[i] = (w[i - 16] + s0 + w[i - 7] + s1) & M; }
+      var a = h[0], bb = h[1], c = h[2], d2 = h[3], e = h[4], f = h[5], g = h[6], hh = h[7];
+      for (i = 0; i < 80; i++) { var S1 = rr(e, 14) ^ rr(e, 18) ^ rr(e, 41), ch = (e & f) ^ (~e & M & g), t1 = (hh + S1 + ch + K512[i] + w[i]) & M, S0 = rr(a, 28) ^ rr(a, 34) ^ rr(a, 39), mj = (a & bb) ^ (a & c) ^ (bb & c), t2 = (S0 + mj) & M; hh = g; g = f; f = e; e = (d2 + t1) & M; d2 = c; c = bb; bb = a; a = (t1 + t2) & M; }
+      h = [h[0] + a, h[1] + bb, h[2] + c, h[3] + d2, h[4] + e, h[5] + f, h[6] + g, h[7] + hh].map(function (x) { return x & M; });
+    }
+    var out = new Uint8Array(is384 ? 48 : 64), od = new DataView(out.buffer); for (var q = 0; q < (is384 ? 6 : 8); q++) { od.setUint32(q * 8, Number(h[q] >> 32n)); od.setUint32(q * 8 + 4, Number(h[q] & 0xffffffffn)); } return out;
+  }
+  /* AES */
+  var SBOX = null, ISBOX = null, MUL = null;
+  function aesInit() {
+    if (SBOX) return; SBOX = new Uint8Array(256); ISBOX = new Uint8Array(256); var p = 1, q = 1, rotl = function (x, s) { return ((x << s) | (x >> (8 - s))) & 255; };
+    do { p = p ^ ((p << 1) & 255) ^ (p & 0x80 ? 0x1b : 0); q ^= q << 1; q ^= q << 2; q ^= q << 4; q &= 255; if (q & 0x80) q ^= 0x09; var x = q ^ rotl(q, 1) ^ rotl(q, 2) ^ rotl(q, 3) ^ rotl(q, 4); SBOX[p] = (x ^ 0x63) & 255; } while (p !== 1);
+    SBOX[0] = 0x63; for (var i = 0; i < 256; i++) ISBOX[SBOX[i]] = i;
+    var gm = function (a, b) { var r = 0; while (b) { if (b & 1) r ^= a; a = ((a << 1) ^ (a & 0x80 ? 0x1b : 0)) & 255; b >>= 1; } return r; }; MUL = {}; [2, 3, 9, 11, 13, 14].forEach(function (m) { var t = new Uint8Array(256); for (var k = 0; k < 256; k++) t[k] = gm(k, m); MUL[m] = t; });
+  }
+  function aesKeys(key) {
+    aesInit(); var nk = key.length / 4, nr = nk + 6, w = new Uint8Array(16 * (nr + 1)), i; w.set(key); var rc = 1;
+    for (i = nk; i < 4 * (nr + 1); i++) { var t = [w[(i - 1) * 4], w[(i - 1) * 4 + 1], w[(i - 1) * 4 + 2], w[(i - 1) * 4 + 3]]; if (i % nk === 0) { t = [SBOX[t[1]] ^ rc, SBOX[t[2]], SBOX[t[3]], SBOX[t[0]]]; rc = ((rc << 1) ^ (rc & 0x80 ? 0x1b : 0)) & 255; } else if (nk > 6 && i % nk === 4) t = t.map(function (v) { return SBOX[v]; }); for (var k = 0; k < 4; k++) w[i * 4 + k] = w[(i - nk) * 4 + k] ^ t[k]; }
+    return { w: w, nr: nr };
+  }
+  function aesBlock(s, K, dec) {
+    var nr = K.nr, w = K.w, i, r, t = new Uint8Array(16);
+    function add(rd) { for (var k = 0; k < 16; k++) s[k] ^= w[rd * 16 + k]; }
+    if (!dec) {
+      add(0); for (r = 1; r <= nr; r++) {
+        for (i = 0; i < 16; i++) s[i] = SBOX[s[i]]; t.set(s); for (i = 0; i < 16; i++) s[i] = t[(i + 4 * (i % 4)) % 16];
+        if (r < nr) for (var c = 0; c < 4; c++) { var a0 = s[c * 4], a1 = s[c * 4 + 1], a2 = s[c * 4 + 2], a3 = s[c * 4 + 3]; s[c * 4] = MUL[2][a0] ^ MUL[3][a1] ^ a2 ^ a3; s[c * 4 + 1] = a0 ^ MUL[2][a1] ^ MUL[3][a2] ^ a3; s[c * 4 + 2] = a0 ^ a1 ^ MUL[2][a2] ^ MUL[3][a3]; s[c * 4 + 3] = MUL[3][a0] ^ a1 ^ a2 ^ MUL[2][a3]; }
+        add(r);
+      }
+    } else {
+      add(nr); for (r = nr - 1; r >= 0; r--) {
+        t.set(s); for (i = 0; i < 16; i++) s[(i + 4 * (i % 4)) % 16] = t[i]; for (i = 0; i < 16; i++) s[i] = ISBOX[s[i]]; add(r);
+        if (r > 0) for (var c2 = 0; c2 < 4; c2++) { var b0 = s[c2 * 4], b1 = s[c2 * 4 + 1], b2 = s[c2 * 4 + 2], b3 = s[c2 * 4 + 3]; s[c2 * 4] = MUL[14][b0] ^ MUL[11][b1] ^ MUL[13][b2] ^ MUL[9][b3]; s[c2 * 4 + 1] = MUL[9][b0] ^ MUL[14][b1] ^ MUL[11][b2] ^ MUL[13][b3]; s[c2 * 4 + 2] = MUL[13][b0] ^ MUL[9][b1] ^ MUL[14][b2] ^ MUL[11][b3]; s[c2 * 4 + 3] = MUL[11][b0] ^ MUL[13][b1] ^ MUL[9][b2] ^ MUL[14][b3]; }
+      }
+    }
+  }
+  function cbcDecrypt(key, iv, data, unpad) {
+    var K = aesKeys(key), n = Math.floor(data.length / 16), out = new Uint8Array(n * 16), prev = iv, blk = new Uint8Array(16);
+    for (var b = 0; b < n; b++) { blk.set(data.subarray(b * 16, b * 16 + 16)); var cur = data.subarray(b * 16, b * 16 + 16); aesBlock(blk, K, true); for (var k = 0; k < 16; k++) out[b * 16 + k] = blk[k] ^ prev[k]; prev = cur; }
+    if (unpad && out.length) { var pl = out[out.length - 1]; if (pl >= 1 && pl <= 16) return out.subarray(0, out.length - pl); }
+    return out;
+  }
+  function cbcEncryptNoPad(key, iv, data) {
+    var K = aesKeys(key), n = data.length / 16, out = new Uint8Array(data.length), prev = iv, blk = new Uint8Array(16);
+    for (var b = 0; b < n; b++) { for (var k = 0; k < 16; k++) blk[k] = data[b * 16 + k] ^ prev[k]; aesBlock(blk, K, false); out.set(blk, b * 16); prev = out.subarray(b * 16, b * 16 + 16); } return out;
+  }
+  function hash2B(pw, salt, udata) {
+    var K = sha256(cat(pw, salt, udata)), i = 0;
+    for (;;) {
+      var one = cat(pw, K, udata), K1 = new Uint8Array(one.length * 64); for (var r = 0; r < 64; r++) K1.set(one, r * one.length);
+      var E = cbcEncryptNoPad(K.subarray(0, 16), K.subarray(16, 32), K1), m = 0; for (var k = 0; k < 16; k++) m += E[k]; m %= 3;
+      K = m === 0 ? sha256(E) : m === 1 ? sha512(E, true) : sha512(E, false); i++;
+      if (i >= 64 && E[E.length - 1] <= i - 32) break;
+    }
+    return K.subarray(0, 32);
+  }
+  function eqBytes(a, b, n) { for (var i = 0; i < n; i++) if (a[i] !== b[i]) return false; return true; }
+  /* returns {obj(o, num, gen)} that decrypts every string and stream of an object; throws code "encrypted" when a password is needed */
+  function makeCrypt(doc, enc, id0) {
+    var g = function (k) { return doc.get(enc.get(k)); }, V = g("V") || 0, R = g("R") || 2, O = g("O"), U = g("U"), Pm = g("P"), len = g("Length") || 40, encMeta = g("EncryptMetadata") !== false;
+    var fail = function () { return PdfError("encrypted", "This PDF is password protected."); };
+    if (!(O instanceof Str) || !(U instanceof Str)) throw fail(); var Ob = O.b, Ub = U.b, key, stm = "RC4", strm = "RC4";
+    if (V >= 4) {
+      var cf = dictOf(g("CF")), pick = function (nm) { var n = doc.get(enc.get(nm)); n = n instanceof Name ? n.n : "Identity"; if (n === "Identity") return "NONE"; var d = cf && dictOf(doc.get(cf.get(n))), m = d && doc.get(d.get("CFM")); m = m instanceof Name ? m.n : "None"; return m === "V2" ? "RC4" : m === "AESV2" ? "AES" : m === "AESV3" ? "AES256" : "NONE"; };
+      stm = pick("StmF"); strm = pick("StrF"); var cd = cf && dictOf(doc.get(cf.get("StdCF"))); if (V === 4) len = (cd && doc.get(cd.get("Length"))) ? (doc.get(cd.get("Length")) <= 40 ? doc.get(cd.get("Length")) * 8 : doc.get(cd.get("Length"))) : 128;
+    }
+    if (V >= 5) {
+      var UE = g("UE"); if (!(UE instanceof Str) || Ub.length < 48) throw fail();
+      var pw = new Uint8Array(0), vs = Ub.subarray(32, 40), ks = Ub.subarray(40, 48), hv = R >= 6 ? hash2B(pw, vs, new Uint8Array(0)) : sha256(cat(pw, vs));
+      if (!eqBytes(hv, Ub, 32)) throw fail();
+      var ik = R >= 6 ? hash2B(pw, ks, new Uint8Array(0)) : sha256(cat(pw, ks)); key = cbcDecrypt(ik, new Uint8Array(16), UE.b.subarray(0, 32), false);
+    } else {
+      var n = V === 1 ? 5 : Math.max(5, Math.min(16, len / 8)), p4 = new Uint8Array(4); new DataView(p4.buffer).setInt32(0, Pm | 0, true);
+      var h = md5(cat(PAD, Ob.subarray(0, 32), p4, id0, R >= 4 && !encMeta ? new Uint8Array([255, 255, 255, 255]) : new Uint8Array(0)));
+      if (R >= 3) for (var i = 0; i < 50; i++) h = md5(h.subarray(0, n)); key = h.subarray(0, n);
+      var ok; if (R === 2) ok = eqBytes(rc4(key, PAD), Ub, 32); else { var x = rc4(key, md5(cat(PAD, id0))); for (var r2 = 1; r2 <= 19; r2++) x = rc4(key.map(function (b) { return b ^ r2; }), x); ok = eqBytes(x, Ub, 16); }
+      if (!ok) throw fail();
+    }
+    function objKey(num, gen, aes) {
+      if (V >= 5) return key; var ext = [num & 255, (num >> 8) & 255, (num >> 16) & 255, gen & 255, (gen >> 8) & 255]; if (aes) ext.push(0x73, 0x41, 0x6c, 0x54);
+      return md5(cat(key, new Uint8Array(ext))).subarray(0, Math.min(key.length + 5, 16));
+    }
+    function dec(method, bytes, num, gen) {
+      if (method === "NONE") return bytes; if (method === "RC4") return rc4(objKey(num, gen, false), bytes);
+      if (bytes.length < 32) return new Uint8Array(0); return cbcDecrypt(objKey(num, gen, true), bytes.subarray(0, 16), bytes.subarray(16), true);
+    }
+    function walk(o, num, gen) {
+      if (o instanceof Str) return new Str(dec(strm, o.b, num, gen), o.hex);
+      if (Array.isArray(o)) return o.map(function (x) { return walk(x, num, gen); });
+      if (o instanceof Dict) { var d = new Dict(); o.m.forEach(function (v, k) { d.set(k, walk(v, num, gen)); }); return d; }
+      if (o instanceof Stream) {
+        var d2 = walk(o.dict, num, gen), t = d2.get("Type"), skip = (t instanceof Name && (t.n === "XRef" || (t.n === "Metadata" && !encMeta))); var fl = d2.get("Filter"), f0 = Array.isArray(fl) ? fl[0] : fl; if (f0 instanceof Name && f0.n === "Crypt") skip = true;
+        var s = new Stream(d2, skip ? o.raw : dec(stm, o.raw, num, gen)); return s;
+      }
+      return o;
+    }
+    return { obj: walk };
+  }
+
   return {
     Doc: Doc, Page: Page, Name: Name, Ref: Ref, Str: Str, Dict: Dict, Stream: Stream, PdfError: PdfError,
     rgb: rgb, degrees: degrees, StandardFonts: StandardFonts, Form: Form,
-    util: { inflate: zlibInflate, deflate: zlibDeflate, mkDict: mkDict, N: N, dictOf: dictOf, serialize: serialize, textString: textString, Parser: Parser, te: te, strText: strText }
+    util: { _crypto: { md5: md5, sha256: sha256, sha512: sha512, rc4: rc4, cbcDecrypt: cbcDecrypt, cbcEncryptNoPad: cbcEncryptNoPad }, afm: function (n) { var k = { Helvetica: "H", "Helvetica-Oblique": "H", "Helvetica-Bold": "HB", "Helvetica-BoldOblique": "HB", "Times-Roman": "T", "Times-Bold": "TB", "Times-Italic": "TI", "Times-BoldItalic": "TBI" }[n]; return k ? AFM[k] : null; }, inflate: zlibInflate, deflate: zlibDeflate, mkDict: mkDict, N: N, dictOf: dictOf, serialize: serialize, textString: textString, Parser: Parser, te: te, strText: strText }
   };
 });

@@ -98,4 +98,22 @@ r=PdfReader("${tmp}"); print(len(r.get_fields() or {}), len(r.pages[0].get("/Ann
   const txt = execFileSync("pdftotext", [tmp, "-"]).toString(); ok(/wrap/.test(txt) && /Goa/.test(txt) && /second para/.test(txt), "flatten text " + txt.replace(/\n/g, "|"));
   execFileSync("pdftoppm", ["-r", "72", "-png", "-singlefile", tmp, dir + "/_fl"]);
 }
+
+// ---- encryption with empty user password ----
+{
+  const C = P.util._crypto, nc = require("crypto");
+  const rnd = n => new Uint8Array(nc.randomBytes(n));
+  for (const n of [0, 3, 55, 56, 64, 200, 1000]) { const m = rnd(n); const hex = u => Buffer.from(u).toString("hex");
+    ok(hex(C.md5(m)) === nc.createHash("md5").update(m).digest("hex"), "md5 " + n); ok(hex(C.sha256(m)) === nc.createHash("sha256").update(m).digest("hex"), "sha256 " + n);
+    ok(hex(C.sha512(m, false)) === nc.createHash("sha512").update(m).digest("hex"), "sha512 " + n); ok(hex(C.sha512(m, true)) === nc.createHash("sha384").update(m).digest("hex"), "sha384 " + n); }
+  { const key = rnd(32), iv = rnd(16), data = rnd(64), ci = nc.createCipheriv("aes-256-cbc", key, iv); ci.setAutoPadding(false); const enc = new Uint8Array(Buffer.concat([ci.update(data), ci.final()]));
+    ok(Buffer.from(C.cbcDecrypt(key, iv, enc, false)).equals(Buffer.from(data)), "aes256 decrypt"); ok(Buffer.from(C.cbcEncryptNoPad(key, iv, data)).equals(Buffer.from(enc)), "aes256 encrypt"); }
+  { const key = rnd(16), iv = rnd(16), data = rnd(32), ci = nc.createCipheriv("aes-128-cbc", key, iv); ci.setAutoPadding(false); const enc = new Uint8Array(Buffer.concat([ci.update(data), ci.final()]));
+    ok(Buffer.from(C.cbcDecrypt(key, iv, enc, false)).equals(Buffer.from(data)), "aes128 decrypt"); }
+  for (const f of ["e40.pdf", "e128rc4.pdf", "e128aes.pdf", "e256.pdf", "e256r5.pdf", "e128meta.pdf"]) {
+    if (!fs.existsSync(dir + "/" + f)) continue;
+    try { const src = P.Doc.load(rd(f)); ok(src.getPageCount() === 3, f + " pages"); const o = P.Doc.create(); (await o.copyPages(src, [0, 2])).forEach(p => o.addPage(p)); check(await o.save(), 2, "Doc a page 3"); }
+    catch (e) { ok(false, f + " failed: " + e.message); }
+  }
+}
 console.log(`${pass} passed, ${fail} failed`); process.exit(fail ? 1 : 0);

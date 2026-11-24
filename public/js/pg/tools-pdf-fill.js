@@ -1,7 +1,7 @@
 var pdfjs=null,doc=null,bytes=null,file=null,tool=null,items=[],sel=null,ink="#111111",sigData=null,uid=0,PG=[],IM={},FV={},FD={},hist=[],hp=-1,hasForm=false;
 var DRAG={hl:1,white:1,redact:1,box:1,oval:1,line:1,arrow:1,pen:1},SHAPE={hl:1,white:1,redact:1,box:1,oval:1},LINEY={line:1,arrow:1,pen:1},TXT={text:1,date:1,stamp:1};
 function msg(id,t){var e=$(id);e.hidden=!t;if(t)e.textContent=t}
-async function lib(){if(!pdfjs){pdfjs=await import("/js/vendor/pdfjs/pdf.min.mjs");pdfjs.GlobalWorkerOptions.workerSrc="/js/vendor/pdfjs/pdf.worker.min.mjs"}return pdfjs}
+async function lib(){if(!pdfjs){pdfjs=DTApdfView}return pdfjs}
 var FONTMAP={h:["Helvetica","HelveticaBold","HelveticaOblique","HelveticaBoldOblique"],t:["TimesRoman","TimesRomanBold","TimesRomanItalic","TimesRomanBoldItalic"],c:["Courier","CourierBold","CourierOblique","CourierBoldOblique"]};
 var CSSF={h:"Arial,Helvetica,sans-serif",t:"'Times New Roman',Times,serif",c:"'Courier New',Courier,monospace"};
 function fidx(it){return(it.b?1:0)+(it.i?2:0)}
