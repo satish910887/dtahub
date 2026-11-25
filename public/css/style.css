@@ -148,6 +148,7 @@ h1{font-size:clamp(2.15rem,8.4vw,3.9rem);line-height:1.06;margin:20px 0 14px;fon
 .tb-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .sel{height:42px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text);padding:0 12px;font-size:.9rem;outline:none}
 .sel:focus{border-color:var(--violet)}
+.sel:focus-visible{outline:2px solid var(--violet2);outline-offset:2px}
 .count{color:var(--muted);font-size:.88rem;margin-left:auto}
 .empty{text-align:center;color:var(--muted);padding:44px 16px;border:1px dashed var(--line2);border-radius:var(--r)}
 .empty svg.big{width:92px;height:92px;margin-bottom:8px}

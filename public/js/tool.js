@@ -142,8 +142,8 @@
     document.querySelectorAll("[data-ph-en]").forEach(function (el) { el.placeholder = el.getAttribute("data-ph-" + lang); });
     document.querySelectorAll("[data-label-en]").forEach(function (el) { el.setAttribute("aria-label", el.getAttribute("data-label-" + lang)); });
     var lb = $("langBtn"), tb = $("themeBtn");
-    if (lb) lb.textContent = lang === "en" ? "हि" : "EN";
-    if (tb) tb.innerHTML = D.icon(theme === "dark" ? "sun" : "moon", 19);
+    if (lb) { lb.textContent = lang === "en" ? "हि" : "EN"; lb.setAttribute("aria-label", lang === "en" ? "हि – switch to Hindi" : "EN – switch to English"); }
+    if (tb) { tb.innerHTML = D.icon(theme === "dark" ? "sun" : "moon", 19); tb.setAttribute("aria-label", theme === "dark" ? L("Switch to light theme", "लाइट थीम चुनें") : L("Switch to dark theme", "डार्क थीम चुनें")); }
     var meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute("content", theme === "dark" ? "#08080d" : "#f4f7fe");
     document.dispatchEvent(new Event("langchange"));
   }
@@ -301,7 +301,7 @@
     palIn.placeholder = L("Search tools, categories, actions…", "टूल, श्रेणी, एक्शन खोजें…"); palIn.value = ""; sel = 0; render();
     pal.classList.add("open"); setTimeout(function () { palIn.focus(); }, 30); document.body.style.overflow = "hidden";
   }
-  function close() { if (!pal) return; pal.classList.remove("open"); document.body.style.overflow = ""; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  function close() { if (!pal) return; pal.classList.remove("open"); document.body.style.overflow = ""; if (lastFocus && lastFocus !== document.body && lastFocus.focus) lastFocus.focus(); if (palIn && document.activeElement === palIn) palIn.blur(); }
   window.DTApalette = open;
   document.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("[data-open-palette]")) { e.preventDefault(); open(); } });
   document.addEventListener("keydown", function (e) {

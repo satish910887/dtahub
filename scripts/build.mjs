@@ -39,9 +39,9 @@ function header() {
  <a class="logo" href="/" aria-label="DTAhub – Your Everyday Digital Toolkit">${logo(32)}<span>DTA<b>hub</b></span></a>
  <nav class="links" aria-label="Main"><a href="/tools/">${bi("Tools", "टूल्स")}</a><div class="dd"><a href="/#categories" aria-haspopup="true">${bi("Categories", "श्रेणियां")}<svg class="ddc" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></a><div class="ddp">${cats}</div></div><a href="/blog/">${bi("Guides", "गाइड्स")}</a><a href="/contact.html">${bi("Contact", "संपर्क")}</a></nav>
  <div class="actions">
-  <button class="kbd-btn" type="button" data-open-palette aria-label="Search">${D.icon("search", 18)}${bi("Search tools…", "टूल खोजें…")}<kbd>Ctrl K</kbd></button>
+  <button class="kbd-btn" type="button" data-open-palette>${D.icon("search", 18)}${bi("Search tools…", "टूल खोजें…")}<kbd>Ctrl K</kbd></button>
   <button class="icon-btn s-btn" type="button" data-open-palette aria-label="Search">${D.icon("search", 19)}</button>
-  <button class="icon-btn" id="langBtn" type="button" aria-label="Language">हि</button>
+  <button class="icon-btn" id="langBtn" type="button" aria-label="हि – switch to Hindi">हि</button>
   <button class="icon-btn" id="themeBtn" type="button" aria-label="Theme">${D.icon("sun", 19)}</button>
   <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="mnav">${D.icon("menu", 20)}</button>
  </div>
@@ -190,7 +190,7 @@ function toolsPage() {
  <div class="chips" id="tiChips" role="group" aria-label="Categories">${chip("all", "All", "सभी", D.TOOLS.length, true)}${D.CATS.map((c) => chip(c.id, c.short ? c.short.en : c.en, c.short ? c.short.hi : c.hi, D.TOOLS.filter((x) => x.cat === c.id).length, false)).join("")}</div>
  <p id="tiCount" class="count" aria-live="polite"></p>
 </div>
-<section class="sec"><div id="tiGrid" class="grid">${D.TOOLS.map((t) => D.cardHTML(t)).join("")}</div>
+<section class="sec"><h2 class="sr" data-en="All tools" data-hi="सभी टूल्स">All tools</h2><div id="tiGrid" class="grid">${D.TOOLS.map((t) => D.cardHTML(t)).join("")}</div>
  <div id="tiEmpty" class="empty" hidden><b data-en="No tool found" data-hi="कोई टूल नहीं मिला">No tool found</b><span data-en="Try a different word, or ask us to build it." data-hi="कोई और शब्द आज़माएं, या हमसे बनवाने को कहें।">Try a different word, or ask us to build it.</span><br><br><a class="btn gold" href="/contact.html#request" data-en="Request a tool" data-hi="टूल मांगें">Request a tool</a></div>
 </section>
 </main>

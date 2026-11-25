@@ -20,7 +20,7 @@
     var pids = ["pdf-merge", "image-compress", "qr-code", "resume-maker"];
     $$("pop").innerHTML = pids.map(function (id) { var t = D.tool(id); return t ? '<a class="pchip" href="' + D.toolUrl(t) + '"><span data-en="' + D.esc(t.en) + '" data-hi="' + D.esc(t.hi) + '">' + D.esc(t.en) + "</span></a>" : ""; }).join("");
     var pill = function (t, hid) { var c = D.cat(t.cat); return '<a class="pill" style="--h:' + c.hue + '" href="' + D.toolUrl(t) + '"' + (hid ? ' tabindex="-1" aria-hidden="true"' : "") + ">" + D.icon(t.id, 18) + '<span data-en="' + D.esc(t.en) + '" data-hi="' + D.esc(t.hi) + '">' + D.esc(t.en) + "</span></a>"; };
-    $$("marq").innerHTML = D.TOOLS.map(function (t) { return pill(t, false); }).join("") + D.TOOLS.map(function (t) { return pill(t, true); }).join("");
+    $$("marq").innerHTML = D.TOOLS.map(function (t) { return pill(t, true); }).join("") + D.TOOLS.map(function (t) { return pill(t, true); }).join("");
   }
   function renderCats() { $$("catGrid").innerHTML = D.CATS.map(D.catCardHTML).join(""); }
   var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
