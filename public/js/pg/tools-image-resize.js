@@ -7,7 +7,8 @@ function load(f){return DTAcore.files.loadImage(f)}
 function first(){return items.find(function(i){return i.im})}
 $("f").addEventListener("change",async function(){
  var fs=[].slice.call($("f").files);if(!fs.length)return;
- items=(await Promise.all(fs.map(load)));var i=first();
+ items=fs.map(function(f){return{f:f}});var i=null;
+ for(var q of items){var r=await load(q.f);if(r.im){q.im=r.im;i=q;break}q.bad=true}
  if(!i){$("err").hidden=false;$("err").textContent=L("Could not open this image.","यह इमेज नहीं खुल सकी।");return}
  var im=i.im,f=i.f;ratio=im.naturalWidth/im.naturalHeight;
  $("err").hidden=true;$("ctl").hidden=false;$("res").hidden=true;$("dt").textContent=fs.length>1?fs.length+L(" photos selected"," फोटो चुनी गईं"):f.name;
@@ -37,10 +38,14 @@ $("go").onclick=async function(){
  var w=Math.round(toPx(+$("w").value)),h=Math.round(toPx(+$("h").value)),lock=$("lock").checked;
  if(!(w>0&&h>0)||w>MAXD||h>MAXD){$("err").hidden=false;$("err").textContent=L("Enter width and height between 1 and 8000 px.","चौड़ाई और ऊंचाई 1 से 8000 px के बीच डालें।");return}
  $("err").hidden=true;var t=$("fmt").value;
- for(var it of items){if(!it.im)continue;
+ var cached=0;
+ for(var it of items){
+  if(!it.im&&!it.bad){var r=await load(it.f);if(r.im)it.im=r.im;else it.bad=true}
+  if(!it.im)continue;
   var W=w,H=lock?Math.max(1,Math.round(w*it.im.naturalHeight/it.im.naturalWidth)):h;
   if(H>MAXD)H=MAXD;
-  it.W=W;it.H=H;it.out=await draw(it.im,W,H,t,lock?"stretch":$("fit").value,$("bg").value)}
+  it.W=W;it.H=H;it.out=await draw(it.im,W,H,t,lock?"stretch":$("fit").value,$("bg").value);
+  cached+=it.im.naturalWidth*it.im.naturalHeight;if(items.length>1&&cached>6e7&&it!==items[0])it.im=null}
  var ok=items.filter(function(i){return i.out}),one=ok.length===1,o=ok[0];
  $("info").textContent=one?o.W+" × "+o.H+" px • "+sizeOf(o.out.size):ok.length+L(" images resized"," इमेज रीसाइज़ हुईं");
  $("pv").hidden=!one;$("list").hidden=one;$("dl").hidden=!one;$("dz").hidden=one;

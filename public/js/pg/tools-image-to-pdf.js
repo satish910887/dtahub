@@ -19,12 +19,12 @@ $("list").addEventListener("drop",function(e){var li=e.target.closest("li");if(!
 $("f").addEventListener("change",function(){
  var inp=this,list=Array.prototype.slice.call(inp.files),bad=[];inp.value="";$("err").hidden=true;$("ok").hidden=true;
  if(!list.length)return;
- Promise.all(list.map(function(f){return new Promise(function(res){
+ (async function(){for(var f of list){await new Promise(function(res){
   if(f.size>50*1024*1024){bad.push(f.name+L(" (over 50 MB)"," (50 MB से बड़ी)"));return res()}
   var u=URL.createObjectURL(f),im=new Image();
   im.onload=function(){files.push({file:f,rot:0,url:u});res()};
   im.onerror=function(){URL.revokeObjectURL(u);bad.push(f.name);res()};
-  im.src=u})})).then(function(){render();
+  im.src=u})}})().then(function(){render();
   if(bad.length){$("err").hidden=false;$("err").textContent=L("Skipped (not a readable image): ","छोड़ी गईं (पढ़ने लायक इमेज नहीं): ")+bad.slice(0,4).join(", ")+(bad.length>4?"…":"")}});
 });
 $("clr").onclick=function(){files.forEach(function(f){URL.revokeObjectURL(f.url)});files=[];render();$("err").hidden=true;$("ok").hidden=true};

@@ -19,9 +19,13 @@ function load(f){return DTAcore.files.loadImage(f)}
 async function run(){
  if(!items.length)return;var my=++busy,t=$("fmt").value;
  $("qv").textContent=$("q").value;$("qbox").hidden=t==="image/png";$("bgbox").hidden=t!=="image/jpeg";
- for(var it of items){it.out=it.im?await enc(it.im,t,+$("q").value/100,$("bg").value):null;if(my!==busy)return}
+ var cached=0;
+ for(var it of items){
+  if(!it.im&&!it.bad){var r=await load(it.f);if(my!==busy)return;if(r.im)it.im=r.im;else it.bad=true}
+  it.out=it.im?await enc(it.im,t,+$("q").value/100,$("bg").value):null;if(my!==busy)return;
+  if(it.im){cached+=it.im.naturalWidth*it.im.naturalHeight;if(items.length>1&&cached>6e7)it.im=null}}
  var ok=items.filter(function(i){return i.out&&i.out.type===t});
- if(!ok.length){$("err").hidden=false;$("err").textContent=items.some(function(i){return i.im})?L("This format is not supported on your browser.","आपके ब्राउज़र में यह फॉर्मेट सपोर्ट नहीं है।"):L("Could not open this image. The file may be damaged or not an image.","यह इमेज खुल नहीं सकी। फ़ाइल खराब हो सकती है या इमेज नहीं है।");$("res").hidden=true;return}
+ if(!ok.length){$("err").hidden=false;$("err").textContent=items.some(function(i){return !i.bad})?L("This format is not supported on your browser.","आपके ब्राउज़र में यह फॉर्मेट सपोर्ट नहीं है।"):L("Could not open this image. The file may be damaged or not an image.","यह इमेज खुल नहीं सकी। फ़ाइल खराब हो सकती है या इमेज नहीं है।");$("res").hidden=true;return}
  $("err").hidden=true;var one=ok.length===1,o=ok[0];
  $("info").textContent=ok.length>1?ok.length+L(" images converted to "," इमेज बदली गईं → ")+extOf(t).toUpperCase():(o.f.type||"image").replace("image/","").toUpperCase()+" → "+extOf(o.out.type).toUpperCase()+" • "+sizeOf(o.f.size)+" → "+sizeOf(o.out.size);
  $("pv").hidden=!one;$("list").hidden=one;$("dl").hidden=!one;$("dz").hidden=one;
@@ -32,7 +36,7 @@ async function run(){
 $("f").addEventListener("change",async function(){
  var fs=[].slice.call($("f").files);if(!fs.length)return;
  $("dt").textContent=fs.length>1?fs.length+L(" photos selected"," फोटो चुनी गईं"):fs[0].name;
- items=await Promise.all(fs.map(load));$("ctl").hidden=false;run();
+ items=fs.map(function(f){return{f:f}});$("ctl").hidden=false;run();
 });
 ["fmt","bg","wp","ws"].forEach(function(i){$(i).addEventListener("input",run)});
 $("wt").addEventListener("input",function(){clearTimeout(tm);tm=setTimeout(run,250)});
