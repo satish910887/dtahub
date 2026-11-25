@@ -1,3 +1,4 @@
+var NAT=new Intl.Collator(undefined,{numeric:true});
 var prev="";
 function set(f){var t=$("t");prev=t.value;t.value=f(t.value);cnt()}
 function cnt(){var v=$("t").value;$("cnt").textContent=v?v.length+L(" characters • "," अक्षर • ")+(v.trim().split(/\s+/).filter(Boolean).length)+L(" words • "," शब्द • ")+v.split("\n").length+L(" lines"," लाइनें"):""}
@@ -18,7 +19,7 @@ var CLN=[["Trim lines","लाइनें ट्रिम करें",eachLin
 ["Remove line breaks","लाइन ब्रेक हटाएं",function(s){return s.replace(/\s*\n+\s*/g," ").trim()}],
 ["Remove blank lines","खाली लाइनें हटाएं",function(s){return s.split("\n").filter(function(l){return l.trim()}).join("\n")}],
 ["Remove duplicate lines","डुप्लिकेट लाइनें हटाएं",function(s){var seen={};return s.split("\n").filter(function(l){if(seen[l])return false;seen[l]=1;return true}).join("\n")}],
-["Sort lines A–Z","लाइनें A–Z",function(s){return s.split("\n").sort(function(a,b){return a.localeCompare(b)}).join("\n")}],
+["Sort lines A–Z","लाइनें A–Z",function(s){return s.split("\n").sort(NAT.compare).join("\n")}],
 ["Reverse lines","लाइनें उलटें",function(s){return s.split("\n").reverse().join("\n")}],
 ["Reverse text","टेक्स्ट उलटें",function(s){return Array.from(s).reverse().join("")}]];
 DEV.forEach(function(x){var b=document.createElement("button");b.className="chip";b.type="button";b.textContent=x[0];b.onclick=function(){set(x[1])};$("dev").appendChild(b)});

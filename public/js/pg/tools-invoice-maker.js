@@ -18,10 +18,14 @@ function three(n){var s="";if(n>=100){s=ones[(n/100|0)-1]+" Hundred";n%=100;if(n
 function words(n){if(n===0)return"Zero";var p=[],cr=Math.floor(n/1e7),r=n%1e7,la=Math.floor(r/1e5),th=Math.floor((r%1e5)/1e3),h=r%1e3;
  if(cr)p.push((cr>=100?words(cr):two(cr))+" Crore");if(la)p.push(two(la)+" Lakh");if(th)p.push(two(th)+" Thousand");if(h)p.push(three(h));return p.join(" ")}
 function m(n){return d.cur+" "+Number(n).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2})}
-function compute(){var rows=[],sub=0;d.items.forEach(function(i){var q=+i.q||0,r=+i.r||0;if(!i.d.trim()&&!q&&!r)return;if(!i.d.trim()&&!(+i.r))return;var a=q*r;rows.push({d:i.d,h:i.h,q:q,r:r,g:d.gstOn?(+i.g||0):0,a:a});sub+=a});
- var disc=Math.min(Math.max(+d.disc||0,0),sub),k=sub?disc/sub:0,gst=0;rows.forEach(function(x){gst+=x.a*(1-k)*x.g/100});
- var tot=sub-disc+gst,fin=d.round?Math.round(tot):tot;
- return{rows:rows,sub:sub,disc:disc,taxable:sub-disc,gst:gst,total:fin,ro:fin-tot}}
+function compute(){ /* all money is worked out in whole paise so the printed lines always add up */
+ var rows=[],subP=0;
+ d.items.forEach(function(i){var q=+i.q||0,r=+i.r||0;if(!i.d.trim()&&!q&&!r)return;if(!i.d.trim()&&!(+i.r))return;var ap=Math.round(q*r*100+1e-7);rows.push({d:i.d,h:i.h,q:q,r:r,g:d.gstOn?(+i.g||0):0,a:ap/100,ap:ap});subP+=ap});
+ var dp=Math.min(Math.max(Math.round((+d.disc||0)*100),0),subP),left=dp,byRate={};
+ rows.forEach(function(x,ix){var sh=ix===rows.length-1?left:(subP?Math.round(dp*x.ap/subP):0);if(sh>left)sh=left;left-=sh;var t=x.ap-sh;byRate[x.g]=(byRate[x.g]||0)+t});
+ var gp=0;Object.keys(byRate).forEach(function(g){gp+=Math.round(byRate[g]*(+g)/100)});
+ var cg=Math.round(gp/2),sg=gp-cg,tp=subP-dp+gp,fp=d.round?Math.round(tp/100)*100:tp;
+ return{rows:rows,sub:subP/100,disc:dp/100,taxable:(subP-dp)/100,gst:gp/100,cg:cg/100,sg:sg/100,total:fp/100,ro:(fp-tp)/100}}
 function render(){
  var c=compute(),h="",f=d.from,to=d.to,show=d.gstOn,hs=c.rows.some(function(x){return x.h});$("dpPaper").style.setProperty("--ac",d.ac);
  h+='<div class="iv-top"><div>'+(d.logo?'<img src="'+d.logo+'" alt="" style="max-height:56px;max-width:200px;display:block;margin-bottom:8px">':"")+'<div class="iv-title">'+E(L("INVOICE","इनवॉइस"))+'</div></div><div class="iv-meta"><div><b>'+E(L("Invoice no","इनवॉइस नं"))+'</b> '+E(d.no)+'</div><div><b>'+E(L("Date","तारीख"))+'</b> '+E(Doc.pretty(d.date))+'</div>'+(d.due?'<div><b>'+E(L("Due","देय"))+'</b> '+E(Doc.pretty(d.due))+'</div>':"")+'</div></div>';
@@ -30,7 +34,7 @@ function render(){
  c.rows.forEach(function(x,i){h+='<tr><td>'+(i+1)+'</td><td>'+E(x.d)+'</td>'+(hs?'<td>'+E(x.h)+'</td>':"")+'<td class="r">'+x.q+'</td><td class="r">'+E(m(x.r))+'</td>'+(show?'<td class="r">'+x.g+'%</td>':"")+'<td class="r">'+E(m(x.a))+'</td></tr>'});
  h+='</tbody></table><div class="iv-tot"><div><span>'+E(L("Subtotal","उप-योग"))+'</span><span>'+E(m(c.sub))+'</span></div>';
  if(c.disc)h+='<div><span>'+E(L("Discount","छूट"))+'</span><span>− '+E(m(c.disc))+'</span></div>';
- if(show){if(d.split)h+='<div><span>CGST</span><span>'+E(m(c.gst/2))+'</span></div><div><span>SGST</span><span>'+E(m(c.gst/2))+'</span></div>';else h+='<div><span>IGST</span><span>'+E(m(c.gst))+'</span></div>'}
+ if(show){if(d.split)h+='<div><span>CGST</span><span>'+E(m(c.cg))+'</span></div><div><span>SGST</span><span>'+E(m(c.sg))+'</span></div>';else h+='<div><span>IGST</span><span>'+E(m(c.gst))+'</span></div>'}
  if(d.round&&Math.abs(c.ro)>0.004)h+='<div><span>'+E(L("Round off","राउंड ऑफ"))+'</span><span>'+(c.ro<0?"− ":"+ ")+E(m(Math.abs(c.ro)))+'</span></div>';
  h+='<div class="gt"><span>'+E(L("Total","कुल"))+'</span><span>'+E(m(c.total))+'</span></div></div>';
  if(d.cur==="₹"&&c.total>0){var p=Math.round(c.total*100),ru=Math.floor(p/100),ps=p%100;h+='<div class="iv-words"><b>'+E(L("Amount in words: ","राशि शब्दों में: "))+'</b>Rupees '+E(words(ru))+(ps?" and "+E(words(ps))+" Paise":"")+' Only</div>'}

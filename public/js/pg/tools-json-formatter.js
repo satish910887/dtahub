@@ -13,6 +13,31 @@ function stat(v,d){
  return r;
 }
 function size(n){return n<1024?fmt(n)+" B":(n/1024).toFixed(1)+" KB"}
+/* Lossless re-printer: keeps number text (big ints, 1.10, -0), string escapes, duplicate keys and key order exactly as typed. Input must already be valid JSON. */
+function lossless(src,min,ind,sort){
+ var i=0,n=src.length;
+ function ws(){while(i<n&&" \t\n\r".indexOf(src[i])>=0)i++}
+ function str(){var j=i+1;while(src[j]!=='"'){if(src[j]==="\\")j++;j++}var r=src.slice(i,j+1);i=j+1;return r}
+ function val(){ws();var c=src[i],e;
+  if(c==="{"){i++;e=[];ws();if(src[i]==="}"){i++;return{t:"o",e:e}}
+   for(;;){ws();var k=str();ws();i++;var v=val();e.push([k,v]);ws();if(src[i++]==="}")return{t:"o",e:e}}}
+  if(c==="["){i++;e=[];ws();if(src[i]==="]"){i++;return{t:"a",e:e}}
+   for(;;){e.push(val());ws();if(src[i++]==="]")return{t:"a",e:e}}}
+  if(c==='"')return{t:"p",r:str()};
+  var j=i;while(j<n&&",]} \t\n\r".indexOf(src[j])<0)j++;var r=src.slice(i,j);i=j;return{t:"p",r:r}}
+ var root=val(),u=min?"":(typeof ind==="number"?(ind>0?new Array(ind+1).join(" "):""):ind),compact=min||u==="";
+ function pad(l){var r="";while(l-->0)r+=u;return r}
+ function pr(x,l){
+  if(x.t==="p")return x.r;
+  var o=x.t==="o",a=x.e;
+  if(!a.length)return o?"{}":"[]";
+  if(o&&sort)a=a.map(function(p,ix){return[p,ix,JSON.parse(p[0])]}).sort(function(p,q){return p[2]<q[2]?-1:p[2]>q[2]?1:p[1]-q[1]}).map(function(p){return p[0]});
+  var parts=a.map(function(y){return o?y[0]+(compact?":":": ")+pr(y[1],l+1):pr(y,l+1)});
+  if(!o&&sort)parts=a.map(function(y){return pr(y,l+1)});
+  return compact?(o?"{":"[")+parts.join(",")+(o?"}":"]"):(o?"{\n":"[\n")+pad(l+1)+parts.join(",\n"+pad(l+1))+"\n"+pad(l)+(o?"}":"]");
+ }
+ return pr(root,0);
+}
 function indent(){var v=$("ind").value;return v==="tab"?"\t":+v}
 function lc(s,p){var b=s.slice(0,p).split("\n");return{l:b.length,c:b[b.length-1].length+1}}
 function showCtx(s,l,c){
@@ -45,7 +70,7 @@ function render(mode){
  try{o=JSON.parse(raw)}catch(e){showErr(e,raw);return}
  if($("srt").checked)o=sortDeep(o);
  cur=o;
- out=lastMode==="min"?JSON.stringify(o):JSON.stringify(o,null,indent());
+ try{out=lossless(raw,lastMode==="min",indent(),$("srt").checked)}catch(e){out=lastMode==="min"?JSON.stringify(o):JSON.stringify(o,null,indent())}
  $("out").value=out;
  $("ok").hidden=false;$("ok").textContent=L("Valid JSON ✓","सही JSON ✓");
  var s=stat(o,0),bi=new TextEncoder().encode(raw.trim()).length,bo=new TextEncoder().encode(out).length;

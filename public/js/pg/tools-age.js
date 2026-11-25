@@ -4,11 +4,11 @@ var DAYS=[["Sunday","रविवार"],["Monday","सोमवार"],["Tues
 var ZOD=[[1,20,"Capricorn","मकर"],[2,19,"Aquarius","कुंभ"],[3,20,"Pisces","मीन"],[4,20,"Aries","मेष"],[5,21,"Taurus","वृषभ"],[6,21,"Gemini","मिथुन"],[7,22,"Cancer","कर्क"],[8,23,"Leo","सिंह"],[9,23,"Virgo","कन्या"],[10,23,"Libra","तुला"],[11,22,"Scorpio","वृश्चिक"],[12,22,"Sagittarius","धनु"],[13,0,"Capricorn","मकर"]];
 function zod(m,d){for(var i=0;i<ZOD.length;i++){var z=ZOD[i];if(m<z[0]||(m===z[0]&&d<=z[1]))return L(z[2],z[3])}return L("Capricorn","मकर")}
 function wd(d){return L(DAYS[d.getDay()][0],DAYS[d.getDay()][1])}
-function diff(d1,d2){ // d1<=d2
- var y=d2.getFullYear()-d1.getFullYear(),m=d2.getMonth()-d1.getMonth(),d=d2.getDate()-d1.getDate();
- if(d<0){m--;d+=new Date(d2.getFullYear(),d2.getMonth(),0).getDate()}
- if(m<0){y--;m+=12}
- return[y,m,d];
+function addM(d,n){var t=d.getMonth()+n,y=d.getFullYear()+Math.floor(t/12),m=((t%12)+12)%12,last=new Date(y,m+1,0).getDate();return new Date(y,m,Math.min(d.getDate(),last))}
+function diff(d1,d2){ // d1<=d2: whole months from d1 (day clamped to month end), then the remaining days
+ var tm=(d2.getFullYear()-d1.getFullYear())*12+d2.getMonth()-d1.getMonth(),c=addM(d1,tm);
+ if(c>d2){tm--;c=addM(d1,tm)}
+ return[Math.floor(tm/12),tm%12,Math.round((d2-c)/864e5)];
 }
 function fmtA(a){return a[0]+L(" yrs ", " साल ")+a[1]+L(" mo ", " माह ")+a[2]+L(" days"," दिन")}
 var last="";
