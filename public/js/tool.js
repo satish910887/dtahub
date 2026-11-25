@@ -135,12 +135,27 @@
     });
   })();
 
+  /* Hindi names for screen readers: labels written in English in the markup or built by scripts are swapped by this table */
+  var AH = {"Main":"मुख्य मेन्यू","Menu":"मेन्यू","More":"और","Quick":"क्विक लिंक","Search":"खोजें","Search tools":"टूल खोजें","Breadcrumb":"आप यहाँ हैं","Favourite":"पसंदीदा","More in this category":"इस श्रेणी के और टूल","Theme":"थीम","Accent":"रंग","Animations":"एनिमेशन","Language":"भाषा","Categories":"श्रेणियाँ","Custom colour":"अपना रंग","DTAhub – Your Everyday Digital Toolkit":"DTAhub – आपका रोज़ का डिजिटल टूलकिट","Balance chart":"बकाया राशि का चार्ट","Growth chart":"बढ़त का चार्ट","Principal vs interest":"मूलधन बनाम ब्याज","Repayment schedule":"किस्तों की तालिका","Delete":"हटाएं","Remove":"हटाएं","Down":"नीचे","Up":"ऊपर","Move down":"नीचे ले जाएं","Move up":"ऊपर ले जाएं","Drag to reorder":"क्रम बदलने के लिए खींचें","Editor":"संपादक","Export":"एक्सपोर्ट","Flags":"फ्लैग","Hash results":"हैश नतीजे","Hindi output":"हिंदी आउटपुट","Item":"आइटम","Price":"कीमत","Price ₹":"कीमत ₹","Letter text":"पत्र का टेक्स्ट","Preview":"प्रीव्यू","Result":"नतीजा","Type":"प्रकार","Unit":"इकाई","Version name":"वर्शन का नाम","View":"व्यू","Discount %":"छूट %","Discount percent":"छूट प्रतिशत","Extra discount percent":"अतिरिक्त छूट प्रतिशत","Extra discount % (optional)":"अतिरिक्त छूट % (वैकल्पिक)","e.g. Ms. Sharma":"जैसे: श्रीमती शर्मा","X number":"X संख्या","Y number":"Y संख्या","X percent":"X प्रतिशत","Qty":"मात्रा","GST %":"जीएसटी %","Rotate":"घुमाएं"};
+  function trAttr(el, attr) {
+    var k = "data-o-" + attr, o = el.getAttribute(k), cur = el.getAttribute(attr);
+    if (o !== null && cur !== o && cur !== AH[o]) { el.removeAttribute(k); o = null; }
+    if (o === null) { if (cur === null || !Object.prototype.hasOwnProperty.call(AH, cur)) return; o = cur; el.setAttribute(k, o); }
+    el.setAttribute(attr, lang === "hi" ? AH[o] : o);
+  }
+  function trAll() {
+    document.querySelectorAll("[aria-label]:not([data-label-en])").forEach(function (el) { trAttr(el, "aria-label"); });
+    document.querySelectorAll("[placeholder]:not([data-ph-en])").forEach(function (el) { trAttr(el, "placeholder"); });
+  }
+  var trT = 0;
+  if (window.MutationObserver) new MutationObserver(function () { if (lang === "hi") { clearTimeout(trT); trT = setTimeout(trAll, 120); } }).observe(document.documentElement, { childList: true, subtree: true });
   /* ---------- apply language / theme ---------- */
   function apply() {
     root.lang = lang; root.setAttribute("data-theme", theme); root.setAttribute("data-motion", motion); if (accent === "gold") root.removeAttribute("data-accent"); else root.setAttribute("data-accent", accent);
     document.querySelectorAll("[data-en]").forEach(function (el) { var v = el.getAttribute("data-" + lang); if (v !== null) el.textContent = v; });
     document.querySelectorAll("[data-ph-en]").forEach(function (el) { el.placeholder = el.getAttribute("data-ph-" + lang); });
     document.querySelectorAll("[data-label-en]").forEach(function (el) { el.setAttribute("aria-label", el.getAttribute("data-label-" + lang)); });
+    trAll();
     var lb = $("langBtn"), tb = $("themeBtn");
     if (lb) { lb.textContent = lang === "en" ? "हि" : "EN"; lb.setAttribute("aria-label", lang === "en" ? "हि – switch to Hindi" : "EN – switch to English"); }
     if (tb) { tb.innerHTML = D.icon(theme === "dark" ? "sun" : "moon", 19); tb.setAttribute("aria-label", theme === "dark" ? L("Switch to light theme", "लाइट थीम चुनें") : L("Switch to dark theme", "डार्क थीम चुनें")); }

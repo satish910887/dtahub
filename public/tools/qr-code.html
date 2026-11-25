@@ -65,7 +65,7 @@
 </div><!--/DTA:ACTIONS-->
 <div class="panel">
  <label for="ty" data-en="What should the QR hold?" data-hi="QR में क्या रखना है?">What should the QR hold?</label>
- <select id="ty"><option value="text">Text / Link</option><option value="wifi">WiFi</option><option value="upi">UPI payment</option><option value="vcard">Contact (vCard)</option><option value="mail">Email</option><option value="sms">SMS</option><option value="wa">WhatsApp</option><option value="geo">Location</option></select>
+ <select id="ty"><option value="text" data-en="Text / Link" data-hi="टेक्स्ट / लिंक">Text / Link</option><option value="wifi" data-en="WiFi" data-hi="वाई-फ़ाई">WiFi</option><option value="upi" data-en="UPI payment" data-hi="UPI भुगतान">UPI payment</option><option value="vcard" data-en="Contact (vCard)" data-hi="संपर्क (vCard)">Contact (vCard)</option><option value="mail" data-en="Email" data-hi="ईमेल">Email</option><option value="sms">SMS</option><option value="wa">WhatsApp</option><option value="geo">Location</option></select>
  <div data-ty="text"><label for="t" data-en="Text or link" data-hi="टेक्स्ट या लिंक">Text or link</label><textarea id="t" style="min-height:90px" placeholder="https://dtahub.pages.dev"></textarea></div>
  <div data-ty="wifi" hidden><label for="wn" data-en="Network name (SSID)" data-hi="नेटवर्क नाम (SSID)">Network name (SSID)</label><input id="wn" data-f><label for="wp" data-en="Password" data-hi="पासवर्ड">Password</label><input id="wp" data-f><label for="wt" data-en="Security" data-hi="सिक्योरिटी">Security</label><select id="wt" data-f><option>WPA</option><option>WEP</option><option value="nopass">None</option></select></div>
  <div data-ty="upi" hidden><label for="ua" data-en="UPI ID (e.g. name@bank)" data-hi="UPI ID (जैसे name@bank)">UPI ID (e.g. name@bank)</label><input id="ua" data-f><label for="un" data-en="Payee name" data-hi="पाने वाले का नाम">Payee name</label><input id="un" data-f><label for="um" data-en="Amount (optional)" data-hi="राशि (वैकल्पिक)">Amount (optional)</label><input id="um" type="number" inputmode="decimal" data-f><label for="uo" data-en="Note (optional)" data-hi="नोट (वैकल्पिक)">Note (optional)</label><input id="uo" data-f></div>
@@ -79,7 +79,7 @@
   <div><label for="sz" data-en="Size" data-hi="साइज़">Size</label>
    <select id="sz"><option value="256">256 px</option><option value="512" selected>512 px</option><option value="1024">1024 px</option><option value="2048">2048 px</option></select></div>
   <div><label for="ec" data-en="Error correction" data-hi="एरर करेक्शन">Error correction</label>
-   <select id="ec"><option value="L">Low</option><option value="M" selected>Medium</option><option value="Q">Quartile</option><option value="H">High</option></select></div>
+   <select id="ec"><option value="L" data-en="Low" data-hi="कम">Low</option><option value="M" selected data-en="Medium" data-hi="मध्यम">Medium</option><option value="Q" data-en="Quartile" data-hi="क्वार्टाइल">Quartile</option><option value="H" data-en="High" data-hi="उच्च">High</option></select></div>
  </div>
  <div class="two">
   <div><label for="fg" data-en="QR colour" data-hi="QR रंग">QR colour</label><input id="fg" type="color" value="#000000"></div>
