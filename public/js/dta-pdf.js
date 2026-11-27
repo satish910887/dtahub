@@ -23,7 +23,20 @@
   Dict.prototype.has = function (k) { return this.m.has(k); };
   Dict.prototype.del = function (k) { this.m.delete(k); return this; };
   Dict.prototype.keys = function () { return Array.from(this.m.keys()); };
-  function Stream(dict, raw) { this.dict = dict; this.raw = raw; this.compress = false; }
+  /* A stream's stored bytes are either held in memory (_raw) or still referenced inside the source file (_src, _off, _len) and read only when
+     somebody asks for `raw`. The writer copies untouched streams straight from the source as zero-copy slices. */
+  function Stream(dict, raw) { this.dict = dict; this._raw = raw === undefined ? null : raw; this._src = null; this._off = 0; this._len = 0; this._dec = null; this.compress = false; }
+  Object.defineProperty(Stream.prototype, "raw", {
+    get: function () {
+      if (this._raw === null) { var b = this._src ? this._src.copy(this._off, this._len) : new Uint8Array(0); this._raw = this._dec ? this._dec(b) : b; }
+      return this._raw;
+    },
+    set: function (v) { this._raw = v; this._src = null; this._dec = null; },
+    enumerable: true, configurable: true
+  });
+  Stream.prototype.rawLength = function () { return this._raw !== null ? this._raw.length : this._dec ? this.raw.length : this._len; };
+  Stream.prototype.rawRef = function () { return this._raw === null && this._src && !this._dec ? this._src.ref(this._off, this._len) : null; }; /* zero-copy view of the untouched stored bytes, or null */
+  Stream.prototype.clone = function (dict) { var s = new Stream(dict, this._raw); s._src = this._src; s._off = this._off; s._len = this._len; s._dec = this._dec; s.compress = this.compress; return s; };
   var isName = function (o, n) { return o instanceof Name && (n === undefined || o.n === n); };
   function dictOf(o) { return o instanceof Dict ? o : o instanceof Stream ? o.dict : null; }
   function N(n) { return new Name(n); }
@@ -45,8 +58,8 @@
   }
   var FIXL, FIXD;
   function inflate(src, start) {
-    var pos = start || 0, bitBuf = 0, bitCnt = 0, out = new Uint8Array(Math.max(1024, src.length * 4)), op = 0, eof = false;
-    function need(n) { if (op + n > out.length) { var o = new Uint8Array(Math.max(out.length * 2, op + n)); o.set(out); out = o; } }
+    var pos = start || 0, bitBuf = 0, bitCnt = 0, out = new Uint8Array(Math.min(Math.max(1024, src.length * 4), 67108864)), op = 0, eof = false;
+    function need(n) { if (op + n > out.length) { if (op + n > 1200000000) throw PdfError("limit", "decoded data is too large"); var o = new Uint8Array(Math.min(Math.max(out.length * 2, op + n), 1200000000)); o.set(out); out = o; } }
     function bits(n) {
       while (bitCnt < n) { if (pos >= src.length) { eof = true; return 0; } bitBuf |= src[pos++] << bitCnt; bitCnt += 8; }
       var v = bitBuf & ((1 << n) - 1); bitBuf >>>= n; bitCnt -= n; return v;
@@ -163,7 +176,7 @@
 
   /* ================= lexer / parser ================= */
   var WS = { 0: 1, 9: 1, 10: 1, 12: 1, 13: 1, 32: 1 }, DELIM = { 40: 1, 41: 1, 60: 1, 62: 1, 91: 1, 93: 1, 123: 1, 125: 1, 47: 1, 37: 1 };
-  function Parser(buf, pos, doc) { this.b = buf; this.p = pos || 0; this.doc = doc; }
+  function Parser(buf, pos, doc) { this.b = buf; this.p = pos || 0; this.doc = doc; this.depth = 0; }
   Parser.prototype.ws = function () {
     var b = this.b;
     for (;;) {
@@ -181,7 +194,7 @@
     if (c === undefined) throw PdfError("eof", "unexpected end of data");
     if (c === 60 && b[this.p + 1] === 60) return this.dict();
     if (c === 60) return this.hexStr();
-    if (c === 91) { this.p++; var a = []; for (;;) { this.ws(); if (b[this.p] === 93) { this.p++; break; } if (this.p >= b.length) break; a.push(this.obj()); } return a; }
+    if (c === 91) { if (++this.depth > 300) throw PdfError("syntax", "nesting too deep"); this.p++; var a = []; for (;;) { this.ws(); if (b[this.p] === 93) { this.p++; break; } if (this.p >= b.length) break; a.push(this.obj()); } this.depth--; return a; }
     if (c === 40) return this.litStr();
     if (c === 47) return this.name();
     if ((c >= 48 && c <= 57) || c === 43 || c === 45 || c === 46) return this.num();
@@ -232,7 +245,7 @@
     return new Str(new Uint8Array(o), false);
   };
   Parser.prototype.dict = function () {
-    var b = this.b, d = new Dict(); this.p += 2;
+    var b = this.b, d = new Dict(); this.p += 2; if (++this.depth > 300) throw PdfError("syntax", "nesting too deep");
     for (;;) {
       this.ws(); if (this.p >= b.length) break;
       if (b[this.p] === 62 && b[this.p + 1] === 62) { this.p += 2; break; }
@@ -241,7 +254,7 @@
       if (b[this.p] === 62 && b[this.p + 1] === 62) { d.set(k, null); continue; }
       d.set(k, this.obj());
     }
-    return d;
+    this.depth--; return d;
   };
   var te = function (s) { return new TextEncoder().encode(s); };
   function indexOfBytes(buf, pat, from, to) {
@@ -254,8 +267,65 @@
   }
   var ENDSTREAM = te("endstream"), ENDOBJ = te("endobj"), STARTXREF = te("startxref");
 
+  /* ================= byte sources =================
+     A source gives the engine random access to the file. MemSource wraps bytes already in memory. BlobSource wraps a Blob/File and
+     reads it synchronously with FileReaderSync (available inside Web Workers), so files far bigger than memory can be opened: only the
+     cross-reference data and the objects that are really needed are read, and stream data is referenced, never copied, until it is
+     decoded or written out (as a zero-copy Blob slice). */
+  function MemSource(u8) { this.u8 = u8; this.size = u8.length; this.kind = "mem"; }
+  MemSource.prototype.read = function (off, len) { if (off < 0) off = 0; return this.u8.subarray(off, Math.min(this.size, off + len)); };
+  MemSource.prototype.copy = function (off, len) { return this.u8.slice(off, off + len); };
+  MemSource.prototype.ref = function (off, len) { return this.u8.subarray(off, off + len); };
+  var BLOCK = 262144, MAXBLOCKS = 48;
+  function BlobSource(blob) {
+    if (typeof root.FileReaderSync !== "function") throw PdfError("env", "Blob sources need a Web Worker (FileReaderSync).");
+    this.blob = blob; this.size = blob.size; this.kind = "blob"; this.fr = new root.FileReaderSync(); this.blocks = new Map();
+  }
+  BlobSource.prototype._raw = function (off, len) { return new Uint8Array(this.fr.readAsArrayBuffer(this.blob.slice(off, off + len))); };
+  BlobSource.prototype._block = function (i) {
+    var m = this.blocks, b = m.get(i);
+    if (b) { m.delete(i); m.set(i, b); return b; }
+    b = this._raw(i * BLOCK, BLOCK); m.set(i, b); if (m.size > MAXBLOCKS) m.delete(m.keys().next().value);
+    return b;
+  };
+  BlobSource.prototype.read = function (off, len) {
+    if (off < 0) off = 0; len = Math.min(len, this.size - off); if (len <= 0) return new Uint8Array(0);
+    if (len <= BLOCK) { var b0 = Math.floor(off / BLOCK); if (Math.floor((off + len - 1) / BLOCK) === b0) { var s = off - b0 * BLOCK; return this._block(b0).subarray(s, s + len); } }
+    return this._raw(off, len);
+  };
+  BlobSource.prototype.copy = function (off, len) { return this._raw(off, len); };
+  BlobSource.prototype.ref = function (off, len) { return this.blob.slice(off, off + len); };
+  function isBlobLike(x) { return !!x && typeof x === "object" && typeof x.size === "number" && typeof x.slice === "function" && !(x instanceof Uint8Array) && !(x instanceof ArrayBuffer) && typeof x.read !== "function"; }
+  function toSource(input) {
+    if (input && typeof input.read === "function" && typeof input.ref === "function" && typeof input.size === "number") return input;
+    if (isBlobLike(input)) return new BlobSource(input);
+    if (input instanceof Uint8Array) return new MemSource(input);
+    if (input instanceof ArrayBuffer) return new MemSource(new Uint8Array(input));
+    if (input && input.buffer instanceof ArrayBuffer) return new MemSource(new Uint8Array(input.buffer.slice(input.byteOffset, input.byteOffset + input.byteLength)));
+    throw PdfError("not-pdf", "This file is not a PDF.");
+  }
+  function findBytes(src, pat, from) { /* first occurrence at or after `from`, scanning in 1 MB pieces */
+    var CH = 1048576, ov = pat.length - 1, pos = from;
+    while (pos < src.size) {
+      var n = Math.min(CH + ov, src.size - pos), i = indexOfBytes(src.read(pos, n), pat, 0); if (i >= 0) return pos + i;
+      if (pos + n >= src.size) break; pos += CH;
+    }
+    return -1;
+  }
+  function findLastBytes(src, pat) { /* last occurrence anywhere: the tail is tried first, then bigger and bigger pieces going backwards */
+    var ov = pat.length - 1, end = src.size, CH = 2048;
+    while (end > 0) {
+      var start = Math.max(0, end - CH), b = src.read(start, Math.min(src.size - start, end - start + ov)), i = lastIndexOfBytes(b, pat);
+      if (i >= 0) return start + i;
+      end = start; CH = Math.min(CH * 8, 4194304);
+    }
+    return -1;
+  }
+  var LATIN1 = typeof TextDecoder === "function" ? new TextDecoder("latin1") : null;
+  function latin1(b) { if (LATIN1) return LATIN1.decode(b); var s = ""; for (var i = 0; i < b.length; i += 32768) s += String.fromCharCode.apply(null, b.subarray(i, Math.min(b.length, i + 32768))); return s; }
+
   /* ================= document ================= */
-  function Doc() { this.objs = new Map(); this.xref = null; this.trailer = new Dict(); this.nextNum = 1; this.buf = null; this._pages = null; this.cache = new Map(); }
+  function Doc() { this.objs = new Map(); this.xref = null; this.trailer = new Dict(); this.nextNum = 1; this.buf = null; this.src = null; this._pages = null; this.cache = new Map(); this._os = new Map(); this._osBytes = 0; }
 
   Doc.create = function () {
     var d = new Doc(); var pages = d.add(mkDict({ Type: N("Pages"), Kids: [], Count: 0 }));
@@ -264,79 +334,125 @@
   };
   Doc.prototype.add = function (o) { var r = new Ref(this.nextNum++, 0); this.objs.set(r.num, o); return r; };
 
+  /* input: Uint8Array | ArrayBuffer | Blob/File (only inside a Web Worker) | a source object. Throws PdfError codes: not-pdf, encrypted, damaged. */
   Doc.load = function (input, opt) {
     opt = opt || {};
-    var buf = input instanceof Uint8Array ? input : new Uint8Array(input.buffer ? input.buffer.slice(input.byteOffset, input.byteOffset + input.byteLength) : input);
-    var d = new Doc(); d.buf = buf;
-    if (indexOfBytes(buf, te("%PDF-"), 0, Math.min(buf.length, 2048)) < 0) throw PdfError("not-pdf", "This file is not a PDF.");
-    d.headerOffset = Math.max(0, indexOfBytes(buf, te("%PDF-"), 0, Math.min(buf.length, 2048)));
+    var src = toSource(input), d = new Doc(); d.src = src; if (src.u8) d.buf = src.u8;
+    var head = src.read(0, Math.min(src.size, 2048)), hp = indexOfBytes(head, te("%PDF-"), 0, head.length);
+    if (hp < 0) throw PdfError("not-pdf", "This file is not a PDF.");
+    d.headerOffset = Math.max(0, hp);
     var ok = false;
     try { ok = d.readXrefChain(); if (ok) d.root(); } catch (e) { if (e.code === "encrypted") throw e; ok = false; }
-    if (!ok) { d.cache.clear(); d.rebuild(); }
+    if (!ok) { d.cache.clear(); d._os.clear(); d.rebuild(); d._rebuilt = true; }
     if (d.trailer.has("Encrypt") && !opt.ignoreEncryption) d.setupCrypt();
     var rt; try { rt = d.root(); } catch (e) { rt = null; }
-    if (!rt || !dictOf(rt)) { d.cache.clear(); d.rebuild(); rt = d.root(); if (!rt) throw PdfError("damaged", "This PDF is damaged and cannot be read."); }
+    if (!rt || !dictOf(rt)) { d.cache.clear(); d._os.clear(); d.rebuild(); d._rebuilt = true; rt = d.root(); if (!rt) throw PdfError("damaged", "This PDF is damaged and cannot be read."); }
     d.nextNum = (d.maxNum || 0) + 1;
     return d;
+  };
+  /* like load, but also accepts a Blob on the main thread (read into memory there, because only workers can read a Blob synchronously) */
+  Doc.loadAsync = function (input, opt) {
+    if (isBlobLike(input) && typeof root.FileReaderSync !== "function") {
+      return (typeof input.arrayBuffer === "function" ? input.arrayBuffer() : Promise.reject(PdfError("env", "cannot read this file"))).then(function (ab) { return Doc.load(new Uint8Array(ab), opt); });
+    }
+    try { return Promise.resolve(Doc.load(input, opt)); } catch (e) { return Promise.reject(e); }
   };
   Doc.prototype.setupCrypt = function () {
     var er = this.trailer.get("Encrypt"), ed = dictOf(this.get(er)); if (!ed) throw PdfError("encrypted", "This PDF is password protected.");
     var ids = this.get(this.trailer.get("ID")), id0 = Array.isArray(ids) && this.get(ids[0]) instanceof Str ? this.get(ids[0]).b : new Uint8Array(0);
     if (er instanceof Ref) this.encNum = er.num;
-    this.crypt = makeCrypt(this, ed, id0); this.cache.clear();
+    this.crypt = makeCrypt(this, ed, id0); this.cache.clear(); this._os.clear(); this._osBytes = 0;
   };
   Doc.prototype.root = function () { return this.get(this.trailer.get("Root")); };
 
-  Doc.prototype.readXrefChain = function () {
-    var buf = this.buf, sx = lastIndexOfBytes(buf, STARTXREF); if (sx < 0) return false;
-    var p = new Parser(buf, sx + 9); p.ws(); var off = p.readInt(); if (off === null) return false;
-    this.xref = new Map(); this.maxNum = 0;
-    var seen = new Set(), queue = [off + this.headerOffset], first = true;
-    while (queue.length) {
-      var o = queue.shift(); if (seen.has(o) || o < 0 || o >= buf.length) { if (first) return false; continue; } seen.add(o);
-      var pr = new Parser(buf, o); pr.ws(); var tr;
-      if (buf[pr.p] === 120 && buf[pr.p + 1] === 114) { /* "xref" */
-        pr.p += 4; pr.ws();
+  /* classic cross-reference table: `pos` is just after the word "xref". Returns the trailer dictionary, or null when the table is unusable. */
+  Doc.prototype._readXrefTable = function (pos, hint) {
+    var src = this.src, hdr = this.headerOffset, avail = src.size - pos, win = src.u8 ? avail : Math.min(avail, Math.max(65536, (hint || 0) + 1024));
+    for (;;) {
+      var b = src.read(pos, win), pr = new Parser(b, 0), more = win < avail, tr = null, bad = false;
+      try {
         for (;;) {
-          pr.ws(); if (buf[pr.p] === 116) break; /* "trailer" */
-          var start = pr.readInt(); pr.ws(); var cnt = pr.readInt(); if (start === null || cnt === null) return false;
+          pr.ws(); if (pr.p >= b.length) { bad = true; break; }
+          if (b[pr.p] === 116) break; /* "trailer" */
+          var start = pr.readInt(); pr.ws(); var cnt = pr.readInt(); if (start === null || cnt === null) { bad = true; break; }
           for (var i = 0; i < cnt; i++) {
-            pr.ws(); var offs = pr.readInt(); pr.ws(); var gen = pr.readInt(); pr.ws(); var f = buf[pr.p]; pr.p++;
-            if (offs === null || gen === null) return false;
-            var num = start + i; if (!this.xref.has(num)) this.xref.set(num, f === 110 ? { t: 1, off: offs + this.headerOffset, gen: gen } : { t: 0 });
+            pr.ws(); var offs = pr.readInt(); pr.ws(); var gen = pr.readInt(); pr.ws(); var f = b[pr.p]; pr.p++;
+            if (offs === null || gen === null) { bad = true; break; }
+            var num = start + i; if (!this.xref.has(num)) this.xref.set(num, f === 110 ? { t: 1, off: offs + hdr, gen: gen } : { t: 0 });
             if (num > this.maxNum) this.maxNum = num;
           }
+          if (bad) break;
         }
-        pr.p += 7; tr = pr.obj(); if (!(tr instanceof Dict)) return false;
-        if (tr.has("XRefStm")) queue.unshift(tr.get("XRefStm") + this.headerOffset);
+        if (!bad) { pr.p += 7; tr = pr.obj(); if (!(tr instanceof Dict)) bad = true; else if (more && pr.p > b.length - 64) bad = true; }
+      } catch (e) { bad = true; }
+      if (!bad) return tr;
+      if (!more) return null;
+      win = Math.min(avail, win * 4);
+    }
+  };
+
+  Doc.prototype.readXrefChain = function () {
+    var src = this.src, sx = findLastBytes(src, STARTXREF); if (sx < 0) return false;
+    var p = new Parser(src.read(sx + 9, 48), 0); p.ws(); var off = p.readInt(); if (off === null) return false;
+    this.xref = new Map(); this.maxNum = 0;
+    var seen = new Set(), hdr = this.headerOffset, queue = [off + hdr], first = true;
+    while (queue.length) {
+      var o = queue.shift(); if (seen.has(o) || o < 0 || o >= src.size) { if (first) return false; continue; } seen.add(o);
+      var head = src.read(o, 64), hp = new Parser(head, 0), tr; hp.ws();
+      if (head[hp.p] === 120 && head[hp.p + 1] === 114) { /* "xref" */
+        tr = this._readXrefTable(o + hp.p + 4, first ? sx - o : 0); if (!tr) return false;
+        if (tr.has("XRefStm")) queue.unshift(tr.get("XRefStm") + hdr);
       } else { /* xref stream */
         var st = this.parseIndirectAt(o); if (!st || !(st.v instanceof Stream)) return false;
         tr = st.v.dict; var data = this.decodeStream(st.v);
-        var W = tr.get("W"), idx = tr.get("Index") || [0, tr.get("Size")], w0 = W[0], w1 = W[1], w2 = W[2], q = 0;
+        var W = tr.get("W"), idx = tr.get("Index") || [0, tr.get("Size")], w0 = W[0], w1 = W[1], w2 = W[2], q = 0, z, v1, v2, v3;
         for (var s = 0; s < idx.length; s += 2) for (var k = 0; k < idx[s + 1]; k++) {
-          var rd = function (n) { var v = 0; for (var z = 0; z < n; z++) v = v * 256 + data[q++]; return v; };
-          var t = w0 ? rd(w0) : 1, a = rd(w1), b2 = rd(w2), nn = idx[s] + k;
-          if (q > data.length) break;
-          if (!this.xref.has(nn)) this.xref.set(nn, t === 1 ? { t: 1, off: a + this.headerOffset, gen: b2 } : t === 2 ? { t: 2, stm: a, idx: b2 } : { t: 0 });
+          if (q + w0 + w1 + w2 > data.length) break;
+          if (w0) { v1 = 0; for (z = 0; z < w0; z++) v1 = v1 * 256 + data[q++]; } else v1 = 1;
+          v2 = 0; for (z = 0; z < w1; z++) v2 = v2 * 256 + data[q++];
+          v3 = 0; for (z = 0; z < w2; z++) v3 = v3 * 256 + data[q++];
+          var nn = idx[s] + k;
+          if (!this.xref.has(nn)) this.xref.set(nn, v1 === 1 ? { t: 1, off: v2 + hdr, gen: v3 } : v1 === 2 ? { t: 2, stm: v2, idx: v3 } : { t: 0 });
           if (nn > this.maxNum) this.maxNum = nn;
         }
       }
       if (first) { this.trailer = new Dict(new Map(tr.m)); first = false; } else tr.keys().forEach(function (k2) { if (!this.trailer.has(k2)) this.trailer.set(k2, tr.get(k2)); }, this);
-      var prev = tr.get("Prev"); if (typeof prev === "number") queue.push(prev + this.headerOffset);
+      var prev = tr.get("Prev"); if (typeof prev === "number") queue.push(prev + hdr);
     }
     return this.trailer.has("Root");
   };
 
+  /* Finds every "N G obj" header (and every "trailer" word) in 4 MB pieces, so even huge damaged files never need one giant string. */
+  Doc.prototype._scanObjects = function (onObj, onTrailer) {
+    var src = this.src, size = src.size, CH = 4194304, OV = 1300, pos = 0, re = /(?:^|[\r\n\s])(\d{1,10})\s+(\d{1,5})\s+obj\b/g, tre = /trailer/g;
+    while (pos < size) {
+      var cs = pos > 0 ? pos - 1 : 0, end = Math.min(size, pos + CH + OV), s = latin1(src.read(cs, end - cs)), lim = Math.min(size, pos + CH), m;
+      re.lastIndex = 0;
+      while ((m = re.exec(s))) {
+        var abs = cs + m.index + m[0].indexOf(m[1]); if (abs < pos) continue; if (abs >= lim) break;
+        onObj(+m[1], +m[2], abs, s, m.index + m[0].length);
+      }
+      tre.lastIndex = 0;
+      while ((m = tre.exec(s))) { var ta = cs + m.index; if (ta < pos) continue; if (ta >= lim) break; onTrailer(ta); }
+      pos += CH;
+    }
+  };
+  Doc.prototype._findHeader = function (num) { /* offset of the newest "num G obj" in the file, or -1 */
+    if (!this._hdr) { var m = new Map(); this._scanObjects(function (n, g, abs) { m.set(n, abs); }, function () { /* not needed */ }); this._hdr = m; }
+    var a = this._hdr.get(num); return a === undefined ? -1 : a;
+  };
+
   /* Recover when the xref is missing or wrong: scan the file for "N G obj" and trailers. */
   Doc.prototype.rebuild = function () {
-    var buf = this.buf, s = ""; for (var i = 0; i < buf.length; i += 32768) s += String.fromCharCode.apply(null, buf.subarray(i, Math.min(buf.length, i + 32768)));
-    this.xref = new Map(); this.maxNum = 0; this.objs = new Map(); this.cache = new Map();
-    var re = /(?:^|[\r\n\s])(\d{1,10})\s+(\d{1,5})\s+obj\b/g, m, found = [];
-    while ((m = re.exec(s))) { var num = +m[1], off = m.index + m[0].indexOf(m[1]); found.push([num, +m[2], off]); this.xref.set(num, { t: 1, off: off, gen: +m[2] }); if (num > this.maxNum) this.maxNum = num; }
-    var tr = new Dict(), trre = /trailer/g, t;
-    while ((t = trre.exec(s))) { try { var d = new Parser(buf, t.index + 7).obj(); if (d instanceof Dict) d.keys().forEach(function (k) { tr.set(k, d.get(k)); }); } catch (e) { /* ignore */ } }
-    var self = this;
-    found.forEach(function (f) { /* xref streams carry the trailer keys; object streams hold compressed objects */
+    var self = this, src = this.src, tr = new Dict(), cand = [], cats = [], trailers = [];
+    this.xref = new Map(); this.maxNum = 0; this.objs = new Map(); this.cache = new Map(); this._os = new Map(); this._osBytes = 0; this._hdr = null;
+    this._scanObjects(function (num, gen, abs, s, after) {
+      self.xref.set(num, { t: 1, off: abs, gen: gen }); if (num > self.maxNum) self.maxNum = num;
+      var sn = s.substr(after, 1200);
+      if (/\/(?:XRef|ObjStm)\b/.test(sn)) cand.push([num, gen]); else if (/\/Catalog\b/.test(sn)) cats.push(num);
+    }, function (at) { trailers.push(at); });
+    trailers.forEach(function (at) { try { var d = new Parser(src.read(at + 7, 65536), 0).obj(); if (d instanceof Dict) d.keys().forEach(function (k) { tr.set(k, d.get(k)); }); } catch (e) { /* ignore */ } });
+    cand.forEach(function (f) { /* xref streams carry the trailer keys; object streams hold compressed objects */
       var ref = new Ref(f[0], f[1]), o; try { o = self.getRaw(ref); } catch (e) { return; }
       var dd = dictOf(o); if (!dd) return;
       if (isName(dd.get("Type"), "XRef")) ["Root", "Info", "ID", "Encrypt"].forEach(function (k) { if (dd.has(k) && !tr.has(k)) tr.set(k, dd.get(k)); });
@@ -348,29 +464,37 @@
         } catch (e) { /* ignore */ }
       }
     });
-    if (!tr.has("Root")) { /* find the catalog by type */
-      for (var num2 of this.xref.keys()) { var oo; try { oo = this.get(new Ref(num2, 0)); } catch (e) { continue; } var d2 = dictOf(oo); if (d2 && isName(d2.get("Type"), "Catalog")) tr.set("Root", new Ref(num2, 0)); }
+    if (!tr.has("Root")) { /* find the catalog by type: plain objects first, then everything (objects inside object streams) */
+      cats.forEach(function (n) { var oo; try { oo = self.get(new Ref(n, 0)); } catch (e) { return; } var d2 = dictOf(oo); if (d2 && isName(d2.get("Type"), "Catalog")) tr.set("Root", new Ref(n, 0)); });
+      if (!tr.has("Root")) for (var num2 of this.xref.keys()) { var oo2; try { oo2 = this.get(new Ref(num2, 0)); } catch (e) { continue; } var d3 = dictOf(oo2); if (d3 && isName(d3.get("Type"), "Catalog")) tr.set("Root", new Ref(num2, 0)); }
     }
     this.trailer = tr;
   };
 
   Doc.prototype.parseIndirectAt = function (off) {
-    var p = new Parser(this.buf, off, this); p.ws();
-    var num = p.readInt(); p.ws(); var gen = p.readInt(); p.ws();
-    if (num === null || gen === null || this.buf[p.p] !== 111 || this.buf[p.p + 1] !== 98 || this.buf[p.p + 2] !== 106) return null;
-    p.p += 3; var v = p.obj(); p.ws();
-    if (v instanceof Dict && this.buf[p.p] === 115 && this.buf[p.p + 1] === 116 && this.buf[p.p + 2] === 114) { /* "stream" */
-      p.p += 6; if (this.buf[p.p] === 13) p.p++; if (this.buf[p.p] === 10) p.p++;
-      var start = p.p, len = v.get("Length"), end = -1;
-      if (len instanceof Ref) { try { len = this.get(len); } catch (e) { len = null; } }
-      if (typeof len === "number" && len >= 0 && start + len <= this.buf.length) {
-        var q = start + len; while (WS[this.buf[q]]) q++;
-        if (this.buf[q] === 101 && indexOfBytes(this.buf, ENDSTREAM, q, q + 9) === q) end = start + len;
+    var src = this.src, size = src.size, win = src.u8 ? size - off : 4096;
+    for (;;) {
+      var n = Math.min(win, size - off); if (n <= 0) return null;
+      var more = off + n < size, b = src.read(off, n), p = new Parser(b, 0, this);
+      p.ws(); var num = p.readInt(); p.ws(); var gen = p.readInt(); p.ws();
+      if (num === null || gen === null || b[p.p] !== 111 || b[p.p + 1] !== 98 || b[p.p + 2] !== 106) { if (more && p.p > b.length - 24) { win *= 4; continue; } return null; }
+      p.p += 3; var v;
+      try { v = p.obj(); } catch (e) { if (more) { win *= 4; continue; } throw e; }
+      p.ws();
+      if (more && p.p > b.length - 48) { win *= 4; continue; } /* the object may have been cut off by the end of the window */
+      if (v instanceof Dict && b[p.p] === 115 && b[p.p + 1] === 116 && b[p.p + 2] === 114) { /* "stream" */
+        p.p += 6; if (b[p.p] === 13) p.p++; if (b[p.p] === 10) p.p++;
+        var start = off + p.p, len = v.get("Length"), end = -1;
+        if (len instanceof Ref) { try { len = this.get(len); } catch (e) { len = null; } }
+        if (typeof len === "number" && len >= 0 && start + len <= size) {
+          var tl = src.read(start + len, 24), q = 0; while (q < tl.length && WS[tl[q]]) q++;
+          if (tl[q] === 101 && indexOfBytes(tl, ENDSTREAM, q, q + 9) === q) end = start + len;
+        }
+        if (end < 0) { end = findBytes(src, ENDSTREAM, start); if (end < 0) end = size; if (end > start && src.read(end - 1, 1)[0] === 10) end--; if (end > start && src.read(end - 1, 1)[0] === 13) end--; }
+        var st = new Stream(v, null); st._src = src; st._off = start; st._len = end - start; v = st;
       }
-      if (end < 0) { end = indexOfBytes(this.buf, ENDSTREAM, start); if (end < 0) end = this.buf.length; if (this.buf[end - 1] === 10) end--; if (this.buf[end - 1] === 13) end--; }
-      v = new Stream(v, this.buf.slice(start, end));
+      return { num: num, gen: gen, v: v };
     }
-    return { num: num, gen: gen, v: v };
   };
 
   Doc.prototype.getRaw = function (ref) {
@@ -381,20 +505,17 @@
     var v = null;
     if (e.t === 1) {
       var r = this.parseIndirectAt(e.off);
-      if (!r || r.num !== num) { /* offset is wrong: search for the object header */
-        var hdr = new RegExp("(^|[\\r\\n\\s])" + num + "\\s+\\d+\\s+obj\\b"), s = ""; var b = this.buf;
-        for (var i = 0; i < b.length; i += 32768) s += String.fromCharCode.apply(null, b.subarray(i, Math.min(b.length, i + 32768)));
-        var mm = hdr.exec(s); r = mm ? this.parseIndirectAt(mm.index + mm[0].indexOf(String(num))) : null;
-      }
+      if (!r || r.num !== num) { var at = this._findHeader(num); r = at >= 0 ? this.parseIndirectAt(at) : null; } /* the offset is wrong: look the header up */
       v = r ? r.v : null; if (v && this.crypt && num !== this.encNum) v = this.crypt.obj(v, num, r.gen);
     } else if (e.t === 2) {
       var stm = this.getRaw(new Ref(e.stm, 0)); if (!(stm instanceof Stream)) return null;
-      var key = "os" + e.stm, os = this.cache.get(key);
+      var os = this._os.get(e.stm);
       if (!os) {
         var data = this.decodeStream(stm), n = stm.dict.get("N"), first = stm.dict.get("First"), pp = new Parser(data, 0), nums = [], offs = [];
         for (var k = 0; k < n; k++) { pp.ws(); nums.push(pp.readInt()); pp.ws(); offs.push(pp.readInt()); }
-        os = { data: data, nums: nums, offs: offs, first: first }; this.cache.set(key, os);
-      }
+        os = { data: data, nums: nums, offs: offs, first: first }; this._os.set(e.stm, os); this._osBytes += data.length;
+        while (this._osBytes > 100663296 && this._os.size > 1) { var ok0 = this._os.keys().next().value; this._osBytes -= this._os.get(ok0).data.length; this._os.delete(ok0); }
+      } else { this._os.delete(e.stm); this._os.set(e.stm, os); }
       var ix = os.nums[e.idx] === num ? e.idx : os.nums.indexOf(num); if (ix < 0) return null;
       v = new Parser(os.data, os.first + os.offs[ix], this).obj();
     }
@@ -416,24 +537,45 @@
     }
     return data;
   };
+  /* native zlib inflate (DecompressionStream); resolves null when it cannot be used or the data is damaged, so callers fall back to the tolerant inflater */
+  function inflateNative(bytes) {
+    if (typeof root.DecompressionStream !== "function") return Promise.resolve(null);
+    return new Promise(function (resolve) {
+      try {
+        var ds = new root.DecompressionStream("deflate"), w = ds.writable.getWriter(), rd = ds.readable.getReader(), chunks = [], total = 0;
+        w.write(bytes).then(function () { return w.close(); }, function () { /* reported by the reader */ }).catch(function () { /* reported by the reader */ });
+        (function pump() {
+          rd.read().then(function (r) {
+            if (r.done) { var out = new Uint8Array(total), p = 0; for (var i = 0; i < chunks.length; i++) { out.set(chunks[i], p); p += chunks[i].length; } resolve(out); return; }
+            chunks.push(r.value); total += r.value.length; if (total > 1.2e9) { rd.cancel().catch(function () { /* ignore */ }); resolve(null); return; } pump();
+          }, function () { resolve(null); });
+        })();
+      } catch (e) { resolve(null); }
+    });
+  }
+  /* Same result as decodeStream, but a big plain Flate stream is inflated natively (several times faster than the JavaScript inflater). */
+  Doc.prototype.decodeStreamAsync = function (st) {
+    var self = this, f = this.get(st.dict.get("Filter") || st.dict.get("F")), fl = f == null ? [] : Array.isArray(f) ? f.map(this.get, this) : [f], nm = fl.length === 1 && fl[0] && fl[0].n;
+    if ((nm !== "FlateDecode" && nm !== "Fl") || st.rawLength() < 32768 || typeof root.DecompressionStream !== "function") return Promise.resolve().then(function () { return self.decodeStream(st); });
+    var pr = this.get(st.dict.get("DecodeParms") || st.dict.get("DP")), parms = Array.isArray(pr) ? this.get(pr[0]) : pr;
+    return inflateNative(st.raw).then(function (out) { return out ? unpredict(out, parms instanceof Dict ? resolveDict(self, parms) : null) : self.decodeStream(st); });
+  };
   function resolveDict(doc, d) { var r = new Dict(); d.keys().forEach(function (k) { r.set(k, doc.get(d.get(k))); }); return r; }
 
   /* ---------- pages ---------- */
   var INHERIT = ["Resources", "MediaBox", "CropBox", "Rotate"];
   Doc.prototype.loadPages = function () {
     if (this._pages) return this._pages;
-    var out = [], self = this, seen = new Set();
-    function walk(nodeRef, inh) {
-      var node = self.get(nodeRef), d = dictOf(node); if (!d) return;
-      if (nodeRef instanceof Ref) { if (seen.has(nodeRef.num)) return; seen.add(nodeRef.num); }
-      var kids = self.get(d.get("Kids")), type = self.get(d.get("Type"));
+    var out = [], seen = new Set(), rootD = dictOf(this.root()), stack = [[rootD ? rootD.get("Pages") : null, {}]]; /* iterative: very deep or very wide trees cannot overflow the stack */
+    while (stack.length) {
+      var it = stack.pop(), nodeRef = it[0], inh = it[1], d = dictOf(this.get(nodeRef)); if (!d) continue;
+      if (nodeRef instanceof Ref) { if (seen.has(nodeRef.num)) continue; seen.add(nodeRef.num); }
+      var kids = this.get(d.get("Kids")), type = this.get(d.get("Type"));
       if (Array.isArray(kids) && !(isName(type, "Page"))) {
         var ni = Object.assign({}, inh); INHERIT.forEach(function (k) { if (d.has(k)) ni[k] = d.get(k); });
-        kids.forEach(function (k) { walk(k, ni); });
-      } else out.push(new Page(self, nodeRef instanceof Ref ? nodeRef : self.add(d), inh));
+        for (var i = kids.length - 1; i >= 0; i--) stack.push([kids[i], ni]);
+      } else out.push(new Page(this, nodeRef instanceof Ref ? nodeRef : this.add(d), inh));
     }
-    var pr = this.get(this.root()) && this.get(this.root()); var rootD = dictOf(pr);
-    walk(rootD ? rootD.get("Pages") : null, {});
     this._pages = out; return out;
   };
 
@@ -480,30 +622,31 @@
 
   /* copy pages from another document: deep-copies everything a page needs, never drags in the other pages */
   var SKIP_KEYS = { Parent: 1, StructParents: 1, B: 1, Thumb: 1, PieceInfo: 1, "AA": 1 };
-  Doc.prototype.copyPages = function (src, indices) {
-    var self = this, memo = new Map();
-    function copy(o, depth) {
-      if (o instanceof Ref) {
-        if (memo.has(o.num)) return memo.get(o.num);
-        var target = src.getRaw(o), td = dictOf(target);
-        if (td && isName(src.get(td.get("Type")), "Page")) return null; /* links to other pages are dropped */
-        var nr = new Ref(self.nextNum++, 0); memo.set(o.num, nr); self.objs.set(nr.num, null);
-        self.objs.set(nr.num, copy(target, depth + 1)); return nr;
-      }
-      if (Array.isArray(o)) return o.map(function (x) { return copy(x, depth + 1); });
-      if (o instanceof Dict) { var d = new Dict(); o.m.forEach(function (v, k) { if (depth <= 1 && SKIP_KEYS[k]) return; d.set(k, copy(v, depth + 1)); }); return d; }
-      if (o instanceof Stream) { var s = new Stream(copy(o.dict, depth + 1), o.raw); return s; }
+  Doc.prototype.copyPages = function (src, indices, opt) {
+    var self = this, memo = new Map(), todo = [], pages = src.loadPages(), out = [], idx = indices || src.getPageIndices(), onp = opt && opt.progress;
+    function mapRef(o) { /* gives the copy a new number and queues the target; the queue is drained in a loop, so long chains of references cannot overflow the stack */
+      var hit = memo.get(o.num); if (hit) return hit;
+      var target = src.getRaw(o), td = dictOf(target);
+      if (td && isName(src.get(td.get("Type")), "Page")) return null; /* links to other pages are dropped */
+      var nr = new Ref(self.nextNum++, 0); memo.set(o.num, nr); self.objs.set(nr.num, null); todo.push([target, nr.num]);
+      return nr;
+    }
+    function cp(o, depth) {
+      if (o instanceof Ref) return mapRef(o);
+      if (Array.isArray(o)) { var a = new Array(o.length); for (var i = 0; i < o.length; i++) a[i] = cp(o[i], depth + 1); return a; }
+      if (o instanceof Dict) { var d = new Dict(); o.m.forEach(function (v, k) { if (depth <= 1 && SKIP_KEYS[k]) return; d.set(k, cp(v, depth + 1)); }); return d; }
+      if (o instanceof Stream) return o.clone(cp(o.dict, depth + 1)); /* shares the stored bytes, nothing is read or copied here */
       return o;
     }
-    var pages = src.loadPages(), out = [];
-    (indices || src.getPageIndices()).forEach(function (i) {
+    idx.forEach(function (i, n) {
       var pg = pages[i]; if (!pg) throw PdfError("range", "page " + (i + 1) + " does not exist");
       var d = pg.dict().m, nd = new Dict();
-      d.forEach(function (v, k) { if (!SKIP_KEYS[k]) nd.set(k, copy(v, 1)); });
-      INHERIT.forEach(function (k) { if (!nd.has(k) && pg.inh[k] !== undefined) nd.set(k, copy(pg.inh[k], 1)); });
+      d.forEach(function (v, k) { if (!SKIP_KEYS[k]) nd.set(k, cp(v, 1)); });
+      INHERIT.forEach(function (k) { if (!nd.has(k) && pg.inh[k] !== undefined) nd.set(k, cp(pg.inh[k], 1)); });
       nd.set("Type", N("Page")); if (!nd.has("Resources")) nd.set("Resources", new Dict());
-      /* annotations: keep the widgets and links, drop the back pointer */
+      while (todo.length) { var t = todo.pop(); self.objs.set(t[1], cp(t[0], 2)); }
       out.push(new Page(self, self.add(nd), {}));
+      if (onp) onp(n + 1, idx.length);
     });
     return Promise.resolve(out);
   };
@@ -543,55 +686,82 @@
   }
   var latin = function (s) { var b = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) b[i] = s.charCodeAt(i) & 255; return b; };
 
-  Doc.prototype.save = function () {
-    var self = this;
+  /* Collects the output as a list of parts (small text/byte buffers plus untouched stream data referenced from the source), so a huge
+     file never has to exist as one big array. toBlob() hands the parts to the browser; toBytes() joins them. */
+  function Writer() { this.parts = []; this.len = 0; this.buf = new Uint8Array(65536); this.bp = 0; }
+  Writer.prototype.str = function (s) {
+    var n = s.length, b = this.buf, i;
+    if (this.bp + n > b.length) { this.flush(); if (n > b.length) { var t = new Uint8Array(n); for (i = 0; i < n; i++) t[i] = s.charCodeAt(i) & 255; this.parts.push(t); this.len += n; return; } }
+    var p = this.bp; for (i = 0; i < n; i++) b[p + i] = s.charCodeAt(i) & 255; this.bp = p + n; this.len += n;
+  };
+  Writer.prototype.flush = function () { if (this.bp) { this.parts.push(this.buf.slice(0, this.bp)); this.bp = 0; } };
+  Writer.prototype.data = function (d, n) { this.flush(); this.parts.push(d); this.len += n; };
+  Writer.prototype.toBlob = function (type) { this.flush(); return new root.Blob(this.parts, { type: type || "application/pdf" }); };
+  Writer.prototype.toBytes = async function () {
+    this.flush(); var out = new Uint8Array(this.len), p = 0;
+    for (var i = 0; i < this.parts.length; i++) {
+      var part = this.parts[i], u = part instanceof Uint8Array ? part : new Uint8Array(await part.arrayBuffer());
+      out.set(u, p); p += u.length;
+    }
+    return out;
+  };
+  /* every object reachable from the given roots, numbered 1.. in depth-first order (iterative, so very long chains cannot overflow the stack) */
+  Doc.prototype._collect = function (roots) {
+    var order = [], map = new Map(), stack = [], i;
+    for (i = roots.length - 1; i >= 0; i--) stack.push(roots[i]);
+    while (stack.length) {
+      var o = stack.pop();
+      if (o instanceof Ref) {
+        if (map.has(o.num)) continue; var t = this.getRaw(o); if (t === null || t === undefined) continue;
+        map.set(o.num, order.length + 1); order.push([o.num, t]); stack.push(t);
+      } else if (Array.isArray(o)) { for (i = o.length - 1; i >= 0; i--) stack.push(o[i]); }
+      else if (o instanceof Dict) { var vals = Array.from(o.m.values()); for (i = vals.length - 1; i >= 0; i--) stack.push(vals[i]); }
+      else if (o instanceof Stream) stack.push(o.dict);
+    }
+    return { order: order, map: map };
+  };
+  /* opt: progress(done,total) and isCancelled() callbacks; asBlob keeps big generated streams out of the JavaScript heap */
+  Doc.prototype._write = async function (opt) {
+    opt = opt || {}; var self = this;
     if (this._pages) { this.ensureTree(); this.syncTree(); }
     if (this._producer) { var inf = this.info(); if (!inf.has("Producer")) inf.set("Producer", textString("DTAhub")); if (!inf.has("CreationDate")) inf.set("CreationDate", new Str(te(pdfDate(new Date())), false)); this._producer = false; }
-    /* reachable objects only, renumbered from 1 */
-    var order = [], map = new Map();
-    function visit(o) {
-      if (o instanceof Ref) {
-        if (map.has(o.num)) return; var t = self.getRaw(o); if (t === null || t === undefined) { return; }
-        map.set(o.num, order.length + 1); order.push([o.num, t]); visit(t);
-      } else if (Array.isArray(o)) o.forEach(visit);
-      else if (o instanceof Dict) o.m.forEach(visit);
-      else if (o instanceof Stream) visit(o.dict);
-    }
-    ["Root", "Info"].forEach(function (k) { visit(self.trailer.get(k)); });
+    var col = this._collect([this.trailer.get("Root"), this.trailer.get("Info")]), order = col.order, map = col.map;
     function remap(o) {
       if (o instanceof Ref) return map.has(o.num) ? new Ref(map.get(o.num), 0) : null;
       if (Array.isArray(o)) return o.map(remap);
       if (o instanceof Dict) { var d = new Dict(); o.m.forEach(function (v, k) { d.set(k, remap(v)); }); return d; }
       return o;
     }
-    var jobs = order.map(function (e) {
-      var o = e[1];
+    var W = new Writer(), offs = new Array(order.length + 1), total = order.length;
+    W.str("%PDF-1.7\n%\xE2\xE3\xCF\xD3\n");
+    for (var i = 0; i < total; i++) {
+      var o = order[i][1]; offs[i + 1] = W.len;
       if (o instanceof Stream) {
-        var d = remap(o.dict), raw = o.raw;
-        d.del("DL"); d.set("Length", raw.length);
-        if (o.compress && !d.has("Filter")) return zlibDeflate(raw).then(function (z) { d.set("Filter", N("FlateDecode")); d.set("Length", z.length); return new Stream(d, z); });
-        return Promise.resolve(new Stream(d, raw));
-      }
-      return Promise.resolve(remap(o));
-    });
-    return Promise.all(jobs).then(function (objs) {
-      var chunks = [], len = 0, offs = [];
-      function push(x) { var b = typeof x === "string" ? latin(x) : x; chunks.push(b); len += b.length; }
-      push("%PDF-1.7\n%\xE2\xE3\xCF\xD3\n");
-      objs.forEach(function (o, i) {
-        offs[i + 1] = len; var parts = []; serialize(o instanceof Stream ? o.dict : o, parts);
-        push((i + 1) + " 0 obj\n" + parts.join("")); if (o instanceof Stream) { push("\nstream\n"); push(o.raw); push("\nendstream"); } push("\nendobj\n");
-      });
-      var xr = len, n = objs.length + 1, x = "xref\n0 " + n + "\n0000000000 65535 f \n";
-      for (var i = 1; i < n; i++) x += String(offs[i]).padStart(10, "0") + " 00000 n \n";
-      var tr = new Dict(); tr.set("Size", n); tr.set("Root", remap(self.trailer.get("Root")));
-      if (self.trailer.has("Info") && remap(self.trailer.get("Info"))) tr.set("Info", remap(self.trailer.get("Info")));
-      var id = new Uint8Array(16); (root.crypto || {}).getRandomValues ? root.crypto.getRandomValues(id) : id.forEach(function (_, k) { id[k] = Math.floor(Math.random() * 256); });
-      tr.set("ID", [new Str(id, true), new Str(id, true)]);
-      var tp = []; serialize(tr, tp); push(x + "trailer\n" + tp.join("") + "\nstartxref\n" + xr + "\n%%EOF\n");
-      var out = new Uint8Array(len), p = 0; chunks.forEach(function (c) { out.set(c, p); p += c.length; }); return out;
-    });
+        var d = remap(o.dict), data, len, ref; d.del("DL");
+        if (o.compress && !d.has("Filter")) { var z = await zlibDeflate(o.raw); d.set("Filter", N("FlateDecode")); data = z; len = z.length; }
+        else if ((ref = o.rawRef())) { data = ref; len = o.rawLength(); }
+        else { data = o.raw; len = data.length; }
+        if (opt.asBlob && len >= 1048576 && root.Blob && data instanceof Uint8Array) data = new root.Blob([data]);
+        d.set("Length", len);
+        var ps = []; serialize(d, ps);
+        W.str((i + 1) + " 0 obj\n" + ps.join("") + "\nstream\n"); W.data(data, len); W.str("\nendstream\nendobj\n");
+      } else { var ps2 = []; serialize(remap(o), ps2); W.str((i + 1) + " 0 obj\n" + ps2.join("") + "\nendobj\n"); }
+      if ((i & 127) === 0) { if (opt.isCancelled && opt.isCancelled()) throw PdfError("cancelled", "cancelled"); if (opt.progress) opt.progress(i, total); }
+    }
+    var xr = W.len, n = total + 1, line = [];
+    W.str("xref\n0 " + n + "\n0000000000 65535 f \n");
+    for (var k = 1; k < n; k++) { line.push(String(offs[k]).padStart(10, "0") + " 00000 n \n"); if (line.length >= 2048) { W.str(line.join("")); line = []; } }
+    if (line.length) W.str(line.join(""));
+    var tr = new Dict(); tr.set("Size", n); tr.set("Root", remap(self.trailer.get("Root")));
+    if (self.trailer.has("Info") && remap(self.trailer.get("Info"))) tr.set("Info", remap(self.trailer.get("Info")));
+    var id = new Uint8Array(16); (root.crypto || {}).getRandomValues ? root.crypto.getRandomValues(id) : id.forEach(function (_, k2) { id[k2] = Math.floor(Math.random() * 256); });
+    tr.set("ID", [new Str(id, true), new Str(id, true)]);
+    var tp = []; serialize(tr, tp); W.str("trailer\n" + tp.join("") + "\nstartxref\n" + xr + "\n%%EOF\n");
+    if (opt.progress) opt.progress(total, total);
+    return W;
   };
+  Doc.prototype.save = function (opt) { return this._write(opt).then(function (W) { return W.toBytes(); }); };
+  Doc.prototype.saveBlob = function (opt) { opt = Object.assign({ asBlob: true }, opt || {}); return this._write(opt).then(function (W) { return W.toBlob("application/pdf"); }); };
   function pdfDate(d) { var p = function (n) { return String(n).padStart(2, "0"); }; return "D:" + d.getUTCFullYear() + p(d.getUTCMonth() + 1) + p(d.getUTCDate()) + p(d.getUTCHours()) + p(d.getUTCMinutes()) + p(d.getUTCSeconds()) + "Z"; }
 
   /* ================= drawing: fonts, images, text, opacity, clip ================= */
@@ -1067,7 +1237,7 @@
       if (o instanceof Dict) { var d = new Dict(); o.m.forEach(function (v, k) { d.set(k, walk(v, num, gen)); }); return d; }
       if (o instanceof Stream) {
         var d2 = walk(o.dict, num, gen), t = d2.get("Type"), skip = (t instanceof Name && (t.n === "XRef" || (t.n === "Metadata" && !encMeta))); var fl = d2.get("Filter"), f0 = Array.isArray(fl) ? fl[0] : fl; if (f0 instanceof Name && f0.n === "Crypt") skip = true;
-        var s = new Stream(d2, skip ? o.raw : dec(stm, o.raw, num, gen)); return s;
+        var s = new Stream(d2, null); s._src = o._src; s._off = o._off; s._len = o._len; if (o._raw !== null) s._raw = skip ? o._raw : dec(stm, o._raw, num, gen); else if (!skip) s._dec = function (bb) { return dec(stm, bb, num, gen); }; return s; /* decrypted only when somebody reads the data */
       }
       return o;
     }
@@ -1075,7 +1245,7 @@
   }
 
   return {
-    Doc: Doc, Page: Page, Name: Name, Ref: Ref, Str: Str, Dict: Dict, Stream: Stream, PdfError: PdfError,
+    Doc: Doc, Page: Page, Name: Name, Ref: Ref, Str: Str, Dict: Dict, Stream: Stream, PdfError: PdfError, MemSource: MemSource, BlobSource: BlobSource,
     rgb: rgb, degrees: degrees, StandardFonts: StandardFonts, Form: Form,
     util: { _crypto: { md5: md5, sha256: sha256, sha512: sha512, rc4: rc4, cbcDecrypt: cbcDecrypt, cbcEncryptNoPad: cbcEncryptNoPad }, afm: function (n) { var k = { Helvetica: "H", "Helvetica-Oblique": "H", "Helvetica-Bold": "HB", "Helvetica-BoldOblique": "HB", "Times-Roman": "T", "Times-Bold": "TB", "Times-Italic": "TI", "Times-BoldItalic": "TBI" }[n]; return k ? AFM[k] : null; }, inflate: zlibInflate, deflate: zlibDeflate, mkDict: mkDict, N: N, dictOf: dictOf, serialize: serialize, textString: textString, Parser: Parser, te: te, strText: strText }
   };
